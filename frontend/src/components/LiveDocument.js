@@ -153,14 +153,19 @@ const LiveDocument = () => {
       {/* Live Data Dashboard */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <TrendingUp className="w-5 h-5 mr-2" />
-            Real-Time Market Data
-            {lastUpdated && (
-              <Badge variant="secondary" className="ml-3">
-                Updated: {new Date(lastUpdated).toLocaleTimeString()}
-              </Badge>
-            )}
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center">
+              <TrendingUp className="w-5 h-5 mr-2" />
+              Live Market Data Dashboard
+              {lastUpdated && (
+                <Badge variant="secondary" className="ml-3">
+                  Updated: {new Date(lastUpdated).toLocaleTimeString()}
+                </Badge>
+              )}
+            </div>
+            <div className="text-sm text-gray-500">
+              Auto-refreshes daily at market close
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
