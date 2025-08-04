@@ -1,75 +1,251 @@
-from fastapi import FastAPI, APIRouter
-from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pymongo import MongoClient
+from bson import ObjectId
 import os
 import logging
-from pathlib import Path
-from pydantic import BaseModel, Field
-from typing import List
-import uuid
+from contextlib import asynccontextmanager
 from datetime import datetime
+from typing import Dict, Any
 
+# Import our models and services
+from .models import LiveDocument, UpdateRequest, RealTimeDataResponse
+from .document_service import DocumentService
 
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Database connection
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+client = MongoClient(MONGO_URL)
+db = client.coastal_oak_db
 
-# Create the main app without a prefix
-app = FastAPI()
+# Initialize document service
+document_service = DocumentService()
 
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("Starting up Coastal Oak Capital Live Document System...")
+    yield
+    # Shutdown
+    logger.info("Shutting down...")
 
+app = FastAPI(
+    lifespan=lifespan,
+    title="Coastal Oak Capital Live Document API",
+    description="Real-time institutional document system with live market data integration",
+    version="1.0.0"
+)
 
-# Define Models
-class StatusCheck(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
-
-# Include the router in the main app
-app.include_router(api_router)
-
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=["*"],  # Configure this properly for production
     allow_credentials=True,
-    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+from fastapi import APIRouter
+router = APIRouter(prefix="/api")
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+@router.get("/")
+async def root():
+    return {
+        "message": "Coastal Oak Capital Live Document System", 
+        "version": "1.0.0",
+        "description": "Institution-grade master deck with real-time market data integration"
+    }
+
+@router.get("/status")
+async def status():
+    try:
+        # Test database connection
+        db.admin.command('ping')
+        return {
+            "status": "healthy", 
+            "database": "connected",
+            "system": "Coastal Oak Capital Live Document System",
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy", 
+            "database": "disconnected", 
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
+@router.post("/document/create", response_model=Dict[str, Any])
+async def create_document():
+    """Create the comprehensive Coastal Oak Capital master deck with real-time data"""
+    try:
+        logger.info("Creating Coastal Oak Capital document with real-time data...")
+        
+        # Create the document with integrated real-time data
+        document = await document_service.create_coastal_oak_document()
+        
+        # Store in database
+        doc_dict = document.model_dump()
+        doc_dict['_id'] = document.id
+        
+        # Store in MongoDB
+        collection = db.documents
+        collection.replace_one(
+            {"_id": document.id}, 
+            doc_dict, 
+            upsert=True
+        )
+        
+        logger.info(f"Document created successfully with ID: {document.id}")
+        
+        return {
+            "success": True,
+            "document_id": document.id,
+            "title": document.title,
+            "sections_count": len(document.sections),
+            "data_sources_count": len(document.data_sources),
+            "last_updated": document.last_updated.isoformat(),
+            "message": "Coastal Oak Capital master deck created with live market data"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error creating document: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create document: {str(e)}")
+
+@router.get("/document/{document_id}")
+async def get_document(document_id: str):
+    """Retrieve a document with its current real-time data"""
+    try:
+        collection = db.documents
+        doc_data = collection.find_one({"_id": document_id})
+        
+        if not doc_data:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Convert MongoDB document back to Pydantic model
+        document = LiveDocument(**doc_data)
+        
+        return {
+            "success": True,
+            "document": document.model_dump(),
+            "export_formats": ["markdown", "json"],
+            "real_time_data_age": "Live data as of request time"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error retrieving document: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve document: {str(e)}")
+
+@router.post("/document/{document_id}/update")
+async def update_document(document_id: str, request: UpdateRequest):
+    """Update a document with the latest real-time data"""
+    try:
+        collection = db.documents
+        doc_data = collection.find_one({"_id": document_id})
+        
+        if not doc_data:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Convert to Pydantic model
+        document = LiveDocument(**doc_data)
+        
+        # Update with latest data
+        updated_document = await document_service.update_document(document, request.force_refresh)
+        
+        # Save back to database
+        doc_dict = updated_document.model_dump()
+        doc_dict['_id'] = updated_document.id
+        collection.replace_one({"_id": document_id}, doc_dict)
+        
+        logger.info(f"Document {document_id} updated successfully")
+        
+        return RealTimeDataResponse(
+            success=True,
+            data=updated_document.model_dump(),
+            sources_updated=list(updated_document.data_sources.keys()),
+            timestamp=datetime.now(),
+            message="Document updated with latest real-time market data"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating document: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update document: {str(e)}")
+
+@router.get("/document/{document_id}/export/markdown")
+async def export_markdown(document_id: str):
+    """Export document as markdown format"""
+    try:
+        collection = db.documents
+        doc_data = collection.find_one({"_id": document_id})
+        
+        if not doc_data:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        document = LiveDocument(**doc_data)
+        markdown_content = document_service.export_to_markdown(document)
+        
+        return {
+            "success": True,
+            "format": "markdown",
+            "content": markdown_content,
+            "title": document.title,
+            "last_updated": document.last_updated.isoformat()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error exporting document: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to export document: {str(e)}")
+
+@router.get("/data/live")
+async def get_live_data():
+    """Get current real-time market data"""
+    try:
+        real_time_data = await document_service.data_manager.fetch_all_data()
+        
+        return {
+            "success": True,
+            "data": real_time_data,
+            "timestamp": datetime.now().isoformat(),
+            "sources_count": len(real_time_data),
+            "message": "Real-time market data retrieved successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching live data: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch live data: {str(e)}")
+
+@router.get("/documents/list")
+async def list_documents():
+    """List all available documents"""
+    try:
+        collection = db.documents
+        documents = list(collection.find({}, {
+            "_id": 1, 
+            "title": 1, 
+            "description": 1, 
+            "last_updated": 1, 
+            "version": 1
+        }))
+        
+        return {
+            "success": True,
+            "documents": documents,
+            "count": len(documents),
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error listing documents: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list documents: {str(e)}")
+
+app.include_router(router)
