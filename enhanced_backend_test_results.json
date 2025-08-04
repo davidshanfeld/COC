@@ -1,0 +1,63 @@
+{
+  "total_tests": 5,
+  "passed": 3,
+  "failed": 2,
+  "success_rate": 60.0,
+  "created_document_id": "61f4d5fe-045c-4192-b036-9d6e9a53e0ce",
+  "test_results": [
+    {
+      "test": "Enhanced Document Creation",
+      "success": true,
+      "details": "Document created with 7 sections (enhanced content)",
+      "timestamp": "2025-08-04T05:08:52.992803",
+      "response_data": {
+        "document_id": "61f4d5fe-045c-4192-b036-9d6e9a53e0ce",
+        "sections": 7
+      }
+    },
+    {
+      "test": "PICO Case Study Content",
+      "success": false,
+      "details": "Missing required elements: ['when to say no']",
+      "timestamp": "2025-08-04T05:08:53.503730",
+      "response_data": {
+        "section_title": "Investment Discipline Case Study: PICO Boulevard Property - When to Say No",
+        "content_length": 6384
+      }
+    },
+    {
+      "test": "AI Data Center Strategy Content",
+      "success": true,
+      "details": "AI Data Center strategy validated with all required elements",
+      "timestamp": "2025-08-04T05:08:54.021056",
+      "response_data": {
+        "section_order": 4,
+        "content_length": 8256
+      }
+    },
+    {
+      "test": "Enhanced Markdown Export",
+      "success": false,
+      "details": "Missing content in markdown: ['modular grid architecture']",
+      "timestamp": "2025-08-04T05:08:54.536032",
+      "response_data": {
+        "content_length": 33875
+      }
+    },
+    {
+      "test": "Real-Time Data Integration",
+      "success": true,
+      "details": "Real-time data integration working with 8 sources",
+      "timestamp": "2025-08-04T05:08:55.055410",
+      "response_data": {
+        "sources_count": 8,
+        "sample_sources": [
+          "fed_funds_rate",
+          "10_year_treasury",
+          "cpi_inflation"
+        ]
+      }
+    }
+  ],
+  "backend_url": "https://12a0bb9f-6266-4878-88ef-301310605353.preview.emergentagent.com/api"
+}
