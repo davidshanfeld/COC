@@ -473,6 +473,63 @@ class CoastalOakAPITester:
             self.log_test("Documents List Endpoint", False, f"Request failed: {str(e)}")
             return False
     
+    def test_daily_refresh_endpoint(self) -> bool:
+        """Test POST /api/system/refresh-all - Daily refresh endpoint for living document functionality"""
+        try:
+            response = self.session.post(f"{self.base_url}/system/refresh-all", timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['success', 'refreshed_count', 'total_documents', 'timestamp', 'message']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Daily Refresh Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                if not data.get('success'):
+                    self.log_test("Daily Refresh Endpoint", False, 
+                                f"API returned success=false: {data.get('message', 'No message')}", data)
+                    return False
+                
+                # Check refresh results
+                refreshed_count = data.get('refreshed_count', 0)
+                total_documents = data.get('total_documents', 0)
+                
+                if total_documents == 0:
+                    self.log_test("Daily Refresh Endpoint", False, 
+                                f"No documents found to refresh", data)
+                    return False
+                
+                if refreshed_count == 0:
+                    self.log_test("Daily Refresh Endpoint", False, 
+                                f"No documents were refreshed despite {total_documents} total documents", data)
+                    return False
+                
+                # Validate message content
+                message = data.get('message', '')
+                if 'refresh completed' not in message.lower():
+                    self.log_test("Daily Refresh Endpoint", False, 
+                                f"Unexpected message format: {message}", data)
+                    return False
+                
+                self.log_test("Daily Refresh Endpoint", True, 
+                            f"Daily refresh completed successfully - {refreshed_count}/{total_documents} documents updated", 
+                            {'refreshed': refreshed_count, 'total': total_documents})
+                return True
+                
+            else:
+                self.log_test("Daily Refresh Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Daily Refresh Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
     def run_all_tests(self) -> Dict[str, Any]:
         """Run all backend API tests in sequence"""
         print(f"\n🚀 Starting Coastal Oak Capital Backend API Tests")
