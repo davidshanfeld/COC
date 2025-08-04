@@ -1,27 +1,27 @@
 {
   "total_tests": 5,
-  "passed": 3,
-  "failed": 2,
-  "success_rate": 60.0,
-  "created_document_id": "61f4d5fe-045c-4192-b036-9d6e9a53e0ce",
+  "passed": 5,
+  "failed": 0,
+  "success_rate": 100.0,
+  "created_document_id": "e79fbf15-9a37-4691-9017-a4cde881dc53",
   "test_results": [
     {
       "test": "Enhanced Document Creation",
       "success": true,
       "details": "Document created with 7 sections (enhanced content)",
-      "timestamp": "2025-08-04T05:08:52.992803",
+      "timestamp": "2025-08-04T05:09:25.946198",
       "response_data": {
-        "document_id": "61f4d5fe-045c-4192-b036-9d6e9a53e0ce",
+        "document_id": "e79fbf15-9a37-4691-9017-a4cde881dc53",
         "sections": 7
       }
     },
     {
       "test": "PICO Case Study Content",
-      "success": false,
-      "details": "Missing required elements: ['when to say no']",
-      "timestamp": "2025-08-04T05:08:53.503730",
+      "success": true,
+      "details": "PICO case study validated with all required elements",
+      "timestamp": "2025-08-04T05:09:26.457352",
       "response_data": {
-        "section_title": "Investment Discipline Case Study: PICO Boulevard Property - When to Say No",
+        "section_order": 6,
         "content_length": 6384
       }
     },
@@ -29,7 +29,7 @@
       "test": "AI Data Center Strategy Content",
       "success": true,
       "details": "AI Data Center strategy validated with all required elements",
-      "timestamp": "2025-08-04T05:08:54.021056",
+      "timestamp": "2025-08-04T05:09:26.968202",
       "response_data": {
         "section_order": 4,
         "content_length": 8256
@@ -37,18 +37,19 @@
     },
     {
       "test": "Enhanced Markdown Export",
-      "success": false,
-      "details": "Missing content in markdown: ['modular grid architecture']",
-      "timestamp": "2025-08-04T05:08:54.536032",
+      "success": true,
+      "details": "Enhanced markdown export validated with all content",
+      "timestamp": "2025-08-04T05:09:27.480221",
       "response_data": {
-        "content_length": 33875
+        "content_length": 33875,
+        "sections": 7
       }
     },
     {
       "test": "Real-Time Data Integration",
       "success": true,
       "details": "Real-time data integration working with 8 sources",
-      "timestamp": "2025-08-04T05:08:55.055410",
+      "timestamp": "2025-08-04T05:09:28.004529",
       "response_data": {
         "sources_count": 8,
         "sample_sources": [
