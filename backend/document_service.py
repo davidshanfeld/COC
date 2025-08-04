@@ -505,7 +505,7 @@ All financial projections incorporate live market data and current conditions as
             # PICO Property Case Study - Investment Discipline Example
             DocumentSection(
                 title="Investment Discipline Case Study: PICO Boulevard Property - When to Say No",
-                order=5,
+                order=6,
                 content=f"""
 **Executive Summary**: The PICO Boulevard property exemplifies the critical importance of disciplined deal selection in distressed markets. Despite being available at an exceptional discount ("basically nothing"), this opportunity demonstrates why even deeply discounted assets must align with core business model requirements.
 
