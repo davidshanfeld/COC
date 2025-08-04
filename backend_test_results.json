@@ -3,25 +3,25 @@
   "passed": 8,
   "failed": 0,
   "success_rate": 100.0,
-  "created_document_id": "a4b41dd7-cdbb-4f2d-8df4-18322575b24c",
+  "created_document_id": "afc6e6b7-a2f7-4566-b9d7-838d2a18954e",
   "test_results": [
     {
       "test": "Status Endpoint",
       "success": true,
       "details": "System healthy, database connected",
-      "timestamp": "2025-08-04T09:11:03.298521",
+      "timestamp": "2025-08-04T09:54:26.695576",
       "response_data": {
         "status": "healthy",
         "database": "connected",
         "system": "Coastal Oak Capital Live Document System",
-        "timestamp": "2025-08-04T09:11:03.295125"
+        "timestamp": "2025-08-04T09:54:26.693125"
       }
     },
     {
       "test": "Live Data Endpoint",
       "success": true,
       "details": "Successfully fetched 8 data sources with complete structure",
-      "timestamp": "2025-08-04T09:11:03.807338",
+      "timestamp": "2025-08-04T09:54:27.205329",
       "response_data": {
         "sources_count": 8,
         "sample_sources": [
@@ -35,9 +35,9 @@
       "test": "Document Create Endpoint",
       "success": true,
       "details": "Document created successfully with 8 sections and 8 data sources",
-      "timestamp": "2025-08-04T09:11:04.322336",
+      "timestamp": "2025-08-04T09:54:27.715519",
       "response_data": {
-        "document_id": "a4b41dd7-cdbb-4f2d-8df4-18322575b24c",
+        "document_id": "afc6e6b7-a2f7-4566-b9d7-838d2a18954e",
         "sections": 8,
         "data_sources": 8
       }
@@ -46,7 +46,7 @@
       "test": "Document Get Endpoint",
       "success": true,
       "details": "Document retrieved successfully with 8 sections and 8 data sources",
-      "timestamp": "2025-08-04T09:11:04.840451",
+      "timestamp": "2025-08-04T09:54:28.228556",
       "response_data": {
         "sections_count": 8,
         "data_sources_count": 8
@@ -56,7 +56,7 @@
       "test": "Document Update Endpoint",
       "success": true,
       "details": "Document updated successfully, 8 sources refreshed",
-      "timestamp": "2025-08-04T09:11:05.354261",
+      "timestamp": "2025-08-04T09:54:28.742261",
       "response_data": {
         "sources_updated": [
           "fed_funds_rate",
@@ -70,7 +70,7 @@
       "test": "Document Export Markdown Endpoint",
       "success": true,
       "details": "Markdown export successful, 70217 characters generated",
-      "timestamp": "2025-08-04T09:11:05.868002",
+      "timestamp": "2025-08-04T09:54:29.252907",
       "response_data": {
         "content_length": 70217,
         "format": "markdown"
@@ -79,21 +79,21 @@
     {
       "test": "Documents List Endpoint",
       "success": true,
-      "details": "Successfully listed 19 documents",
-      "timestamp": "2025-08-04T09:11:06.377933",
+      "details": "Successfully listed 22 documents",
+      "timestamp": "2025-08-04T09:54:29.762290",
       "response_data": {
-        "count": 19,
+        "count": 22,
         "has_created_doc": true
       }
     },
     {
       "test": "Daily Refresh Endpoint",
       "success": true,
-      "details": "Daily refresh completed successfully - 19/19 documents updated",
-      "timestamp": "2025-08-04T09:11:06.911203",
+      "details": "Daily refresh completed successfully - 22/22 documents updated",
+      "timestamp": "2025-08-04T09:54:30.301440",
       "response_data": {
-        "refreshed": 19,
-        "total": 19
+        "refreshed": 22,
+        "total": 22
       }
     }
   ],
