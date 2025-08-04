@@ -250,4 +250,46 @@ async def list_documents():
         logger.error(f"Error listing documents: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to list documents: {str(e)}")
 
+@router.post("/system/refresh-all")
+async def refresh_all_documents():
+    """Refresh all documents with latest real-time data - Daily auto-refresh endpoint"""
+    try:
+        logger.info("Starting daily refresh of all documents...")
+        
+        collection = db.documents
+        documents = list(collection.find({}))
+        
+        refreshed_count = 0
+        for doc_data in documents:
+            try:
+                # Convert to Pydantic model
+                document = LiveDocument(**doc_data)
+                
+                # Update with latest data
+                updated_document = await document_service.update_document(document, force_refresh=True)
+                
+                # Save back to database
+                doc_dict = updated_document.model_dump()
+                doc_dict['_id'] = updated_document.id
+                collection.replace_one({"_id": updated_document.id}, doc_dict)
+                
+                refreshed_count += 1
+                logger.info(f"Refreshed document: {updated_document.title}")
+                
+            except Exception as doc_error:
+                logger.error(f"Error refreshing document {doc_data.get('_id', 'unknown')}: {doc_error}")
+                continue
+        
+        return {
+            "success": True,
+            "refreshed_count": refreshed_count,
+            "total_documents": len(documents),
+            "timestamp": datetime.now().isoformat(),
+            "message": f"Daily refresh completed - {refreshed_count} documents updated with latest market data"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error during daily refresh: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to refresh documents: {str(e)}")
+
 app.include_router(router)
