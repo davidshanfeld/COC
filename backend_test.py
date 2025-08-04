@@ -545,7 +545,8 @@ class CoastalOakAPITester:
             ("Document Retrieval", self.test_document_get_endpoint),
             ("Document Update", self.test_document_update_endpoint),
             ("Markdown Export", self.test_document_export_markdown_endpoint),
-            ("Documents List", self.test_documents_list_endpoint)
+            ("Documents List", self.test_documents_list_endpoint),
+            ("Daily Refresh System", self.test_daily_refresh_endpoint)
         ]
         
         passed = 0
