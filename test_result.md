@@ -178,6 +178,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "PASS: New daily refresh endpoint /api/system/refresh-all working perfectly. Successfully refreshes all documents with latest real-time market data. Tested with 14 documents - all updated successfully. This enables the 'living document' functionality as requested, keeping content current with daily data updates."
+      - working: true
+        agent: "testing"
+        comment: "PASS: POST-PROSPECTUS VALIDATION - Daily refresh endpoint continues working perfectly after institutional prospectus package creation. Successfully tested with 19 documents - all updated with latest real-time market data. The 'living and breathing' document functionality remains fully operational alongside static prospectus files."
 
 frontend:
   - task: "Live document interface"
