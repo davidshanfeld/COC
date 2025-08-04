@@ -246,10 +246,157 @@ Target 50-70% discounts to face value through:
                 data_dependencies=['10_year_treasury', 'cap_rates_office', 'cpi_inflation', 'commercial_electricity_rate']
             ),
             
+            # AI Data Center Modular Grid Infrastructure Strategy
+            DocumentSection(
+                title="AI Data Center Modular Grid Infrastructure: Next-Generation Value Creation",
+                order=4,
+                content=f"""
+**Strategic Overview**: The convergence of AI compute demand, modular data center technology, and distressed real estate creates unprecedented value creation opportunities. Our infrastructure strategy transforms underutilized office buildings into high-performance edge computing nodes within an integrated grid network.
+
+**Market Drivers** (Current Environment):
+• **AI Compute Explosion**: ChatGPT to 100M users in 2 months, driving exponential compute demand
+• **Edge Computing Growth**: $16.9B (2023) to $61.6B (2028) market expansion
+• **Data Sovereignty**: Local processing requirements for sensitive AI applications  
+• **Latency Requirements**: Sub-5ms latency for real-time AI inference applications
+• **Energy Costs**: Current {real_time_data['commercial_electricity_rate']['value']:.1f}¢/kWh creating operational optimization opportunities
+
+**Modular Grid Infrastructure Architecture**:
+
+**Technical Specifications**:
+• **Power Density**: 200-400 watts per square foot (vs. 50-100W traditional office)
+• **Cooling Requirements**: 1.2-1.4 PUE (Power Usage Effectiveness) targets
+• **Network Connectivity**: Minimum 10Gbps, targeting 100Gbps backbone
+• **Modular Deployment**: 250kW-2MW capacity per location
+• **Redundancy**: N+1 power, 2N cooling, diverse fiber paths
+
+**Grid Integration Strategy**:
+• **Distributed Processing**: 10-15 nodes within 25-mile radius of Los Angeles
+• **Load Balancing**: Dynamic workload distribution based on capacity/demand
+• **Fault Tolerance**: Automatic failover between grid nodes
+• **Edge-to-Cloud Hybrid**: Seamless integration with hyperscale cloud providers
+
+**Conversion Process - Office to Data Center**:
+
+**Phase 1: Structural Assessment & Design (Months 1-3)**
+• **Structural Engineering**: Floor loading analysis for equipment density
+• **Power Infrastructure**: Utility service upgrade planning (1-5MW typical)
+• **HVAC Design**: Precision cooling system architecture
+• **Security Planning**: Biometric access, 24/7 monitoring, SSAE-16 compliance
+
+**Phase 2: Infrastructure Installation (Months 4-8)**
+• **Electrical Upgrades**: Primary switchgear, UPS systems, generator backup
+• **Cooling Systems**: Computer Room Air Conditioning (CRAC) units, hot/cold aisle containment
+• **Network Infrastructure**: Fiber optic backbone, meet-me room construction
+• **Security Implementation**: Multi-layer physical and cyber security
+
+**Phase 3: Modular Deployment (Months 9-12)**
+• **Server Installation**: High-density rack systems, GPU clusters for AI workloads
+• **Commissioning**: System integration testing, performance validation
+• **Certification**: Uptime Institute Tier II/III, SOC 2 compliance
+• **Customer Onboarding**: Tenant improvements, connectivity provisioning
+
+**Financial Model - Modular Data Center Conversion**:
+
+**Typical 25,000 SF Office Building Conversion**:
+• **Acquisition Cost**: $5.0M (distressed acquisition at $200/SF)
+• **Conversion Investment**: $8.5M ($340/SF including all infrastructure)
+• **Total Investment**: $13.5M all-in
+• **Capacity**: 2.0 MW critical IT load
+
+**Revenue Streams**:
+• **Colocation Services**: $175/kW/month average (premium for AI/edge computing)
+• **Network Connectivity**: $500-2,000/month per customer cross-connects
+• **Managed Services**: 15-25% markup on third-party services
+• **Cloud On-Ramps**: Revenue sharing with hyperscale providers
+
+**Financial Performance**:
+• **Stabilized Revenue**: $4.2M annually (2MW × $175/kW × 12 months)
+• **Operating Expenses**: $1.4M annually (utilities, staffing, maintenance)
+• **NOI**: $2.8M annually (20.7% yield on total investment)
+• **Stabilized Value**: $40M (7.0% cap rate)
+• **Equity Multiple**: 2.96x over 5 years
+• **Target IRR**: 24% gross, ~21% net to LPs
+
+**Heat-to-Energy Conversion Integration**:
+
+**Waste Heat Recovery Systems**:
+• **Thermal Capture**: 60-70% of input power converted to recoverable heat
+• **Heat Pump Integration**: Coefficient of Performance (COP) 3.0-4.0 systems
+• **District Heating**: Hot water/steam distribution to adjacent buildings
+• **Absorption Cooling**: Heat-driven cooling for reduced electrical consumption
+
+**Energy Arbitrage Opportunities**:
+• **Peak Shaving**: Battery storage charged during off-peak hours at {(real_time_data['commercial_electricity_rate']['value'] * 0.7):.1f}¢/kWh
+• **Demand Response**: Grid services revenue $50-150/kW-year participation
+• **Renewable Integration**: On-site solar + storage + grid-interactive capabilities
+• **Carbon Credits**: $15-25/ton CO₂ equivalent for verified emissions reductions
+
+**Economic Impact of Heat Recovery**:
+• **Energy Cost Reduction**: 25-35% reduction in total facility energy costs
+• **Additional Revenue**: $75,000-125,000 annually per MW of heat recovery
+• **Carbon Reduction**: 1,200-1,800 tons CO₂ annually per facility
+• **Grid Stability**: Demand flexibility services create additional revenue streams
+
+**Competitive Advantages in AI Data Center Market**:
+
+**Location Premium**:
+• **Urban Edge Computing**: 20-30% rate premium for sub-5ms latency to users
+• **Fiber Connectivity**: Direct connection to major carrier hotels and internet exchanges
+• **Talent Access**: Proximity to tech workforce for on-site support requirements
+• **Regulatory Environment**: California's favorable data privacy and AI development policies
+
+**Modular Scalability**:
+• **Phased Deployment**: Start with 500kW, scale to 2MW+ based on demand
+• **Technology Agnostic**: Accommodate evolving AI chip architectures (NVIDIA, AMD, Intel)
+• **Tenant Flexibility**: Colocation, private suites, or full building lease options
+• **Future-Proofing**: Infrastructure designed for next-generation compute requirements
+
+**Grid Network Effects**:
+• **Distributed Computing**: Portfolio-wide workload optimization
+• **Redundancy Premium**: 99.99%+ uptime through distributed architecture
+• **Economies of Scale**: Shared NOC, security, maintenance across portfolio
+• **Strategic Value**: Integrated network more valuable than individual facilities
+
+**Risk Mitigation - Technology and Market**:
+
+**Technology Evolution Risk**:
+• **Modular Architecture**: Equipment refresh capability without facility rebuild
+• **Standards Compliance**: Open Compute Project (OCP) designs for vendor flexibility
+• **AI Workload Diversity**: Support for training, inference, and edge computing applications
+• **Quantum Readiness**: Infrastructure designed for future quantum computing integration
+
+**Market Demand Risk**:
+• **Diverse Tenant Base**: Enterprise, startups, research institutions, government
+• **Multiple Use Cases**: AI development, autonomous vehicles, IoT processing, gaming
+• **Geographic Distribution**: Risk mitigation through multiple market exposure
+• **Exit Flexibility**: Data centers maintain value across technology cycles
+
+**Current Market Validation** (Real-Time Integration):
+• **Construction Costs**: {real_time_data['construction_cost_index']['value']:.1f} index supports adaptive reuse vs. ground-up development
+• **Interest Rates**: {real_time_data['10_year_treasury']['value']:.2f}% Treasury environment favors operational assets over development
+• **Inflation Impact**: {real_time_data['cpi_inflation']['value']:.1f}% supports contracted revenue escalations in data center leases
+• **Energy Costs**: {real_time_data['commercial_electricity_rate']['value']:.1f}¢/kWh drives demand for energy-efficient computing solutions
+
+**Implementation Timeline**:
+• **2025 Q2-Q4**: First 3 facilities (proof of concept)
+• **2026**: Scale to 8-10 facilities (network effects activation)
+• **2027-2028**: Portfolio optimization and selective expansion
+• **2029-2030**: Strategic exit or recapitalization at scale
+
+The AI data center modular grid strategy represents the intersection of three powerful trends: artificial intelligence compute demand, distressed real estate opportunities, and sustainable infrastructure development. By transforming underutilized office buildings into high-performance computing nodes, we create substantial value while supporting the digital infrastructure backbone of the modern economy.
+
+**Strategic Conclusion**: The combination of discounted real estate acquisition, modular infrastructure deployment, and heat-to-energy conversion creates multiple value creation vectors that compound over time. This approach positions the fund at the forefront of next-generation data center development while maintaining the risk-adjusted return profiles expected in opportunistic real estate investing.
+
+---
+*Strategy incorporates live market data and AI compute demand trends as of {datetime.now().strftime('%B %d, %Y')}*
+                """,
+                data_dependencies=['commercial_electricity_rate', 'construction_cost_index', '10_year_treasury', 'cpi_inflation']
+            ),
+            
             # Financial Case Studies - Enhanced with specific examples
             DocumentSection(
                 title="Financial Case Studies: Proven Value Creation Models",
-                order=4,
+                order=5,
                 content=f"""
 **Case Study 1: Modular Data Center Grid Portfolio**
 
