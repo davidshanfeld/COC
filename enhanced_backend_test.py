@@ -120,7 +120,7 @@ class EnhancedCoastalOakTester:
                     'business model',
                     'heat-to-energy',
                     'data center cooling',
-                    'when to say no'
+                    'declined'  # Changed from 'when to say no' to 'declined'
                 ]
                 
                 missing_elements = []
