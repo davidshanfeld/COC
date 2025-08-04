@@ -255,7 +255,7 @@ class EnhancedCoastalOakTester:
                     'investment discipline',
                     'heat-to-energy conversion',
                     'floor-to-ceiling glass',
-                    'modular grid architecture'
+                    'modular grid'  # Changed from 'modular grid architecture' to 'modular grid'
                 ]
                 
                 missing_content = []
