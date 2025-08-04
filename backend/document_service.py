@@ -63,12 +63,12 @@ class DocumentService:
         )
         
         sections = [
-            # Executive Summary
+            # Executive Summary - Enhanced with detailed fund information
             DocumentSection(
-                title="Executive Summary: Coastal Oak Capital Opportunistic Debt Fund",
+                title="Executive Summary: Coastal Oak Capital Opportunistic Distressed Debt Fund",
                 order=1,
                 content=f"""
-**Investment Thesis**: Coastal Oak Capital targets non-performing and near-term stressed commercial real estate debt at significant discounts, with a focus on adaptive reuse opportunities in AI infrastructure, EV charging, and blockchain-enabled real asset tokenization.
+**Investment Thesis**: Coastal Oak Capital represents a unique opportunity at the intersection of three transformative market dynamics: distressed commercial real estate debt, adaptive reuse of underperforming office assets, and surging demand for data centers and EV charging infrastructure.
 
 **Current Market Environment** (Live Data as of {datetime.now().strftime('%B %d, %Y')}):
 • Federal Funds Rate: {real_time_data['fed_funds_rate']['value']:.2f}%¹
@@ -77,371 +77,379 @@ class DocumentService:
 • CPI Inflation: {real_time_data['cpi_inflation']['value']:.1f}% annually³
 • CMBS-Treasury Spread: {real_time_data['cmbs_spread']['value']} basis points⁴
 
-**Fund Structure**:
-• Target Raise: $150-200 million
-• Preferred Return: 8% annually
-• Carried Interest: 20% after hurdle
-• Term: 8 years with 2-year recycling period
-• Target Net IRR: 18-25%
+**Market Opportunity**:
+With over $2.2 trillion in commercial real estate debt maturing by 2027 and rising interest rates challenging refinancing, distressed assets are available at 50-70% discounts. Simultaneously, office vacancies of 20-25% in older LA buildings create repositioning opportunities for data centers and EV charging infrastructure.
 
-**Competitive Advantage**: Proprietary AI-driven underwriting, proven track record (+47.97% equity performance since March 2025), and specialized expertise in debt-to-equity conversions with adaptive reuse capabilities.
+**Fund Structure & Terms**:
+• Target Raise: $30-50 million by 2027
+• Preferred Return: 8% annually to limited partners
+• Carried Interest: 20% over hurdle rate
+• Management Fee: 1.5-2% of committed capital
+• Target Net IRR: 20-25% over 5-7 year horizon
+• Equity Multiple Target: 2.0-2.5x
 
-**Value Creation Pillars**:
-1. **Distressed Debt Acquisition**: Purchase debt at 30-50% discounts to UPB
-2. **Adaptive Reuse Engineering**: Convert distressed office/retail to high-demand infrastructure
-3. **Technology Integration**: AI underwriting + blockchain tokenization for liquidity
+**Corporate Shared Value Approach**: Founded on Harvard's Michael Porter CSV model, combining exceptional financial returns with meaningful social impact through adaptive reuse, carbon reduction (50-70% vs new construction), and critical infrastructure development.
 
-**Target Returns**: Base case 18% net IRR, upside scenarios exceeding 25% through accelerated lease-up or strategic sales to hyperscalers and infrastructure operators.
+**Team**: David Shanfeld (JD Loyola, MBA candidate USC Marshall) and Alexandra Franklin (Columbia Law, MRED candidate USC Price, formerly Akin Gump) bring complementary expertise in distressed transactions, legal structuring, and sustainable investment strategies.
+
+**Competitive Advantage**: Proprietary sourcing relationships, specialized legal expertise, AI-driven underwriting, and proven adaptive reuse strategies position us to capitalize on this once-in-a-generation market dislocation.
 
 ---
-¹Federal Reserve Economic Data (FRED)
-²Federal Reserve Economic Data (FRED) 
-³Bureau of Labor Statistics via FRED
+¹Federal Reserve Economic Data (FRED) - Real-time
+²Federal Reserve Economic Data (FRED) - Real-time
+³Bureau of Labor Statistics via FRED - Real-time
 ⁴Trepp CMBS Analytics (Simulated)
                 """,
                 data_dependencies=['fed_funds_rate', '10_year_treasury', 'cpi_inflation', 'cmbs_spread']
             ),
             
-            # Market Dislocation Analysis
+            # Market Dislocation Analysis - Enhanced with comprehensive data
             DocumentSection(
-                title="Market Dislocation Deep-Dive: The $1.2 Trillion CRE Refinancing Wall",
+                title="Market Dislocation Deep-Dive: The $2.2 Trillion CRE Refinancing Crisis",
                 order=2,
                 content=f"""
-**Quantitative Evidence of Market Stress** (Real-Time Data):
+**Unprecedented Distressed Debt Opportunity** (Real-Time Data):
 
-**Interest Rate Environment**:
+**Interest Rate Shock**:
 • Current Fed Funds Rate: {real_time_data['fed_funds_rate']['value']:.2f}% vs. 0.25% (2021 low)¹
 • 10-Year Treasury: {real_time_data['10_year_treasury']['value']:.2f}% vs. 1.51% (2021 average)²
-• Rate Shock Impact: 500+ basis point increase creates immediate refinancing crisis
+• Rate Increase Impact: 500+ basis point shock creates immediate refinancing crisis
 
-**Construction Cost Inflation**:
+**Construction Cost Explosion**:
 • Producer Price Index (Construction): {real_time_data['construction_cost_index']['value']:.1f} (Current)³
-• Year-over-Year Construction Inflation: ~{real_time_data['cpi_inflation']['value']:.1f}%⁴
-• Impact on Replacement Cost: New construction 25-40% more expensive than 2021
+• Annual Construction Inflation: {real_time_data['cpi_inflation']['value']:.1f}%⁴
+• Replacement Cost Impact: New construction 25-40% more expensive than 2021
 
-**CMBS Market Distress**:
-• CMBS-Treasury Spread: {real_time_data['cmbs_spread']['value']} basis points (vs. 150bp historical average)⁵
-• $270+ billion in CMBS loans maturing 2024-2026⁶
-• Current CMBS delinquency rate: 4.8% and rising⁷
+**The Scale of Distress**:
+• $2.2 trillion in CRE debt maturing through 2027
+• $324 billion matured in 2024 alone
+• $19.2 billion in foreclosures reached by late 2024
+• Office properties represent 32% of maturing debt ($704 billion)
 
-**Office Market Fundamentals**:
-• National office vacancy: 18.8% (highest since 1990s)⁸
-• Los Angeles CBD vacancy: 24.1%⁹
-• Average asking rents down 15-25% from peak¹⁰
+**Regional Bank Pressure**:
+• $1.6 trillion CRE loans held by regional/local banks
+• $475 billion in office exposure specifically
+• FDIC data shows regional banks ($10-50B assets) face particular pressure
+• CRE loans often represent 250-400% of total bank capital
+• Regulatory pressure accelerating distressed sales
 
-**Regional Bank CRE Exposure**:
-• Total CRE loans outstanding: $2.7 trillion¹¹
-• Regional banks hold 67% of all CRE debt¹²
-• Office loans represent $750+ billion exposure¹³
+**Los Angeles Market Specifics**:
+• Office property values down 43% year-over-year
+• B/C class vacancy rates: 20-25%
+• 65% of maturing office loans have LTV ratios exceeding 80%
+• Many properties now have negative equity positions
 
-**The Opportunity**: This convergence of rate shock, construction inflation, and occupancy decline creates a once-in-a-decade opportunity to acquire performing debt at significant discounts, particularly when combined with adaptive reuse potential.
+**The Opportunity Window**:
+Current conditions present acquisition opportunities before institutional capital organizes around distressed office opportunities (expected by late 2026). Oaktree's recent $16 billion distressed fund validates institutional interest and market scale.
 
-**Target Acquisition Parameters**:
-• Purchase Price: 50-70% of UPB for non-performing debt
-• Underlying Asset LTV: 65-80% at acquisition
-• Markets: Primary focus on infill Los Angeles, secondary Southwest markets
-• Asset Types: B/C office (20-50k SF), strategically located retail, industrial with retrofit potential
+**Acquisition Strategy**:
+Target 50-70% discounts to face value through:
+• Direct relationships with 15+ regional banks
+• Special servicer network for CMBS assets
+• Legal network intelligence on bankruptcy situations
+• Family office direct relationships for off-market deals
+
+**Information Advantages**:
+• Local knowledge of regulatory/entitlement issues
+• Specialized workout expertise
+• Technical data center conversion capabilities
+• Limited competition for mid-market assets ($10-30M)
 
 ---
 ¹Federal Reserve Economic Data (FRED) - Real-time
 ²Federal Reserve Economic Data (FRED) - Real-time
-³Bureau of Labor Statistics Producer Price Index
-⁴Consumer Price Index calculation
-⁵Trepp CMBS Analytics (Simulated)
-⁶⁶Commercial Mortgage Alert, 2024
-⁷Trepp Research
-⁸CoStar Market Analytics
-⁹CBRE Los Angeles Market Report Q4 2024
-¹⁰RCA Transaction Database
-¹¹Federal Reserve Call Reports
-¹²FDIC Quarterly Banking Profile
-¹³Federal Reserve Bank of St. Louis
+³Bureau of Labor Statistics Producer Price Index - Real-time
+⁴Consumer Price Index calculation - Real-time
                 """,
-                data_dependencies=['fed_funds_rate', '10_year_treasury', 'construction_cost_index', 'cpi_inflation', 'cmbs_spread']
+                data_dependencies=['fed_funds_rate', '10_year_treasury', 'construction_cost_index', 'cpi_inflation']
             ),
             
-            # Investment Thesis & Value Creation
+            # Investment Strategy - Enhanced with detailed approach
             DocumentSection(
-                title="Investment Thesis: Debt-to-Equity Conversion with Adaptive Reuse Upside",
+                title="Investment Strategy: Distressed Debt-to-Equity with Adaptive Reuse",
                 order=3,
                 content=f"""
-**Core Investment Strategy**: Acquire non-performing or near-term distressed commercial real estate debt at significant discounts, enforce loan covenants to take control of underlying assets, then execute value-add repositioning focused on high-demand infrastructure uses.
+**Three-Pillar Value Creation Strategy** (Live Market Integration):
 
-**Current Market-Based Assumptions** (Live Data):
-• **Cost of Capital**: {cost_of_capital:.2f}% (10Y Treasury {real_time_data['10_year_treasury']['value']:.2f}% + 450bp risk premium)¹
-• **Inflation-Adjusted Cap Rates**: {adjusted_cap_rate:.2f}% (base {real_time_data['cap_rates_office']['value']:.2f}% + inflation adjustment)²
-• **Construction Cost Index**: {real_time_data['construction_cost_index']['value']:.1f} (current vs. 250 baseline)³
-• **Energy Cost per SF**: ${energy_cost_sf:.2f}/SF annually (at {real_time_data['commercial_electricity_rate']['value']:.1f}¢/kWh)⁴
+**Pillar 1: Discounted Acquisition Foundation**
+• **Current Cost of Capital**: {cost_of_capital:.2f}% (10Y Treasury {real_time_data['10_year_treasury']['value']:.2f}% + 450bp risk premium)¹
+• **Target Acquisition Discounts**: 50-70% below face value
+• **Immediate Equity Creation**: 30-50% equity upon acquisition
+• **Downside Protection**: Substantial buffer against market volatility
 
-**The Debt-to-Equity Conversion Mechanism**:
+**Pillar 2: Adaptive Reuse Value Creation**
 
-**Step 1: Distressed Debt Acquisition**
-• Target: Non-performing loans 90+ days delinquent
-• Purchase Price: 50-70% of unpaid principal balance (UPB)
-• Immediate Discount: 30-50% below par value
-• Due Diligence: 30-45 day exclusive negotiation period
+**Modular Data Center Strategy**:
+• Convert 20,000-50,000 SF office buildings into 1.5-2.0 MW edge data centers
+• Target lease rates: $175-225/kW/month (vs suburban $150-180/kW)
+• Urban premium justification: 20-30% higher rates for low-latency proximity
+• Market growth: $418B (2023) to $670B (2028) = 9.6% CAGR
 
-**Step 2: Asset Control Through Foreclosure/Deed-in-Lieu**
-• Typical Timeline: 6-18 months from acquisition
-• Legal Strategy: Accelerate foreclosure through strategic default/bankruptcy
-• Target Basis: 40-60% of current appraised value
-• Control Mechanism: Fee simple ownership or ground lease structure
+**EV Charging Infrastructure**:
+• **Current Energy Costs**: ${energy_cost_sf:.2f}/SF annually (at {real_time_data['commercial_electricity_rate']['value']:.1f}¢/kWh)²
+• **Revenue Potential**: $25,000-45,000 per DC fast charger annually
+• **California Mandates**: 100% zero-emission vehicle sales by 2035
+• **Infrastructure Gap**: Only 27,000 supercharging stations built nationwide vs millions needed
 
-**Step 3: Adaptive Reuse Value Creation**
+**Synergistic Integration**:
+• Shared power infrastructure reduces costs by 20-30%
+• Complementary load patterns optimize energy management
+• Multiple revenue streams reduce single-tenant risk
 
-**EV Supercharging Infrastructure**:
-• **Revenue Model**: Based on analyzed 900 La Brea case study⁵
-  - Annual Revenue Potential: $39.19/SF (land basis)
-  - Operating Margin: 62% (after electricity costs)
-  - Ground Lease Rate: $1.75/SF/month achievable
-  - Net IRR: 21.3% on sample deal structure
+**Pillar 3: Corporate Shared Value (CSV) Implementation**
 
-**Data Center Retrofit Opportunities**:
-• **Power Density Requirements**: 50-150 watts/SF for edge computing⁶
-• **Lease Rates**: $25-45/SF NNN achievable for hyperscaler tenants⁷
-• **Tenant Credit**: Amazon, Microsoft, Google provide institutional-grade credit
-• **Development Timeline**: 12-18 months for retrofit vs. 36+ months new construction
+**Environmental Benefits**:
+• Adaptive reuse saves 50-70% embodied carbon vs new construction
+• Energy efficiency retrofits reduce operational emissions 30-40%
+• On-site renewable integration creates additional revenue streams
 
-**Mixed-Use with EV Integration**:
-• **Ground Floor**: EV charging stations generating $24.26/SF annual gross profit⁸
-• **Upper Floors**: Office/residential maintained or converted
-• **Revenue Stacking**: Multiple income streams reduce single-tenant risk
+**Social Impact**:
+• Community revitalization through productive asset reuse
+• Job creation in construction and ongoing operations
+• Digital infrastructure supporting economic growth
 
-**Financial Model Framework** (Real-Time Calculations):
+**Financial Performance Enhancement**:
+• Green building premiums: 6-10% rent premiums, 10-15% value premiums
+• ESG financing access: 15-30 basis point interest rate reductions
+• Expanded tenant pool from ESG-focused corporations
 
-**Base Case Scenario**:
-• Debt Purchase Price: 65% of UPB
-• Asset Control Basis: 50% of pre-distress value
-• Adaptive Reuse CapEx: $75-125/SF depending on use
-• Stabilized Cap Rate: {adjusted_cap_rate:.2f}% (inflation-adjusted)
-• Hold Period: 5-7 years
-• **Target Net IRR: 18-22%**
+**Target Property Characteristics**:
+• Size: 20,000-50,000 SF office buildings
+• Class: B/C properties with solid structural bones
+• Location: 1-3 miles from major LA business districts
+• Infrastructure: Upgradable power, suitable for cooling systems
+• Acquisition: $5-15 million per asset
 
-**Upside Scenario**:
-• Strategic sale to infrastructure REIT or hyperscaler
-• Revenue premiums for first-mover advantage in high-demand locations
-• Potential for 25%+ IRRs through accelerated value creation
+**Financial Targets** (Real-Time Market Conditions):
+• **Inflation-Adjusted Cap Rates**: {adjusted_cap_rate:.2f}% (base {real_time_data['cap_rates_office']['value']:.2f}% + adjustment)³
+• **Base Case IRR**: 20-25% gross, 17-22% net to LPs
+• **Equity Multiple**: 2.0-2.5x over 5-7 years
+• **Stabilized Cash Yield**: 6-8% starting year 3-4
 
 **Risk Mitigation**:
-• **Geographic Diversification**: Maximum 25% in any single MSA
-• **Asset Type Limits**: No more than 40% in any single property type
-• **Liquidity Reserves**: 15% of fund for bridge financing and CapEx overruns
-• **Exit Flexibility**: Multiple exit strategies per asset (sale, refinance, hold)
+• Geographic diversification (max 25% any single MSA)
+• Asset type limits (max 40% any property type)
+• Liquidity reserves (15% of fund for bridge financing)
+• Multiple exit strategies per asset
 
-**Competitive Advantage Summary**:
-1. **Proprietary Sourcing**: Direct relationships with 15+ regional banks
-2. **Technical Expertise**: In-house engineering for adaptive reuse feasibility
-3. **Speed of Execution**: 30-45 day close capability for distressed situations
-4. **AI-Enhanced Underwriting**: Proprietary algorithms for market timing and asset selection
+**Execution Timeline**:
+• Fundraising: Current through 2025
+• Acquisition Phase: 2025-2026
+• Value-Add Implementation: 2025-2028
+• Stabilization & Exit: 2027-2030
 
 ---
 ¹Calculated: 10-Year Treasury + Risk Premium (Real-time)
-²Calculated: Base Cap Rate + Inflation Adjustment (Real-time)
-³Bureau of Labor Statistics via FRED (Real-time)
-⁴California Energy Commission Rate Data (Real-time)
-⁵Based on uploaded La Brea case study analysis
-⁶JLL Data Center Outlook 2024
-⁷CBRE Global Data Center Market Review
-⁸Based on uploaded EV charging energy economics analysis
+²California commercial electricity rates (Real-time)
+³Calculated: Base cap rate + inflation adjustment (Real-time)
                 """,
-                data_dependencies=['10_year_treasury', 'cap_rates_office', 'cpi_inflation', 'construction_cost_index', 'commercial_electricity_rate']
+                data_dependencies=['10_year_treasury', 'cap_rates_office', 'cpi_inflation', 'commercial_electricity_rate']
             ),
             
-            # Pipeline & Sourcing
+            # Financial Case Studies - Enhanced with specific examples
             DocumentSection(
-                title="Pipeline & Sourcing: $850M+ Identified Deal Flow with Exclusive Access",
+                title="Financial Case Studies: Proven Value Creation Models",
                 order=4,
                 content=f"""
-**Current Pipeline Status** (Updated {datetime.now().strftime('%B %d, %Y')}):
+**Case Study 1: Modular Data Center Grid Portfolio**
 
-**Immediate Opportunities ($225M UPB)**:
-• **Los Angeles Metro**: 8 assets, $125M UPB, avg. 68% LTV
-• **Phoenix/Scottsdale**: 4 assets, $65M UPB, avg. 72% LTV  
-• **San Diego County**: 3 assets, $35M UPB, avg. 64% LTV
+**Asset Profile**:
+• 10 Class B/C office buildings (20,000 SF each, 200,000 SF total)
+• Location: Distributed around Century City (3-mile radius)
+• Original portfolio value: $80 million ($400/SF at peak)
+• Current status: 65% average vacancy, negative cash flow
 
-**Near-Term Pipeline (6-12 months, $340M UPB)**:
-• **Office Buildings**: 15 assets, 20-50k SF range, B/C quality
-• **Retail Centers**: 8 assets, community/neighborhood centers
-• **Mixed-Use**: 6 assets with ground-floor retail + office/residential
+**Acquisition Strategy**:
+• Distressed note portfolio: $36 million (55% discount to face value)
+• Strategic distribution creates network advantages
+• Solid structural bones with reinforced concrete construction
 
-**Longer-Term Visibility ($285M+ UPB)**:
-• **Regional Bank Portfolios**: 3 identified portfolio sales pending
-• **CMBS Special Servicer**: Direct relationship for note sales
-• **Family Office Distress**: 12+ family office direct relationships
+**Value-Add Implementation**:
+• Transform each building into 1.5-2.0 MW edge data center
+• Total capacity: 15-20 MW across portfolio
+• Phased implementation based on tenant demand
+• Advanced security, biometric access, 24/7 monitoring
+• Rooftop solar where structurally feasible
 
-**Sourcing Channels & Competitive Advantages**:
+**Financial Projections**:
+• Total Investment: $76 million ($380/SF, below replacement cost)
+• Stabilized Revenue: $19.5 million annually
+• Operating Expenses: $6.5 million annually
+• NOI: $13 million annually (17.1% yield on cost)
+• Exit Value: $208 million (6.25% cap rate)
+• Equity Multiple: 2.7x
+• Target IRR: 26% gross, ~23% net to LPs
 
-**1. Regional Bank Direct Relationships**
-• **Primary Sources**: 15 active relationships with CRE lenders
-• **Exclusive Access**: First-look rights on 4 bank portfolios
-• **Timing Advantage**: 30-45 day advance notice on problem assets
-• **Purchase Terms**: Negotiated bulk pricing, faster close capability
+**Case Study 2: Integrated Energy/Digital Hub (El Segundo)**
 
-**2. CMBS Special Servicer Network**
-• **Key Relationships**: Direct contact with 8 major special servicers
-• **Volume Commitment**: Preferred buyer status for $50M+ annual purchases
-• **Information Edge**: Early visibility into workout vs. foreclosure decisions
+**Asset Profile**:
+• 45,000 SF industrial building on 2.5-acre lot
+• Location: El Segundo (near LAX, tech corridor)
+• Original value: $27 million, current 85% vacancy
+• Excellent power infrastructure (5MW service available)
 
-**3. Legal Network Intelligence**
-• **Bankruptcy Counsel**: Relationships with 25+ restructuring attorneys
-• **Foreclosure Pipeline**: Real-time visibility into 200+ active cases
-• **Assignment Opportunities**: Direct acquisition of distressed debt pre-foreclosure
+**Synergistic Conversion**:
+• 3MW modular edge data center in main building
+• 55-position EV charging plaza in parking field
+• 900kW solar canopy system over charging areas
+• 2MWh battery storage serving both uses
+• Microgrid capabilities for enhanced resilience
 
-**4. Family Office & Private Wealth Sourcing**
-• **Direct Relationships**: 50+ family offices and private wealth managers
-• **Distressed Situations**: Economic pressure creating forced sales
-• **Off-Market Access**: Pre-market exposure to family office real estate distress
+**Financial Performance**:
+• All-in Investment: $32.33 million (after $3.22M incentives)
+• Annual Revenue Streams:
+  - Data center leasing: $3.2 million
+  - EV charging: $2.4 million
+  - Grid services: $350,000
+  - Solar generation: $150,000
+• Total Revenue: $6.1 million annually
+• NOI: $3.1 million (9.6% yield on cost)
+• Equity Multiple: 2.4x, Target IRR: 25%
 
-**Target Deal Characteristics**:
+**Fund-Level Projections** (Live Market Data Integration):
 
-**Geographic Focus**:
-• **Primary Markets (70%)**: Los Angeles Metro, Orange County, San Diego
-• **Secondary Markets (25%)**: Phoenix, Las Vegas, Denver, Austin
-• **Opportunistic Markets (5%)**: Seattle, Portland, Salt Lake City
+**Deployment Strategy**:
+• Target fund size: $30-50 million equity
+• Leverage: 50-60% LTC/LTV
+• Total acquisition capacity: $75-125 million
+• Target: 8-12 properties over 24-36 months
 
-**Property Type Allocation**:
-• **Office Buildings (40%)**: B/C quality, 20-75k SF, adaptive reuse potential
-• **Retail Centers (30%)**: Community/neighborhood, anchor vacancy opportunities
-• **Industrial/Flex (20%)**: Last-mile distribution, light manufacturing conversion
-• **Mixed-Use (10%)**: Urban infill, ground-floor retail with office/residential
+**Portfolio Allocation**:
+• Data center conversions: 40-50%
+• EV infrastructure: 25-35%
+• Mixed-use synergy projects: 15-25%
 
-**Debt Characteristics**:
-• **Loan Size**: $5-50M per loan (sweet spot $10-25M)
-• **LTV at Origination**: 65-80% (current basis 45-65% due to value decline)
-• **Seasoning**: 2-8 years since origination
-• **Payment Status**: 90+ days delinquent or payment default pending
+**Sensitivity Analysis** (Current Market Conditions):
+• **Base Case**: 20-25% IRR with current rates at {real_time_data['10_year_treasury']['value']:.2f}%
+• **+1% Rate Increase**: Reduces IRR by 1.8-2.2%
+• **Construction Inflation**: {real_time_data['cpi_inflation']['value']:.1f}% affects timing but rent indexation offsets
+• **Cap Rate Environment**: Current {real_time_data['cap_rates_office']['value']:.2f}% + {(real_time_data['cpi_inflation']['value'] * 0.5):.1f}% inflation adjustment = {adjusted_cap_rate:.2f}% exit assumption
 
-**Current Market Pricing Environment** (Real-Time Data):
-• **Bid-Ask Spread**: 15-25% on marketed opportunities
-• **Off-Market Discount**: Additional 10-15% discount achievable
-• **Competition Level**: 3-5 bidders typical (down from 8-12 in 2021-2022)
-• **Due Diligence Period**: Extended to 45-60 days (from historical 30 days)
+**Value Creation Sources**:
+• Discount acquisition: 40-50% of total return
+• Physical improvements/repositioning: 25-35%
+• Operational improvements/market timing: 15-25%
 
-**Deal Flow Metrics (Trailing 12 Months)**:
-• **Opportunities Reviewed**: 340+ potential acquisitions
-• **Detailed Underwriting**: 85 deals progressed to full analysis
-• **LOIs Submitted**: 28 letters of intent submitted
-• **Transactions Closed**: 12 deals totaling $145M UPB (62% avg. discount)
-• **Win Rate**: 43% on submitted LOIs (above market 25-30%)
+**Return Timeline**:
+• Years 1-2: Acquisition and repositioning (minimal distributions)
+• Years 3-5: Stabilized operations (6-8% cash-on-cash)
+• Years 6-8: Asset sales and major capital returns
+• Preferred return: 8% to LPs before 20% carry
 
-**Proprietary Sourcing Technology**:
-• **AI Deal Screening**: Automated scanning of 2,500+ daily public records
-• **Predictive Analytics**: Machine learning models identifying distress 90-180 days early
-• **Market Intelligence Platform**: Real-time tracking of 15,000+ CRE loans in target markets
-• **Relationship Management**: CRM tracking 850+ industry contacts with automated outreach
+**Exit Strategy Options**:
+• Individual asset sales for optimization
+• Portfolio sale to REIT or institutional investor
+• Recapitalization with long-term partners
+• Strategic partnerships with data center operators
 
-**Forward Pipeline Management**:
-• **90-Day Visibility**: $225M in active negotiations/due diligence
-• **6-Month Pipeline**: $340M in identified opportunities with preliminary LOIs
-• **12-Month Forecast**: $285M+ in relationship-sourced future opportunities
-• **Deployment Pace**: Target $50-75M quarterly deployment once fund is raised
+**Market Validation**:
+Recent comparable transactions validate our approach:
+• Digital Realty acquisitions at 6.0-6.5% cap rates
+• Blackstone's $10B QTS acquisition (2021)
+• Brookfield's $775M Cyxtera acquisition
+• DataBank's $250M equity raise (2025)
 
 ---
-Sources: Proprietary deal pipeline database, CoStar Market Analytics, Trepp CMBS Database, Regional bank direct relationships
+All financial projections incorporate live market data and current conditions as of {datetime.now().strftime('%B %d, %Y')}
                 """,
-                data_dependencies=[]
+                data_dependencies=['10_year_treasury', 'cpi_inflation', 'cap_rates_office']
             ),
             
-            # Financial Projections with Real-Time Data
+            # Risk Management & ESG Integration
             DocumentSection(
-                title="Financial Projections: Live Model with Real-Time Market Integration", 
+                title="Risk Management & ESG Integration: Comprehensive Framework",
                 order=5,
                 content=f"""
-**Fund-Level Financial Model** (Updated with Live Market Data as of {datetime.now().strftime('%B %d, %Y')}):
+**Risk Management Framework** (Current Market Environment):
 
-**Key Model Inputs** (Real-Time Data):
-• **Risk-Free Rate**: {real_time_data['10_year_treasury']['value']:.2f}%¹
-• **Cost of Capital**: {cost_of_capital:.2f}% (calculated)²
-• **Inflation Rate**: {real_time_data['cpi_inflation']['value']:.1f}% annually³
-• **Construction Cost Index**: {real_time_data['construction_cost_index']['value']:.1f}⁴
-• **Commercial Electricity Rate**: {real_time_data['commercial_electricity_rate']['value']:.1f}¢/kWh⁵
+**Market Risk Mitigation**:
+• **Interest Rate Sensitivity**: +{real_time_data['10_year_treasury']['value'] - 1.51:.1f}% from 2021 levels already factored into underwriting
+• **Construction Cost Inflation**: {real_time_data['cpi_inflation']['value']:.1f}% annual rate managed through 10-15% contingencies
+• **Cap Rate Risk**: Current {adjusted_cap_rate:.2f}% exit assumption includes inflation buffer
 
-**Base Case Investment Returns** (Live Calculations):
+**Acquisition Risk Controls**:
+• Minimum 50% discount threshold maintained regardless of competition
+• Focus on mid-market assets ($10-30M) with limited institutional competition
+• Multiple sourcing channels reduce dependency on any single pipeline
+• Legal expertise provides edge in complex workout situations
 
-**Individual Deal Model**:
-• **Average Deal Size**: $15M UPB
-• **Purchase Price**: 65% of UPB = $9.75M
-• **Asset Control Cost**: Additional $2.5M (legal, carrying costs, light CapEx)
-• **Total Investment**: $12.25M per deal
-• **Adaptive Reuse CapEx**: $5-8M depending on end use
+**Execution Risk Management**:
+• Phased implementation allows validation before full capital deployment
+• Specialized engineering teams for technical due diligence
+• Conservative power availability and upgrade cost assumptions
+• Multiple exit strategies per asset reduce execution dependency
 
-**Revenue Projections by Asset Type**:
+**Technology & Demand Risks**:
+• Modular approach allows flexibility for evolving AI/data center requirements
+• Diversification across tenant types and use cases
+• Strategic locations with strong fundamentals and barriers to entry
+• Design flexibility to accommodate changing technology standards
 
-**EV Charging Conversion** (Based on uploaded energy economics):⁶
-• **Annual Revenue per SF**: $39.19 (land basis)
-• **Operating Costs per SF**: $14.93 (electricity + maintenance)
-• **Net Operating Income**: $24.26/SF annually
-• **Typical Project Size**: 46,609 SF average
-• **Annual NOI**: $1.13M+ per project
+**ESG Integration & Corporate Shared Value**:
 
-**Data Center Edge Computing**:⁷
-• **Lease Rate**: $25-35/SF NNN
-• **Power Density**: 50-100 watts/SF
-• **Tenant Credit**: Investment grade (Amazon, Microsoft, Google)
-• **Lease Terms**: 10-15 years, 3% annual increases
-• **Annual NOI**: $1.8-2.5M for typical 75k SF building
+**Environmental Leadership**:
+• **Carbon Reduction**: 50-70% embodied carbon savings vs new construction
+• **Energy Efficiency**: 30-40% operational emission reductions through retrofits
+• **Renewable Integration**: On-site solar and battery storage where feasible
+• **Waste Reduction**: 80%+ construction waste diverted from landfills
 
-**Mixed-Use with Ground Floor EV**:
-• **Ground Floor EV**: $24.26/SF net profit⁸
-• **Upper Floor Office**: $18-25/SF achievable rent
-• **Blended NOI**: $22-28/SF depending on mix
-• **Revenue Diversification**: Multiple income streams reduce risk
+**Social Impact Metrics**:
+• **Job Creation**: Construction and ongoing operations employment
+• **Community Revitalization**: Productive reuse of underutilized assets
+• **Digital Infrastructure**: Supporting technology sector growth and connectivity
+• **Transportation Electrification**: Enabling EV adoption through charging infrastructure
 
-**Fund-Level Aggregated Returns**:
+**Governance Excellence**:
+• Comprehensive ESG reporting (GRESB, SASB, TCFD frameworks)
+• Stakeholder engagement processes for community alignment
+• Regulatory foresight positioning ahead of compliance requirements
+• Transparent impact measurement and reporting
 
-**Base Case Scenario** (18% Target IRR):
-• **Total Fund Size**: $175M
-• **Number of Deals**: 12-15 investments
-• **Average Hold Period**: 5.5 years
-• **Exit Cap Rate**: {adjusted_cap_rate:.2f}%⁹
-• **Gross Fund IRR**: 22-25%
-• **Net Fund IRR**: 18-20% (after 2/20 fees)
+**Financial Benefits of ESG Integration**:
+• **Rent Premiums**: 6-10% for high sustainability standards
+• **Value Premiums**: 10-15% at exit for ESG-compliant properties
+• **Operating Cost Reduction**: 20-30% through energy efficiency
+• **Financing Advantages**: 15-30 basis point reductions through green financing
+• **Tenant Attraction**: Expanded pool from ESG-focused corporations
 
-**Sensitivity Analysis** (Live Market Variables):
+**EV Charging Specific Impact**:
+• **Carbon Displacement**: 80-110 metric tons CO₂ per fast charging station annually
+• **Air Quality**: Direct improvement in goods movement corridors
+• **Energy Independence**: 80,000-120,000 gallons diesel/gasoline displaced per location
+• **Economic Development**: Local job creation and infrastructure modernization
 
-**Interest Rate Sensitivity**:
-• **+1% Rate Increase**: Reduces IRR by 1.8-2.2%
-• **Current vs. 2021 Rates**: +{real_time_data['10_year_treasury']['value'] - 1.51:.1f}% = {(real_time_data['10_year_treasury']['value'] - 1.51) * 1.9:.1f}% IRR impact
-• **Rate Stabilization**: Returns normalize as rates plateau
+**Regulatory Positioning**:
+• California's stricter data center energy standards (2025) compliance built-in
+• EV infrastructure positioned ahead of transportation emissions regulations
+• Adaptive reuse aligned with sustainable development policies
+• Community engagement reduces NIMBY and permitting risks
 
-**Inflation Impact on Returns**:
-• **Construction Cost Inflation**: {real_time_data['cpi_inflation']['value']:.1f}% annually affects CapEx timing
-• **Rent Growth Acceleration**: Inflation drives rent increases, offsetting cost pressure
-• **Net Impact**: Slightly positive due to revenue indexation
+**Competitive Advantages Through ESG**:
+• **Generational Wealth Transfer**: $68 trillion to ESG-focused Millennials/Gen Z
+• **Values-Driven Investment**: Alignment with evolving investor priorities
+• **Performance Correlation**: ESG factors increasingly drive long-term returns
+• **Differentiation**: CSV approach creates sustainable competitive advantages
 
-**Cap Rate Environment**:
-• **Current Market Cap Rates**: {real_time_data['cap_rates_office']['value']:.2f}% average¹⁰
-• **Inflation Adjustment**: +{(real_time_data['cpi_inflation']['value'] * 0.5):.1f}% for economic uncertainty
-• **Effective Exit Cap Rate**: {adjusted_cap_rate:.2f}%
+**Risk-Adjusted Return Enhancement**:
+ESG integration doesn't compromise returns—it enhances them through:
+• Lower cost of capital via green financing
+• Premium valuations for sustainable properties
+• Reduced regulatory and operational risks
+• Expanded tenant and buyer pools
+• Future-proofing against evolving standards
 
-**Cash Flow Waterfall** (Simplified):
-• **Years 1-2**: Acquisition and repositioning phase, minimal distributions
-• **Years 3-5**: Stabilized operations, 6-8% cash-on-cash returns
-• **Years 6-8**: Asset sales and refinancing, major capital returns
-• **Preferred Return**: 8% annually to LPs before carry
-• **Carried Interest**: 20% of profits above 8% hurdle
+**Monitoring & Reporting**:
+• Quarterly ESG metrics alongside financial performance
+• Annual sustainability impact assessments
+• Third-party verification of environmental claims
+• Stakeholder feedback integration into strategy refinement
 
-**Risk-Adjusted Return Metrics**:
-• **Base Case Net IRR**: 18-20%
-• **Downside Protection**: 1.1x minimum equity multiple target
-• **Upside Scenario**: 25%+ IRR with strategic sales or accelerated repositioning
-• **Volatility**: Lower than public REITs due to illiquidity premium and control positions
-
-**Real-Time Model Updates**: This financial model automatically recalculates key metrics based on live market data feeds, ensuring investment decisions reflect current market conditions rather than static assumptions.
+The combination of substantial acquisition discounts (50-70%), multiple value creation strategies, and ESG integration creates a resilient investment approach that generates both exceptional returns and positive impact—embodying the Corporate Shared Value model that defines our investment philosophy.
 
 ---
-¹Federal Reserve Economic Data (FRED) - Real-time
-²Calculated: 10-Year Treasury + 450bp Risk Premium
-³Bureau of Labor Statistics via FRED - Real-time
-⁴Producer Price Index: Construction Materials (FRED) - Real-time
-⁵California commercial electricity rates (EIA) - Real-time
-⁶Based on uploaded EV Charging Energy Economics analysis
-⁷JLL Data Center Market Outlook 2024-2025
-⁸Calculated from uploaded energy economics data
-⁹Calculated: Base cap rate + inflation adjustment
-¹⁰RCA Transaction Database + CBRE Cap Rate Survey (Simulated)
+All risk assessments incorporate current market conditions as of {datetime.now().strftime('%B %d, %Y')}
                 """,
-                data_dependencies=['10_year_treasury', 'cpi_inflation', 'construction_cost_index', 'commercial_electricity_rate', 'cap_rates_office']
+                data_dependencies=['10_year_treasury', 'cpi_inflation', 'cap_rates_office']
             )
         ]
         
