@@ -82,12 +82,12 @@ async def status():
 
 @router.post("/document/create", response_model=Dict[str, Any])
 async def create_document():
-    """Create the comprehensive Coastal Oak Capital master deck with real-time data"""
+    """Create the comprehensive Coastal Oak Capital master deck with real-time data and all integrated content"""
     try:
-        logger.info("Creating Coastal Oak Capital document with real-time data...")
+        logger.info("Creating comprehensive Coastal Oak Capital master deck with all integrated content...")
         
-        # Create the document with integrated real-time data
-        document = await document_service.create_coastal_oak_document()
+        # Create the enhanced document with all integrated content
+        document = await document_service.create_comprehensive_master_deck()
         
         # Store in database
         doc_dict = document.model_dump()
@@ -101,7 +101,7 @@ async def create_document():
             upsert=True
         )
         
-        logger.info(f"Document created successfully with ID: {document.id}")
+        logger.info(f"Comprehensive master deck created successfully with ID: {document.id}")
         
         return {
             "success": True,
@@ -110,12 +110,13 @@ async def create_document():
             "sections_count": len(document.sections),
             "data_sources_count": len(document.data_sources),
             "last_updated": document.last_updated.isoformat(),
-            "message": "Coastal Oak Capital master deck created with live market data"
+            "version": document.version,
+            "message": "Comprehensive Coastal Oak Capital master deck created with all integrated content and live market data"
         }
         
     except Exception as e:
-        logger.error(f"Error creating document: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to create document: {str(e)}")
+        logger.error(f"Error creating comprehensive document: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create comprehensive document: {str(e)}")
 
 @router.get("/document/{document_id}")
 async def get_document(document_id: str):
