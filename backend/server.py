@@ -9,9 +9,9 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Dict, Any
 
-# Import our models and services
-from .models import LiveDocument, UpdateRequest, RealTimeDataResponse
-from .document_service import DocumentService
+# Import our models and services - using absolute imports
+from models import LiveDocument, UpdateRequest, RealTimeDataResponse
+from document_service import DocumentService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
