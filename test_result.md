@@ -119,11 +119,14 @@ backend:
     file: "/app/backend/models.py, /app/backend/document_service.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "testing"
         comment: "PASS: Comprehensive document models and service layer working perfectly. Enhanced with detailed Coastal Oak Capital content from uploaded executive summary."
+      - working: "unknown"
+        agent: "main"
+        comment: "UPDATED: Added PICO Boulevard case study demonstrating investment discipline and AI data center modular grid infrastructure strategy. Two new comprehensive sections added to master deck."
 
   - task: "API endpoints for document management"
     implemented: true
@@ -131,11 +134,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "testing"
         comment: "PASS: All 7 API endpoints tested successfully with 100% success rate. Document creation, retrieval, updating, and export all functional."
+      - working: "unknown"
+        agent: "main"
+        comment: "NEEDS TESTING: Backend document service updated with new case studies. API endpoints need validation with enhanced content."
 
   - task: "Database setup and models"
     implemented: true
