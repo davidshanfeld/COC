@@ -123,9 +123,9 @@ const LiveDocument = () => {
         </div>
         <div className="flex space-x-3">
           {!document && (
-            <Button onClick={createDocument} disabled={loading} className="bg-blue-600 hover:bg-blue-700">
-              <FileText className="w-4 h-4 mr-2" />
-              Create Master Deck
+            <Button onClick={createDocument} disabled={loading} className="bg-blue-600 hover:bg-blue-700 text-lg px-6 py-3">
+              <FileText className="w-5 h-5 mr-2" />
+              Create Final Master Deck
             </Button>
           )}
           {document && (
