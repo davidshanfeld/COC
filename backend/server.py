@@ -11,7 +11,7 @@ from typing import Dict, Any
 
 # Import our models and services - using absolute imports
 from models import LiveDocument, UpdateRequest, RealTimeDataResponse
-from document_service import DocumentService
+from enhanced_document_service import EnhancedDocumentService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -23,7 +23,7 @@ client = MongoClient(MONGO_URL)
 db = client.coastal_oak_db
 
 # Initialize document service
-document_service = DocumentService()
+document_service = EnhancedDocumentService()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
