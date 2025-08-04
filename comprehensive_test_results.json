@@ -1,0 +1,83 @@
+{
+  "total_tests": 7,
+  "passed": 6,
+  "failed": 1,
+  "success_rate": 85.71428571428571,
+  "created_document_id": "0de5aa6c-c608-463e-8ee9-3c09094aef7a",
+  "test_results": [
+    {
+      "test": "Enhanced Document Creation (8 Sections)",
+      "success": true,
+      "details": "Document created with 8 sections, version: 2.0 - Final Comprehensive Edition",
+      "timestamp": "2025-08-04T05:28:58.836109",
+      "response_data": {
+        "document_id": "0de5aa6c-c608-463e-8ee9-3c09094aef7a",
+        "sections": 8,
+        "version": "2.0 - Final Comprehensive Edition"
+      }
+    },
+    {
+      "test": "Living Master Deck Title/Version",
+      "success": true,
+      "details": "Correct title and version validated",
+      "timestamp": "2025-08-04T05:28:59.355110",
+      "response_data": {
+        "title": "Coastal Oak Capital - Opportunistic Commercial Real Estate Distressed Debt Fund: Living Master Deck",
+        "version": "2.0 - Final Comprehensive Edition"
+      }
+    },
+    {
+      "test": "8 Sections Content Validation",
+      "success": false,
+      "details": "Content validation failed: [\"Section 3: Title should contain 'Five-Pillar Strategy', got 'Investment Strategy: Five-Pillar Value Creation with Blockchain Integration'\", \"Section 4: Title should contain 'AI Data Center Infrastructure', got 'AI Data Center Modular Grid Infrastructure: The Digital Infrastructure Revolution'\", \"Section 4: Missing 'modular grid' in content\", \"Section 5: Missing 'stablecoin scenarios' in content\", \"Section 6: Title should contain 'PICO Property Investment', got 'Investment Discipline Masterclass: PICO Boulevard Property Analysis'\"]",
+      "timestamp": "2025-08-04T05:28:59.869035",
+      "response_data": {
+        "total_issues": 6
+      }
+    },
+    {
+      "test": "Daily Refresh Endpoint",
+      "success": true,
+      "details": "Daily refresh completed: 11/11 documents updated",
+      "timestamp": "2025-08-04T05:29:00.393675",
+      "response_data": {
+        "refreshed": 11,
+        "total": 11
+      }
+    },
+    {
+      "test": "Real-Time Data Integration",
+      "success": true,
+      "details": "Real-time data integration working with 8 sources",
+      "timestamp": "2025-08-04T05:29:00.915898",
+      "response_data": {
+        "sources_count": 8,
+        "sample_sources": [
+          "fed_funds_rate",
+          "10_year_treasury",
+          "cpi_inflation"
+        ]
+      }
+    },
+    {
+      "test": "Comprehensive Markdown Export",
+      "success": true,
+      "details": "Comprehensive markdown export validated with all content",
+      "timestamp": "2025-08-04T05:29:01.442085",
+      "response_data": {
+        "content_length": 70217,
+        "sections": 8
+      }
+    },
+    {
+      "test": "API Endpoints Success Rate",
+      "success": true,
+      "details": "100% success rate achieved: 7/7 endpoints",
+      "timestamp": "2025-08-04T05:29:02.021074",
+      "response_data": {
+        "success_rate": 100.0
+      }
+    }
+  ],
+  "backend_url": "https://12a0bb9f-6266-4878-88ef-301310605353.preview.emergentagent.com/api"
+}
