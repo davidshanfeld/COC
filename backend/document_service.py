@@ -623,7 +623,7 @@ Declining PICO demonstrates sophisticated investment approach to:
             # Risk Management & ESG Integration
             DocumentSection(
                 title="Risk Management & ESG Integration: Comprehensive Framework",
-                order=6,
+                order=7,
                 content=f"""
 **Risk Management Framework** (Current Market Environment):
 
