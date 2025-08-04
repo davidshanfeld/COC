@@ -1,8 +1,8 @@
 from typing import Dict, List
 from datetime import datetime
 import logging
-from .models import LiveDocument, DocumentSection, DataSource, FinancialModel
-from .data_sources import DataSourceManager, FinancialCalculator
+from models import LiveDocument, DocumentSection, DataSource, FinancialModel
+from data_sources import DataSourceManager, FinancialCalculator
 import json
 import re
 
