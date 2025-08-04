@@ -146,13 +146,14 @@ class CoastalOakFinancialModel:
                 cell.border = self.border
                 
         # Auto-fit columns
-        for column in ws.columns:
+        for col_num, column in enumerate(ws.columns, 1):
             max_length = 0
-            column_letter = column[0].column_letter
+            column_letter = ws.cell(row=1, column=col_num).column_letter
             for cell in column:
                 try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
+                    if hasattr(cell, 'value') and cell.value is not None:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(str(cell.value))
                 except:
                     pass
             adjusted_width = (max_length + 2) * 1.2
