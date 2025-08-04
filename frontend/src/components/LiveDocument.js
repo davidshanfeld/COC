@@ -115,10 +115,10 @@ const LiveDocument = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Coastal Oak Capital Live Document System
+            Coastal Oak Capital - Living Master Deck System
           </h1>
           <p className="text-gray-600 mt-2">
-            Institution-grade master deck with real-time market data integration
+            Comprehensive real-time master deck with AI data center integration, cryptocurrency insights, and daily market data refresh
           </p>
         </div>
         <div className="flex space-x-3">
