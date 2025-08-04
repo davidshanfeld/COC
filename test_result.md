@@ -205,9 +205,7 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus:
-    - "Backend document service with PICO case study and AI data center infrastructure"
-    - "API endpoints validation with enhanced content"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
