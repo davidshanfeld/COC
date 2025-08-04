@@ -1,58 +1,90 @@
 {
   "total_tests": 7,
-  "passed": 0,
-  "failed": 7,
-  "success_rate": 0.0,
-  "created_document_id": null,
+  "passed": 6,
+  "failed": 1,
+  "success_rate": 85.71428571428571,
+  "created_document_id": "8ba05f58-a199-45f1-9f42-52a8af7e0bc2",
   "test_results": [
     {
       "test": "Status Endpoint",
       "success": false,
-      "details": "HTTP 502: ",
-      "timestamp": "2025-08-04T03:56:25.096145",
-      "response_data": null
+      "details": "Missing required fields: ['system']",
+      "timestamp": "2025-08-04T03:57:14.435451",
+      "response_data": {
+        "status": "unhealthy",
+        "database": "disconnected",
+        "error": "'Collection' object is not callable. If you meant to call the 'command' method on a 'Collection' object it is failing because no such method exists.",
+        "timestamp": "2025-08-04T03:57:14.432896"
+      }
     },
     {
       "test": "Live Data Endpoint",
-      "success": false,
-      "details": "HTTP 502: ",
-      "timestamp": "2025-08-04T03:56:25.602901",
-      "response_data": null
+      "success": true,
+      "details": "Successfully fetched 8 data sources with complete structure",
+      "timestamp": "2025-08-04T03:57:14.942888",
+      "response_data": {
+        "sources_count": 8,
+        "sample_sources": [
+          "fed_funds_rate",
+          "10_year_treasury",
+          "cpi_inflation"
+        ]
+      }
     },
     {
       "test": "Document Create Endpoint",
-      "success": false,
-      "details": "HTTP 502: ",
-      "timestamp": "2025-08-04T03:56:26.113721",
-      "response_data": null
+      "success": true,
+      "details": "Document created successfully with 5 sections and 8 data sources",
+      "timestamp": "2025-08-04T03:57:15.465195",
+      "response_data": {
+        "document_id": "8ba05f58-a199-45f1-9f42-52a8af7e0bc2",
+        "sections": 5,
+        "data_sources": 8
+      }
     },
     {
       "test": "Document Get Endpoint",
-      "success": false,
-      "details": "No document ID available (create test must run first)",
-      "timestamp": "2025-08-04T03:56:26.613891",
-      "response_data": null
+      "success": true,
+      "details": "Document retrieved successfully with 5 sections and 8 data sources",
+      "timestamp": "2025-08-04T03:57:15.974382",
+      "response_data": {
+        "sections_count": 5,
+        "data_sources_count": 8
+      }
     },
     {
       "test": "Document Update Endpoint",
-      "success": false,
-      "details": "No document ID available (create test must run first)",
-      "timestamp": "2025-08-04T03:56:27.114030",
-      "response_data": null
+      "success": true,
+      "details": "Document updated successfully, 8 sources refreshed",
+      "timestamp": "2025-08-04T03:57:16.489330",
+      "response_data": {
+        "sources_updated": [
+          "fed_funds_rate",
+          "10_year_treasury",
+          "cpi_inflation"
+        ],
+        "total_updated": 8
+      }
     },
     {
       "test": "Document Export Markdown Endpoint",
-      "success": false,
-      "details": "No document ID available (create test must run first)",
-      "timestamp": "2025-08-04T03:56:27.614176",
-      "response_data": null
+      "success": true,
+      "details": "Markdown export successful, 18466 characters generated",
+      "timestamp": "2025-08-04T03:57:16.997642",
+      "response_data": {
+        "content_length": 18466,
+        "format": "markdown"
+      }
     },
     {
       "test": "Documents List Endpoint",
-      "success": false,
-      "details": "HTTP 502: ",
-      "timestamp": "2025-08-04T03:56:28.121181",
-      "response_data": null
+      "success": true,
+      "details": "Successfully listed 1 documents",
+      "timestamp": "2025-08-04T03:57:17.506136",
+      "response_data": {
+        "count": 1,
+        "has_created_doc": true
+      }
     }
   ],
   "backend_url": "https://ffb516bf-ab5f-4e53-97f2-3081fb75a71c.preview.emergentagent.com/api"
