@@ -167,6 +167,18 @@ backend:
         agent: "testing"
         comment: "PASS: MongoDB integration working perfectly. System healthy, database connected."
 
+  - task: "Daily refresh endpoint for living document functionality"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "PASS: New daily refresh endpoint /api/system/refresh-all working perfectly. Successfully refreshes all documents with latest real-time market data. Tested with 14 documents - all updated successfully. This enables the 'living document' functionality as requested, keeping content current with daily data updates."
+
 frontend:
   - task: "Live document interface"
     implemented: true
