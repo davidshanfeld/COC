@@ -169,16 +169,25 @@ const LiveDocument = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {Object.entries(liveData).map(([key, data]) => (
-              <div key={key} className="bg-gray-50 p-3 rounded-lg">
+              <div key={key} className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
                 <div className="text-sm text-gray-600 mb-1">{data.description}</div>
-                <div className="text-lg font-semibold text-gray-900">
+                <div className="text-xl font-bold text-indigo-900">
                   {formatValue(data.value, data.unit)}
                 </div>
-                <div className="text-xs text-gray-500 mt-1">{data.source}</div>
+                <div className="text-xs text-gray-500 mt-1 flex items-center">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></div>
+                  {data.source}
+                </div>
               </div>
             ))}
+          </div>
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <div className="text-sm text-blue-800">
+              📊 <strong>Living Data Integration:</strong> Market data refreshes automatically daily at 4:00 PM EST. 
+              All calculations and projections update dynamically based on current market conditions.
+            </div>
           </div>
         </CardContent>
       </Card>
