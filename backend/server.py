@@ -64,7 +64,7 @@ async def root():
 async def status():
     try:
         # Test database connection
-        db.admin.command('ping')
+        db.command('ping')
         return {
             "status": "healthy", 
             "database": "connected",
@@ -75,6 +75,7 @@ async def status():
         return {
             "status": "unhealthy", 
             "database": "disconnected", 
+            "system": "Coastal Oak Capital Live Document System",
             "error": str(e),
             "timestamp": datetime.now().isoformat()
         }
