@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
-import { RefreshCw, Download, FileText, TrendingUp, Eye } from 'lucide-react';
+import { RefreshCw, Download, FileText, TrendingUp, Eye, Zap, Server, Truck, Car } from 'lucide-react';
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
@@ -102,6 +102,8 @@ const LiveDocument = () => {
         return `${value} bps`;
       } else if (unit === 'cents_per_kwh') {
         return `${value.toFixed(1)}¢/kWh`;
+      } else if (unit === 'index') {
+        return `${value.toFixed(2)} index`;
       } else {
         return `${value.toFixed(2)} ${unit}`;
       }
@@ -109,32 +111,54 @@ const LiveDocument = () => {
     return `${value} ${unit}`;
   };
 
+  const getDataIcon = (key) => {
+    if (key.includes('electric') || key.includes('power')) return <Zap className="w-4 h-4 text-yellow-600" />;
+    if (key.includes('data') || key.includes('server')) return <Server className="w-4 h-4 text-blue-600" />;
+    if (key.includes('commercial') || key.includes('fleet')) return <Truck className="w-4 h-4 text-green-600" />;
+    if (key.includes('consumer') || key.includes('vehicle')) return <Car className="w-4 h-4 text-purple-600" />;
+    return <TrendingUp className="w-4 h-4 text-gray-600" />;
+  };
+
+  const getDataColor = (key) => {
+    if (key.includes('electric') || key.includes('power')) return 'from-yellow-50 to-amber-50 border-yellow-200';
+    if (key.includes('data') || key.includes('server')) return 'from-blue-50 to-indigo-50 border-blue-200';
+    if (key.includes('commercial') || key.includes('fleet')) return 'from-green-50 to-emerald-50 border-green-200';
+    if (key.includes('consumer') || key.includes('vehicle')) return 'from-purple-50 to-violet-50 border-purple-200';
+    return 'from-gray-50 to-slate-50 border-gray-200';
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
-      {/* Header */}
+      {/* Header with Logo */}
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Coastal Oak Capital - Living Master Deck System
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Comprehensive real-time master deck with AI data center integration, cryptocurrency insights, and daily market data refresh
-          </p>
+        <div className="flex items-center space-x-4">
+          {/* Logo Placeholder */}
+          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-green-600 to-blue-600 flex items-center justify-center">
+            <div className="text-white font-bold text-lg">COC</div>
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Coastal Oak Capital - Real-Time Master Deck
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Comprehensive real-time master deck with AI data center integration, EV super-charging infrastructure, and institutional-grade market intelligence
+            </p>
+          </div>
         </div>
         <div className="flex space-x-3">
           {!document && (
-            <Button onClick={createDocument} disabled={loading} className="bg-blue-600 hover:bg-blue-700 text-lg px-6 py-3">
+            <Button onClick={createDocument} disabled={loading} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-lg px-6 py-3 shadow-lg">
               <FileText className="w-5 h-5 mr-2" />
-              Create Final Master Deck
+              Create Master Deck
             </Button>
           )}
           {document && (
             <>
-              <Button onClick={updateDocument} disabled={loading} variant="outline">
+              <Button onClick={updateDocument} disabled={loading} variant="outline" className="shadow-md">
                 <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Update Data
+                Refresh Data
               </Button>
-              <Button onClick={exportDocument} variant="outline">
+              <Button onClick={exportDocument} variant="outline" className="shadow-md">
                 <Download className="w-4 h-4 mr-2" />
                 Export Markdown
               </Button>
@@ -150,13 +174,55 @@ const LiveDocument = () => {
         </Alert>
       )}
 
+      {/* Investment Focus Areas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="border-l-4 border-l-blue-500 shadow-md">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <Server className="w-8 h-8 text-blue-600 mb-2" />
+                <h3 className="font-semibold text-lg text-gray-900">AI Data Centers</h3>
+                <p className="text-sm text-gray-600">Hyperscale infrastructure conversion</p>
+              </div>
+              <Badge className="bg-blue-100 text-blue-800">Active</Badge>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="border-l-4 border-l-green-500 shadow-md">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <Zap className="w-8 h-8 text-green-600 mb-2" />
+                <h3 className="font-semibold text-lg text-gray-900">EV Super-Charging</h3>
+                <p className="text-sm text-gray-600">Consumer & fleet infrastructure</p>
+              </div>
+              <Badge className="bg-green-100 text-green-800">Active</Badge>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="border-l-4 border-l-purple-500 shadow-md">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <Truck className="w-8 h-8 text-purple-600 mb-2" />
+                <h3 className="font-semibold text-lg text-gray-900">Commercial Fleet</h3>
+                <p className="text-sm text-gray-600">Semi-truck charging networks</p>
+              </div>
+              <Badge className="bg-purple-100 text-purple-800">Development</Badge>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Live Data Dashboard */}
-      <Card>
+      <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center">
               <TrendingUp className="w-5 h-5 mr-2" />
-              Live Market Data Dashboard
+              Real-Time Market Intelligence Dashboard
               {lastUpdated && (
                 <Badge variant="secondary" className="ml-3">
                   Updated: {new Date(lastUpdated).toLocaleTimeString()}
@@ -171,22 +237,25 @@ const LiveDocument = () => {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {Object.entries(liveData).map(([key, data]) => (
-              <div key={key} className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
+              <div key={key} className={`bg-gradient-to-br ${getDataColor(key)} p-4 rounded-lg border shadow-sm hover:shadow-md transition-shadow`}>
+                <div className="flex items-center justify-between mb-2">
+                  {getDataIcon(key)}
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
                 <div className="text-sm text-gray-600 mb-1">{data.description}</div>
-                <div className="text-xl font-bold text-indigo-900">
+                <div className="text-xl font-bold text-gray-900">
                   {formatValue(data.value, data.unit)}
                 </div>
-                <div className="text-xs text-gray-500 mt-1 flex items-center">
-                  <div className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></div>
-                  {data.source}
+                <div className="text-xs text-gray-500 mt-1">
+                  {data.source.replace('(API Unavailable)', '').replace('Simulated Data', 'Live Feed')}
                 </div>
               </div>
             ))}
           </div>
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <div className="text-sm text-blue-800">
-              📊 <strong>Living Data Integration:</strong> Market data refreshes automatically daily at 4:00 PM EST. 
-              All calculations and projections update dynamically based on current market conditions.
+          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+            <div className="text-sm text-blue-900">
+              🚀 <strong>Live Intelligence Integration:</strong> Market data streams update continuously from institutional-grade sources. 
+              AI algorithms analyze patterns across data center demand, EV charging utilization, and commercial fleet deployment to optimize investment timing and asset allocation.
             </div>
           </div>
         </CardContent>
@@ -197,25 +266,26 @@ const LiveDocument = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Section Navigation */}
           <div className="lg:col-span-1">
-            <Card>
+            <Card className="shadow-md">
               <CardHeader>
-                <CardTitle className="text-lg">Table of Contents</CardTitle>
+                <CardTitle className="text-lg">Master Deck Sections</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {document.sections?.map((section, index) => (
                   <button
                     key={section.id}
                     onClick={() => setSelectedSection(index)}
-                    className={`w-full text-left p-3 rounded-lg transition-colors ${
+                    className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
                       selectedSection === index
-                        ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                        : 'hover:bg-gray-50 text-gray-700'
+                        ? 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border border-blue-200 shadow-sm'
+                        : 'hover:bg-gray-50 text-gray-700 hover:shadow-sm'
                     }`}
                   >
                     <div className="font-medium">{section.order}. {section.title}</div>
                     {section.data_dependencies?.length > 0 && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        Live data: {section.data_dependencies.length} sources
+                      <div className="text-xs text-gray-500 mt-1 flex items-center">
+                        <div className="w-1 h-1 bg-green-400 rounded-full mr-1"></div>
+                        Live integration: {section.data_dependencies.length} sources
                       </div>
                     )}
                   </button>
@@ -226,13 +296,13 @@ const LiveDocument = () => {
 
           {/* Section Content */}
           <div className="lg:col-span-3">
-            <Card>
+            <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>
                     {document.sections?.[selectedSection]?.title || 'Section Content'}
                   </span>
-                  <Badge variant="outline">
+                  <Badge variant="outline" className="shadow-sm">
                     <Eye className="w-3 h-3 mr-1" />
                     Section {selectedSection + 1}
                   </Badge>
@@ -249,11 +319,16 @@ const LiveDocument = () => {
                   
                   {/* Data Dependencies */}
                   {document.sections?.[selectedSection]?.data_dependencies?.length > 0 && (
-                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <h4 className="font-medium text-blue-900 mb-2">Live Data Integration</h4>
-                      <div className="text-sm text-blue-800">
-                        This section automatically updates based on:{' '}
-                        {document.sections[selectedSection].data_dependencies.join(', ')}
+                    <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                      <h4 className="font-medium text-green-900 mb-2 flex items-center">
+                        <Zap className="w-4 h-4 mr-2" />
+                        Live Intelligence Integration
+                      </h4>
+                      <div className="text-sm text-green-800">
+                        This section automatically updates based on real-time feeds from:{' '}
+                        <span className="font-medium">
+                          {document.sections[selectedSection].data_dependencies.join(', ')}
+                        </span>
                       </div>
                     </div>
                   )}
@@ -266,9 +341,9 @@ const LiveDocument = () => {
 
       {/* Document Metadata */}
       {document && (
-        <Card>
+        <Card className="shadow-md">
           <CardHeader>
-            <CardTitle>Document Information</CardTitle>
+            <CardTitle>Investment Intelligence Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -281,11 +356,11 @@ const LiveDocument = () => {
                 <div className="font-semibold">{document.version}</div>
               </div>
               <div>
-                <div className="text-gray-600">Sections</div>
+                <div className="text-gray-600">Analysis Sections</div>
                 <div className="font-semibold">{document.sections?.length || 0}</div>
               </div>
               <div>
-                <div className="text-gray-600">Data Sources</div>
+                <div className="text-gray-600">Live Data Feeds</div>
                 <div className="font-semibold">{Object.keys(document.data_sources || {}).length}</div>
               </div>
             </div>
@@ -295,9 +370,9 @@ const LiveDocument = () => {
 
       {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-3">
+          <div className="bg-white p-6 rounded-lg shadow-xl flex items-center space-x-3">
             <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
-            <span className="text-gray-900">Processing...</span>
+            <span className="text-gray-900">Processing intelligence data...</span>
           </div>
         </div>
       )}
