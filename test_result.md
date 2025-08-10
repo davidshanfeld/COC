@@ -203,8 +203,8 @@ frontend:
           comment: "✅ Dashboard component fully functional! LP users see 'Limited Partner' badge (not green) with NO export button (restriction working). GP users see green 'General Partner' badge with Export Data button that works and triggers download. All 6 fund performance metrics displayed correctly (Total Fund Value, NAV per Share, Net IRR, Total Return Multiple, Portfolio Occupancy, Average Leverage). Active Portfolio table shows 3 properties with proper status badges. Market Intelligence section with 3 insight cards. Real-time updates working - timestamp changes every 5 seconds. Session persistence works on page refresh. Logout functionality clears session properly."
 
   - task: "Masterdeck/Prospectus Document Access"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "components/Dashboard.jsx"
     stuck_count: 0
     priority: "high"
@@ -216,6 +216,9 @@ frontend:
         - working: "NA"
           agent: "main"
           comment: "Need to implement masterdeck/prospectus document access functionality. This should include document viewer, navigation sections (Executive Summary, Investment Strategy, Market Analysis, Portfolio, Financial Projections, Legal Terms, etc.), and proper role-based access controls."
+        - working: true
+          agent: "main"
+          comment: "✅ MASTERDECK/PROSPECTUS IMPLEMENTED: Added comprehensive prospectus document viewer with 8 sections (Executive Summary, Investment Strategy, Market Analysis, Portfolio Overview, Financial Projections, Risk Factors, Management Team, Legal Terms). Features include: 1) Toggle between Dashboard and Prospectus views 2) Left navigation sidebar for document sections 3) Role-based access - LP view-only, GP download functionality 4) Professional document layout with comprehensive investment information 5) Download functionality for GPs to get full prospectus document 6) Proper security and confidentiality notices. Backend testing confirmed all existing functionality intact."
 
   - task: "Theme styling with teal gradient"
     implemented: true
