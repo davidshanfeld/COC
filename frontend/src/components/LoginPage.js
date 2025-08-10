@@ -92,7 +92,14 @@ const LoginPage = ({ onLogin }) => {
       <div className="login-card">
         <div className="login-logo">
           <h1>COASTAL OAK CAPITAL</h1>
-          <p className="subtitle">Sustainable Growth, Urban Transformation</p>
+          <div className="subtitle">CAPITAL</div>
+          <p style={{ 
+            fontSize: '0.75rem', 
+            marginTop: '10px', 
+            color: 'rgba(255,255,255,0.7)' 
+          }}>
+            Distressed & Opportunistic Real Estate Fund
+          </p>
         </div>
         
         <form onSubmit={handleSubmit} className="login-form">
