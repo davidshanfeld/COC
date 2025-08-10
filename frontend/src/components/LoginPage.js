@@ -129,13 +129,12 @@ const LoginPage = ({ onLogin }) => {
         </form>
         
         <div style={{ 
-          marginTop: '30px', 
+          marginTop: '20px', 
           textAlign: 'center', 
-          fontSize: '0.8rem', 
-          color: 'rgba(255,255,255,0.6)' 
+          fontSize: '0.75rem', 
+          color: 'rgba(255,255,255,0.5)' 
         }}>
-          This platform contains confidential and proprietary information.<br />
-          Unauthorized access is strictly prohibited.
+          Authorized Personnel Only
         </div>
       </div>
     </div>
