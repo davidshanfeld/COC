@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 const Dashboard = ({ userType, onLogout }) => {
+  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' or 'prospectus'
   const [marketData, setMarketData] = useState({
     fundValue: 125000000,
     nav: 98.7,
