@@ -196,6 +196,21 @@ frontend:
           agent: "testing"
           comment: "✅ Dashboard component fully functional! LP users see 'Limited Partner' badge (not green) with NO export button (restriction working). GP users see green 'General Partner' badge with Export Data button that works and triggers download. All 6 fund performance metrics displayed correctly (Total Fund Value, NAV per Share, Net IRR, Total Return Multiple, Portfolio Occupancy, Average Leverage). Active Portfolio table shows 3 properties with proper status badges. Market Intelligence section with 3 insight cards. Real-time updates working - timestamp changes every 5 seconds. Session persistence works on page refresh. Logout functionality clears session properly."
 
+  - task: "Masterdeck/Prospectus Document Access"
+    implemented: false
+    working: false
+    file: "components/Dashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "user"
+          comment: "CRITICAL MISSING FEATURE: Users cannot access the actual investment prospectus document (masterdeck). Dashboard only shows performance metrics but missing the core functionality to view/access the actual investment materials."
+        - working: "NA"
+          agent: "main"
+          comment: "Need to implement masterdeck/prospectus document access functionality. This should include document viewer, navigation sections (Executive Summary, Investment Strategy, Market Analysis, Portfolio, Financial Projections, Legal Terms, etc.), and proper role-based access controls."
+
   - task: "Theme styling with teal gradient"
     implemented: true
     working: true
