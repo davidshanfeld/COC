@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 
 const Dashboard = ({ userType, onLogout }) => {
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' or 'prospectus'
+  const [activeSection, setActiveSection] = useState('executive-summary');
   const [marketData, setMarketData] = useState({
     fundValue: 125000000,
     nav: 98.7,
