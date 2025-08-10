@@ -90,6 +90,106 @@ const Dashboard = ({ userType, onLogout }) => {
     URL.revokeObjectURL(url);
   };
 
+  const handleProspectusDownload = () => {
+    if (userType !== 'gp') {
+      toast.error('Document download is restricted to General Partners only.');
+      return;
+    }
+    
+    toast.success('Prospectus document download initiated.');
+    
+    // Create a comprehensive prospectus document text
+    const prospectusContent = `
+COASTAL OAK CAPITAL
+DISTRESSED & OPPORTUNISTIC REAL ESTATE FUND
+CONFIDENTIAL PRIVATE PLACEMENT MEMORANDUM
+
+=====================================
+EXECUTIVE SUMMARY
+=====================================
+
+Coastal Oak Capital Fund I ("the Fund") is a $500 million distressed and opportunistic real estate fund focused on acquiring underperforming commercial real estate assets across the United States. Our strategy targets office, retail, industrial, and multifamily properties in major metropolitan markets.
+
+Fund Size: $500,000,000 target
+Investment Period: 5 years
+Fund Life: 10 years (with 2 one-year extensions)
+Target Net IRR: 15-20%
+Target Equity Multiple: 2.0x - 2.5x
+
+=====================================
+INVESTMENT STRATEGY
+=====================================
+
+The Fund employs a disciplined approach to acquiring distressed and opportunistic real estate investments:
+
+1. DISTRESSED ACQUISITIONS (60%)
+   - Properties in financial distress
+   - Below replacement cost acquisitions
+   - Value-add repositioning opportunities
+
+2. OPPORTUNISTIC INVESTMENTS (40%)
+   - Off-market transactions
+   - Strategic partnerships
+   - Development and redevelopment projects
+
+=====================================
+MARKET ANALYSIS
+=====================================
+
+Current market conditions present compelling opportunities:
+- Interest rate volatility creating distressed situations
+- Bank lending tightening creating acquisition opportunities
+- Demographic shifts creating new demand patterns
+- Technology disruption in commercial real estate
+
+=====================================
+PORTFOLIO OVERVIEW
+=====================================
+
+Current portfolio includes ${deals.length} active investments:
+${deals.map(deal => `- ${deal.name}: ${deal.type} (${deal.status}) - $${(deal.value / 1000000).toFixed(1)}M`).join('\n')}
+
+Total Portfolio Value: ${formatCurrency(marketData.fundValue)}
+Current Net IRR: ${formatPercent(marketData.irr)}
+Portfolio Occupancy: ${formatPercent(marketData.occupancy)}
+
+=====================================
+RISK FACTORS
+=====================================
+
+Investment in the Fund involves significant risks including but not limited to:
+- Real estate market volatility
+- Interest rate fluctuations
+- Regulatory changes
+- Liquidity constraints
+- General economic conditions
+
+=====================================
+LEGAL TERMS
+=====================================
+
+This document contains confidential and proprietary information. Distribution is restricted to accredited investors only. No public offering is being made.
+
+Management Fee: 2.0% annually
+Carried Interest: 20% above 8% preferred return
+Minimum Investment: $1,000,000
+
+Generated: ${new Date().toLocaleString()}
+Document Version: 1.0
+    `;
+    
+    // Create downloadable PDF-like text file
+    const blob = new Blob([prospectusContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `coastal_oak_capital_prospectus_${new Date().getTime()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
