@@ -66,8 +66,8 @@ const LoginPage = ({ onLogin }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Check password (these would be stored securely in production)
-      const LP_PASSWORD = 'CoastalOakLP2025!';
-      const GP_PASSWORD = 'CoastalOakGP2025@Export';
+      const LP_PASSWORD = 'DigitalDepression';
+      const GP_PASSWORD = 'NicoleWest0904!!';
 
       if (password === GP_PASSWORD) {
         toast.success('Welcome back, General Partner!');
