@@ -208,8 +208,8 @@ metadata:
 test_plan:
   current_focus:
     - "LoginPage component with dual passwords"
-    - "Password authentication system"
     - "LegalDisclaimer component with NDA"
+    - "Dashboard component with real-time data"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
