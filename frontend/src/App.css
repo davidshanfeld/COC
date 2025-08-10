@@ -1,34 +1,439 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Coastal Oak Capital Theme */
+:root {
+  --coastal-primary: #1e4d5b;
+  --coastal-secondary: #2d6670;
+  --coastal-accent: #3a8a9b;
+  --coastal-light: #5eb3c4;
+  --coastal-gradient: linear-gradient(135deg, #1e4d5b 0%, #3a8a9b 50%, #5eb3c4 100%);
+  --coastal-dark: #0f2830;
+  --coastal-text: #ffffff;
+  --coastal-text-secondary: #e0f4f7;
+  --coastal-danger: #dc3545;
+  --coastal-success: #28a745;
+  --coastal-warning: #ffc107;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none; /* Disable text selection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
+/* Disable right-click context menu */
+body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Disable drag and drop */
+img, div, span, p, h1, h2, h3, h4, h5, h6 {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+/* Disable print screen and screenshots (partial protection) */
+@media print {
+  body {
+    display: none !important;
+  }
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: var(--coastal-gradient);
+  min-height: 100vh;
+  color: var(--coastal-text);
+  overflow-x: hidden;
+}
+
+.App {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Loading Screen */
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--coastal-gradient);
+}
+
+.coastal-oak-logo {
+  width: 120px;
+  height: 120px;
+  position: relative;
+}
+
+.logo-animation {
+  width: 100%;
+  height: 100%;
+  border: 3px solid var(--coastal-text-secondary);
+  border-top: 3px solid var(--coastal-text);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Login Page Styles */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: var(--coastal-gradient);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-20px, -20px) rotate(90deg); }
+  50% { transform: translate(20px, -40px) rotate(180deg); }
+  75% { transform: translate(-40px, 20px) rotate(270deg); }
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-logo h1 {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--coastal-text);
+  margin-bottom: 5px;
+  letter-spacing: 2px;
+}
+
+.login-logo .subtitle {
+  color: var(--coastal-text-secondary);
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--coastal-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 15px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--coastal-text);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--coastal-light);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(94, 179, 196, 0.3);
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.login-button {
+  background: var(--coastal-gradient);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  color: var(--coastal-text);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  color: var(--coastal-danger);
+  font-size: 0.85rem;
+  margin-top: 5px;
+  text-align: center;
+}
+
+/* Disclaimer Page Styles */
+.disclaimer-container {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: var(--coastal-gradient);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.disclaimer-content {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.disclaimer-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.disclaimer-header h1 {
+  font-size: 2rem;
+  color: var(--coastal-text);
+  margin-bottom: 10px;
+}
+
+.disclaimer-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--coastal-text-secondary);
+  margin-bottom: 30px;
+}
+
+.disclaimer-section {
+  margin-bottom: 25px;
+}
+
+.disclaimer-section h3 {
+  color: var(--coastal-text);
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+.agreement-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 15px 0;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-top: 4px;
+  transform: scale(1.2);
+}
+
+.checkbox-group label {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.proceed-button {
+  width: 100%;
+  background: var(--coastal-gradient);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 10px;
+  color: var(--coastal-text);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.proceed-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.proceed-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Dashboard Styles */
+.dashboard-container {
+  min-height: 100vh;
+  background: var(--coastal-gradient);
+}
+
+.dashboard-header {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-logo h1 {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--coastal-text);
+  letter-spacing: 1px;
+}
+
+.dashboard-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.user-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: var(--coastal-text-secondary);
+}
+
+.user-badge.gp {
+  background: var(--coastal-success);
+  color: white;
+}
+
+.logout-button, .export-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--coastal-text);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.export-button {
+  background: var(--coastal-success);
+  border-color: var(--coastal-success);
+}
+
+.logout-button:hover, .export-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.dashboard-content {
+  padding: 40px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-card {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .disclaimer-content {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .dashboard-header {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .dashboard-content {
+    padding: 20px;
+  }
 }
 
-.App-link {
-    color: #61dafb;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--coastal-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--coastal-accent);
 }
