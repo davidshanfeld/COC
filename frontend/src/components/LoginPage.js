@@ -124,7 +124,7 @@ const LoginPage = ({ onLogin }) => {
             className="login-button"
             disabled={loading || !password.trim()}
           >
-            {loading ? 'Authenticating...' : 'Access Platform'}
+            {loading ? 'Authenticating...' : 'Access Fund Prospectus'}
           </button>
         </form>
         
