@@ -77,6 +77,70 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
+@api_router.post("/auth", response_model=AuthResponse)
+async def authenticate(auth_request: AuthRequest):
+    """
+    Authenticate user with LP or GP password
+    """
+    password = auth_request.password.strip()
+    
+    if password == LP_PASSWORD:
+        # Generate JWT token
+        token_payload = {
+            "user_type": "lp",
+            "exp": datetime.utcnow() + timedelta(hours=24)
+        }
+        token = jwt.encode(token_payload, SECRET_KEY, algorithm="HS256")
+        
+        return AuthResponse(
+            success=True,
+            user_type="lp",
+            message="LP access granted",
+            token=token
+        )
+    elif password == GP_PASSWORD:
+        # Generate JWT token
+        token_payload = {
+            "user_type": "gp", 
+            "exp": datetime.utcnow() + timedelta(hours=24)
+        }
+        token = jwt.encode(token_payload, SECRET_KEY, algorithm="HS256")
+        
+        return AuthResponse(
+            success=True,
+            user_type="gp",
+            message="GP access granted",
+            token=token
+        )
+    else:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+@api_router.get("/market-data", response_model=MarketDataResponse)
+async def get_market_data():
+    """
+    Get current market data - mock data that simulates real-time updates
+    """
+    import random
+    import time
+    
+    # Simulate some variation based on time
+    seed = int(time.time() / 60)  # Changes every minute
+    random.seed(seed)
+    
+    base_fund_value = 125000000
+    base_nav = 98.7
+    base_irr = 12.8
+    
+    return MarketDataResponse(
+        fund_value=base_fund_value + random.randint(-500000, 500000),
+        nav=base_nav + random.uniform(-0.5, 0.5),
+        irr=base_irr + random.uniform(-0.3, 0.3),
+        multiple=1.34 + random.uniform(-0.05, 0.05),
+        occupancy=87.2 + random.uniform(-2, 2),
+        leverage=62.5 + random.uniform(-1, 1),
+        last_update=datetime.utcnow().isoformat()
+    )
+
 # Include the router in the main app
 app.include_router(api_router)
 
