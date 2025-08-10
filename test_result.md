@@ -143,6 +143,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ Market data endpoint fully functional: GET /api/market-data returns all required fields (fund_value, nav, irr, multiple, occupancy, leverage, last_update) with correct data types. Mock real-time data simulation working with time-based seed variation. Response structure matches MarketDataResponse model perfectly."
+        - working: true
+          agent: "testing"
+          comment: "✅ POST-MASTERDECK VERIFICATION: Market data API endpoint remains fully functional after masterdeck/prospectus frontend implementation. GET /api/market-data returns all required fields (fund_value: 124641966.0, nav: 98.48, irr: 12.82, multiple: 1.34, occupancy: 87.10, leverage: 63.12, last_update: 2025-08-10T21:58:42.984735) with correct numeric data types. Time-based seed variation working correctly for mock real-time updates. Response structure matches MarketDataResponse model perfectly."
 
 frontend:
   - task: "LoginPage component with dual passwords"
