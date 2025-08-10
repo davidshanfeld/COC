@@ -211,3 +211,5 @@ test_plan:
 agent_communication:
     - agent: "main"
       message: "Starting implementation of Coastal Oak Capital application. App structure and theme are already in place, now creating the missing components and backend authentication."
+    - agent: "main"
+      message: "Core components implemented: LoginPage, LegalDisclaimer, Dashboard. Backend authentication endpoints added. Ready for testing to verify full flow works correctly."
