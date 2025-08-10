@@ -37,6 +37,29 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+class AuthRequest(BaseModel):
+    password: str
+
+class AuthResponse(BaseModel):
+    success: bool
+    user_type: str
+    message: str
+    token: str = None
+
+class MarketDataResponse(BaseModel):
+    fund_value: float
+    nav: float
+    irr: float
+    multiple: float
+    occupancy: float
+    leverage: float
+    last_update: str
+
+# Authentication configuration
+LP_PASSWORD = "DigitalDepression"
+GP_PASSWORD = "NicoleWest0904!!"
+SECRET_KEY = "coastal_oak_secret_key_2024"
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
