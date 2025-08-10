@@ -622,18 +622,57 @@ Document Version: 1.0
         <div className="dashboard-logo">
           <h1>COASTAL OAK CAPITAL</h1>
           <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', marginTop: '5px' }}>
-            Real-Time Fund Performance Dashboard
+            {currentView === 'dashboard' ? 'Real-Time Fund Performance Dashboard' : 'Investment Prospectus'}
           </p>
         </div>
         
         <div className="dashboard-controls">
+          <div className="view-toggle" style={{ display: 'flex', gap: '10px', marginRight: '20px' }}>
+            <button 
+              className={`toggle-button ${currentView === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setCurrentView('dashboard')}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '20px',
+                border: currentView === 'dashboard' ? '2px solid var(--coastal-primary)' : '2px solid rgba(255,255,255,0.2)',
+                background: currentView === 'dashboard' ? 'rgba(0,128,128,0.3)' : 'transparent',
+                color: 'white',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Dashboard
+            </button>
+            <button 
+              className={`toggle-button ${currentView === 'prospectus' ? 'active' : ''}`}
+              onClick={() => setCurrentView('prospectus')}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '20px',
+                border: currentView === 'prospectus' ? '2px solid var(--coastal-primary)' : '2px solid rgba(255,255,255,0.2)',
+                background: currentView === 'prospectus' ? 'rgba(0,128,128,0.3)' : 'transparent',
+                color: 'white',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Prospectus
+            </button>
+          </div>
+          
           <div className={`user-badge ${userType === 'gp' ? 'gp' : ''}`}>
             {userType === 'gp' ? 'General Partner' : 'Limited Partner'}
           </div>
           
-          {userType === 'gp' && (
+          {userType === 'gp' && currentView === 'dashboard' && (
             <button className="export-button" onClick={handleExport}>
               Export Data
+            </button>
+          )}
+          
+          {userType === 'gp' && currentView === 'prospectus' && (
+            <button className="export-button" onClick={handleProspectusDownload}>
+              Download Prospectus
             </button>
           )}
           
@@ -643,131 +682,228 @@ Document Version: 1.0
         </div>
       </div>
 
-      <div className="dashboard-content">
-        {/* Fund Overview */}
-        <div style={{ marginBottom: '40px' }}>
-          <h2 style={{ color: 'var(--coastal-text)', marginBottom: '20px', fontSize: '1.5rem' }}>
-            Fund Performance Overview
-          </h2>
-          
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '20px',
-            marginBottom: '30px'
-          }}>
-            <div className="metric-card">
-              <div className="metric-label">Total Fund Value</div>
-              <div className="metric-value">{formatCurrency(marketData.fundValue)}</div>
-            </div>
+      {/* Dashboard View */}
+      {currentView === 'dashboard' && (
+        <div className="dashboard-content">
+          {/* Fund Overview */}
+          <div style={{ marginBottom: '40px' }}>
+            <h2 style={{ color: 'var(--coastal-text)', marginBottom: '20px', fontSize: '1.5rem' }}>
+              Fund Performance Overview
+            </h2>
             
-            <div className="metric-card">
-              <div className="metric-label">NAV per Share</div>
-              <div className="metric-value">${marketData.nav.toFixed(2)}</div>
-            </div>
-            
-            <div className="metric-card">
-              <div className="metric-label">Net IRR</div>
-              <div className="metric-value">{formatPercent(marketData.irr)}</div>
-            </div>
-            
-            <div className="metric-card">
-              <div className="metric-label">Total Return Multiple</div>
-              <div className="metric-value">{marketData.multiple.toFixed(2)}x</div>
-            </div>
-            
-            <div className="metric-card">
-              <div className="metric-label">Portfolio Occupancy</div>
-              <div className="metric-value">{formatPercent(marketData.occupancy)}</div>
-            </div>
-            
-            <div className="metric-card">
-              <div className="metric-label">Average Leverage</div>
-              <div className="metric-value">{formatPercent(marketData.leverage)}</div>
-            </div>
-          </div>
-          
-          <div style={{ 
-            fontSize: '0.8rem', 
-            color: 'rgba(255,255,255,0.6)',
-            textAlign: 'right'
-          }}>
-            Last Updated: {marketData.lastUpdate}
-          </div>
-        </div>
-
-        {/* Active Deals */}
-        <div>
-          <h2 style={{ color: 'var(--coastal-text)', marginBottom: '20px', fontSize: '1.5rem' }}>
-            Active Portfolio
-          </h2>
-          
-          <div style={{ 
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: '15px',
-            padding: '25px',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.1)'
-          }}>
-            <div className="deals-table">
-              <div className="table-header">
-                <div>Property</div>
-                <div>Type</div>
-                <div>Status</div>
-                <div>Value</div>
-                <div>Acquired</div>
-                <div>Net IRR</div>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '20px',
+              marginBottom: '30px'
+            }}>
+              <div className="metric-card">
+                <div className="metric-label">Total Fund Value</div>
+                <div className="metric-value">{formatCurrency(marketData.fundValue)}</div>
               </div>
               
-              {deals.map(deal => (
-                <div key={deal.id} className="table-row">
-                  <div style={{ fontWeight: '600' }}>{deal.name}</div>
-                  <div>{deal.type}</div>
-                  <div>
-                    <span className={`status-badge ${deal.status.replace(' ', '-').toLowerCase()}`}>
-                      {deal.status}
-                    </span>
-                  </div>
-                  <div>{formatCurrency(deal.value)}</div>
-                  <div>{deal.acquisition}</div>
-                  <div>{formatPercent(deal.irr)}</div>
-                </div>
-              ))}
+              <div className="metric-card">
+                <div className="metric-label">NAV per Share</div>
+                <div className="metric-value">${marketData.nav.toFixed(2)}</div>
+              </div>
+              
+              <div className="metric-card">
+                <div className="metric-label">Net IRR</div>
+                <div className="metric-value">{formatPercent(marketData.irr)}</div>
+              </div>
+              
+              <div className="metric-card">
+                <div className="metric-label">Total Return Multiple</div>
+                <div className="metric-value">{marketData.multiple.toFixed(2)}x</div>
+              </div>
+              
+              <div className="metric-card">
+                <div className="metric-label">Portfolio Occupancy</div>
+                <div className="metric-value">{formatPercent(marketData.occupancy)}</div>
+              </div>
+              
+              <div className="metric-card">
+                <div className="metric-label">Average Leverage</div>
+                <div className="metric-value">{formatPercent(marketData.leverage)}</div>
+              </div>
+            </div>
+            
+            <div style={{ 
+              fontSize: '0.8rem', 
+              color: 'rgba(255,255,255,0.6)',
+              textAlign: 'right'
+            }}>
+              Last Updated: {marketData.lastUpdate}
             </div>
           </div>
-        </div>
 
-        {/* Market Insights */}
-        <div style={{ marginTop: '40px' }}>
-          <h2 style={{ color: 'var(--coastal-text)', marginBottom: '20px', fontSize: '1.5rem' }}>
-            Market Intelligence
-          </h2>
-          
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '20px'
-          }}>
-            <div className="insight-card">
-              <h3>Federal Reserve Update</h3>
-              <p>Interest rates maintained at current levels. Distressed opportunities increasing in secondary markets.</p>
-              <div className="insight-source">Source: Federal Reserve Economic Data</div>
-            </div>
+          {/* Active Deals */}
+          <div>
+            <h2 style={{ color: 'var(--coastal-text)', marginBottom: '20px', fontSize: '1.5rem' }}>
+              Active Portfolio
+            </h2>
             
-            <div className="insight-card">
-              <h3>CBRE Market Report</h3>
-              <p>Office sector showing signs of stabilization in key metropolitan areas. Industrial demand remains strong.</p>
-              <div className="insight-source">Source: CBRE Research</div>
+            <div style={{ 
+              background: 'rgba(255,255,255,0.05)',
+              borderRadius: '15px',
+              padding: '25px',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}>
+              <div className="deals-table">
+                <div className="table-header">
+                  <div>Property</div>
+                  <div>Type</div>
+                  <div>Status</div>
+                  <div>Value</div>
+                  <div>Acquired</div>
+                  <div>Net IRR</div>
+                </div>
+                
+                {deals.map(deal => (
+                  <div key={deal.id} className="table-row">
+                    <div style={{ fontWeight: '600' }}>{deal.name}</div>
+                    <div>{deal.type}</div>
+                    <div>
+                      <span className={`status-badge ${deal.status.replace(' ', '-').toLowerCase()}`}>
+                        {deal.status}
+                      </span>
+                    </div>
+                    <div>{formatCurrency(deal.value)}</div>
+                    <div>{deal.acquisition}</div>
+                    <div>{formatPercent(deal.irr)}</div>
+                  </div>
+                ))}
+              </div>
             </div>
+          </div>
+
+          {/* Market Insights */}
+          <div style={{ marginTop: '40px' }}>
+            <h2 style={{ color: 'var(--coastal-text)', marginBottom: '20px', fontSize: '1.5rem' }}>
+              Market Intelligence
+            </h2>
             
-            <div className="insight-card">
-              <h3>Capital Markets</h3>
-              <p>Lending standards tightening, creating acquisition opportunities for well-capitalized funds.</p>
-              <div className="insight-source">Source: Market Analysis</div>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: '20px'
+            }}>
+              <div className="insight-card">
+                <h3>Federal Reserve Update</h3>
+                <p>Interest rates maintained at current levels. Distressed opportunities increasing in secondary markets.</p>
+                <div className="insight-source">Source: Federal Reserve Economic Data</div>
+              </div>
+              
+              <div className="insight-card">
+                <h3>CBRE Market Report</h3>
+                <p>Office sector showing signs of stabilization in key metropolitan areas. Industrial demand remains strong.</p>
+                <div className="insight-source">Source: CBRE Research</div>
+              </div>
+              
+              <div className="insight-card">
+                <h3>Capital Markets</h3>
+                <p>Lending standards tightening, creating acquisition opportunities for well-capitalized funds.</p>
+                <div className="insight-source">Source: Market Analysis</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Prospectus View */}
+      {currentView === 'prospectus' && (
+        <div className="prospectus-container" style={{ display: 'flex', gap: '30px', height: 'calc(100vh - 120px)' }}>
+          {/* Navigation Sidebar */}
+          <div className="prospectus-nav" style={{
+            minWidth: '250px',
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: '15px',
+            padding: '20px',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            height: 'fit-content'
+          }}>
+            <h3 style={{ color: 'var(--coastal-text)', marginBottom: '20px', fontSize: '1.2rem' }}>
+              Document Sections
+            </h3>
+            {prospectusNav.map(section => (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  padding: '12px 16px',
+                  marginBottom: '8px',
+                  background: activeSection === section.id ? 'rgba(0,128,128,0.3)' : 'transparent',
+                  border: activeSection === section.id ? '1px solid var(--coastal-primary)' : '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '8px',
+                  color: 'white',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                {section.label}
+              </button>
+            ))}
+            
+            {userType === 'gp' && (
+              <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <button 
+                  className="export-button" 
+                  onClick={handleProspectusDownload}
+                  style={{ width: '100%', fontSize: '0.9rem' }}
+                >
+                  Download Full Document
+                </button>
+              </div>
+            )}
+            
+            {userType === 'lp' && (
+              <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>
+                Document download restricted to General Partners only.
+              </div>
+            )}
+          </div>
+          
+          {/* Content Area */}
+          <div className="prospectus-content" style={{
+            flex: 1,
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: '15px',
+            padding: '30px',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            overflowY: 'auto',
+            maxHeight: 'calc(100vh - 140px)'
+          }}>
+            <h2 style={{ color: 'var(--coastal-text)', marginBottom: '30px', fontSize: '2rem', borderBottom: '2px solid var(--coastal-primary)', paddingBottom: '10px' }}>
+              {prospectusData[activeSection].title}
+            </h2>
+            
+            <div style={{ lineHeight: '1.6', fontSize: '1rem' }}>
+              {prospectusData[activeSection].content}
+            </div>
+            
+            <div style={{ 
+              marginTop: '40px', 
+              paddingTop: '20px', 
+              borderTop: '1px solid rgba(255,255,255,0.1)',
+              fontSize: '0.8rem', 
+              color: 'rgba(255,255,255,0.6)',
+              textAlign: 'center'
+            }}>
+              This document contains confidential and proprietary information. 
+              Unauthorized distribution is prohibited.
+              <br />
+              © {new Date().getFullYear()} Coastal Oak Capital. All rights reserved.
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
