@@ -203,6 +203,419 @@ Document Version: 1.0
     return `${value.toFixed(1)}%`;
   };
 
+  // Prospectus sections data
+  const prospectusData = {
+    'executive-summary': {
+      title: 'Executive Summary',
+      content: (
+        <div>
+          <h3>Fund Overview</h3>
+          <p>Coastal Oak Capital Fund I is a $500 million distressed and opportunistic real estate fund focused on acquiring underperforming commercial real estate assets across the United States. Our strategy targets office, retail, industrial, and multifamily properties in major metropolitan markets.</p>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', margin: '20px 0' }}>
+            <div className="metric-card">
+              <div className="metric-label">Target Fund Size</div>
+              <div className="metric-value">$500M</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Investment Period</div>
+              <div className="metric-value">5 Years</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Target Net IRR</div>
+              <div className="metric-value">15-20%</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Target Multiple</div>
+              <div className="metric-value">2.0x - 2.5x</div>
+            </div>
+          </div>
+          
+          <h4>Investment Thesis</h4>
+          <p>Current market dislocation presents compelling opportunities for disciplined capital deployment in distressed commercial real estate. Our experienced team leverages deep market relationships and operational expertise to generate superior risk-adjusted returns.</p>
+        </div>
+      )
+    },
+    'investment-strategy': {
+      title: 'Investment Strategy',
+      content: (
+        <div>
+          <h3>Core Strategy</h3>
+          <p>The Fund employs a disciplined approach to acquiring distressed and opportunistic real estate investments across multiple property types and geographic markets.</p>
+          
+          <div style={{ margin: '30px 0' }}>
+            <h4>Investment Focus Areas</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
+              <div className="insight-card">
+                <h4>Distressed Acquisitions (60%)</h4>
+                <ul>
+                  <li>Properties in financial distress</li>
+                  <li>Below replacement cost acquisitions</li>
+                  <li>Foreclosure and REO opportunities</li>
+                  <li>Value-add repositioning</li>
+                </ul>
+              </div>
+              <div className="insight-card">
+                <h4>Opportunistic Investments (40%)</h4>
+                <ul>
+                  <li>Off-market transactions</li>
+                  <li>Strategic partnerships</li>
+                  <li>Ground-up development</li>
+                  <li>Major redevelopment projects</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <h4>Geographic Focus</h4>
+          <p>Primary markets include Atlanta, Dallas, Phoenix, Denver, Nashville, and Charlotte, with selective investments in secondary markets with strong fundamentals.</p>
+          
+          <h4>Property Types</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginTop: '20px' }}>
+            <div style={{ padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
+              <strong>Office</strong><br/>25-30%
+            </div>
+            <div style={{ padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
+              <strong>Industrial</strong><br/>25-30%
+            </div>
+            <div style={{ padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
+              <strong>Retail</strong><br/>20-25%
+            </div>
+            <div style={{ padding: '15px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
+              <strong>Multifamily</strong><br/>15-20%
+            </div>
+          </div>
+        </div>
+      )
+    },
+    'market-analysis': {
+      title: 'Market Analysis',
+      content: (
+        <div>
+          <h3>Market Conditions</h3>
+          <p>Current market conditions present compelling opportunities for disciplined capital deployment in distressed commercial real estate assets.</p>
+          
+          <h4>Key Market Drivers</h4>
+          <div style={{ margin: '20px 0' }}>
+            <div className="insight-card" style={{ marginBottom: '15px' }}>
+              <h4>Interest Rate Environment</h4>
+              <p>Federal Reserve policy changes have created financing stress for leveraged property owners, creating acquisition opportunities for well-capitalized investors.</p>
+            </div>
+            <div className="insight-card" style={{ marginBottom: '15px' }}>
+              <h4>Bank Lending Contraction</h4>
+              <p>Tightening lending standards and regulatory pressure on regional banks have reduced capital availability, creating a favorable environment for private capital deployment.</p>
+            </div>
+            <div className="insight-card" style={{ marginBottom: '15px' }}>
+              <h4>Demographic Shifts</h4>
+              <p>Population migration to Sunbelt markets continues to drive demand for commercial real estate in our target markets.</p>
+            </div>
+          </div>
+          
+          <h4>Market Intelligence</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
+            <div className="insight-card">
+              <h4>Federal Reserve Update</h4>
+              <p>Interest rates maintained at current levels. Distressed opportunities increasing in secondary markets with continued pressure on debt maturities.</p>
+              <div className="insight-source">Source: Federal Reserve Economic Data</div>
+            </div>
+            <div className="insight-card">
+              <h4>CBRE Market Report</h4>
+              <p>Office sector showing signs of stabilization in key metropolitan areas. Industrial demand remains strong driven by e-commerce and supply chain shifts.</p>
+              <div className="insight-source">Source: CBRE Research Q4 2024</div>
+            </div>
+            <div className="insight-card">
+              <h4>Capital Markets Outlook</h4>
+              <p>Lending standards continue to tighten, creating acquisition opportunities for well-capitalized funds with flexible capital structures.</p>
+              <div className="insight-source">Source: Market Analysis</div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    'portfolio': {
+      title: 'Portfolio Overview',
+      content: (
+        <div>
+          <h3>Current Portfolio</h3>
+          <p>The Fund has successfully deployed capital across {deals.length} high-quality commercial real estate investments.</p>
+          
+          <div style={{ margin: '20px 0' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+              <div className="metric-card">
+                <div className="metric-label">Total Portfolio Value</div>
+                <div className="metric-value">{formatCurrency(marketData.fundValue)}</div>
+              </div>
+              <div className="metric-card">
+                <div className="metric-label">Current Net IRR</div>
+                <div className="metric-value">{formatPercent(marketData.irr)}</div>
+              </div>
+              <div className="metric-card">
+                <div className="metric-label">Portfolio Occupancy</div>
+                <div className="metric-value">{formatPercent(marketData.occupancy)}</div>
+              </div>
+              <div className="metric-card">
+                <div className="metric-label">Average Leverage</div>
+                <div className="metric-value">{formatPercent(marketData.leverage)}</div>
+              </div>
+            </div>
+          </div>
+          
+          <h4>Active Investments</h4>
+          <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '25px', marginTop: '20px' }}>
+            <div className="deals-table">
+              <div className="table-header">
+                <div>Property</div>
+                <div>Type</div>
+                <div>Status</div>
+                <div>Value</div>
+                <div>Acquired</div>
+                <div>Net IRR</div>
+              </div>
+              
+              {deals.map(deal => (
+                <div key={deal.id} className="table-row">
+                  <div style={{ fontWeight: '600' }}>{deal.name}</div>
+                  <div>{deal.type}</div>
+                  <div>
+                    <span className={`status-badge ${deal.status.replace(' ', '-').toLowerCase()}`}>
+                      {deal.status}
+                    </span>
+                  </div>
+                  <div>{formatCurrency(deal.value)}</div>
+                  <div>{deal.acquisition}</div>
+                  <div>{formatPercent(deal.irr)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div style={{ marginTop: '30px' }}>
+            <h4>Investment Highlights</h4>
+            <ul style={{ marginLeft: '20px', lineHeight: '1.6' }}>
+              <li>Diversified across property types and geographic markets</li>
+              <li>Strong focus on value-add repositioning strategies</li>
+              <li>Active asset management to optimize performance</li>
+              <li>Conservative leverage profile with flexible capital structures</li>
+            </ul>
+          </div>
+        </div>
+      )
+    },
+    'financial-projections': {
+      title: 'Financial Projections',
+      content: (
+        <div>
+          <h3>Fund Performance Projections</h3>
+          <p>Based on current market conditions and our investment pipeline, the Fund projects strong risk-adjusted returns for investors.</p>
+          
+          <h4>Target Returns</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', margin: '20px 0' }}>
+            <div className="metric-card">
+              <div className="metric-label">Target Net IRR</div>
+              <div className="metric-value">15-20%</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Target Equity Multiple</div>
+              <div className="metric-value">2.0x - 2.5x</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Minimum Preferred Return</div>
+              <div className="metric-value">8%</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Fund Life</div>
+              <div className="metric-value">10 Years</div>
+            </div>
+          </div>
+          
+          <h4>Return Waterfall</h4>
+          <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '25px', marginTop: '20px' }}>
+            <div style={{ marginBottom: '15px' }}>
+              <strong>1. Return of Capital:</strong> 100% to Limited Partners
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <strong>2. Preferred Return:</strong> 8% annual cumulative preferred return to Limited Partners
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <strong>3. Catch-up:</strong> 100% to General Partner until GP has received 20% of total distributions
+            </div>
+            <div>
+              <strong>4. Carried Interest:</strong> 80% to Limited Partners, 20% to General Partner
+            </div>
+          </div>
+          
+          <h4>Fee Structure</h4>
+          <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '25px', marginTop: '20px' }}>
+            <div style={{ marginBottom: '15px' }}>
+              <strong>Management Fee:</strong> 2.0% per annum of committed capital during investment period, 2.0% of invested capital thereafter
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <strong>Acquisition Fee:</strong> 1.0% of gross acquisition price
+            </div>
+            <div>
+              <strong>Asset Management Fee:</strong> 0.25% per annum of gross asset value
+            </div>
+          </div>
+          
+          <div style={{ marginTop: '30px', padding: '20px', background: 'rgba(255,204,0,0.1)', borderRadius: '10px', border: '1px solid rgba(255,204,0,0.3)' }}>
+            <strong>Important Notice:</strong> These projections are estimates based on current market conditions and assumptions. Actual results may vary significantly. Past performance does not guarantee future results.
+          </div>
+        </div>
+      )
+    },
+    'risk-factors': {
+      title: 'Risk Factors',
+      content: (
+        <div>
+          <h3>Investment Risks</h3>
+          <p>Investment in the Fund involves significant risks that could result in partial or total loss of capital. Prospective investors should carefully consider the following risk factors:</p>
+          
+          <div style={{ marginTop: '30px' }}>
+            <div className="insight-card" style={{ marginBottom: '20px', background: 'rgba(255,99,99,0.1)', border: '1px solid rgba(255,99,99,0.3)' }}>
+              <h4>Real Estate Market Risk</h4>
+              <p>Commercial real estate markets are subject to significant volatility based on economic conditions, supply and demand dynamics, and regulatory changes. Property values may decline substantially.</p>
+            </div>
+            
+            <div className="insight-card" style={{ marginBottom: '20px', background: 'rgba(255,99,99,0.1)', border: '1px solid rgba(255,99,99,0.3)' }}>
+              <h4>Interest Rate Risk</h4>
+              <p>Rising interest rates may negatively impact property valuations and increase financing costs. Variable rate debt may result in increased debt service obligations.</p>
+            </div>
+            
+            <div className="insight-card" style={{ marginBottom: '20px', background: 'rgba(255,99,99,0.1)', border: '1px solid rgba(255,99,99,0.3)' }}>
+              <h4>Liquidity Risk</h4>
+              <p>Real estate investments are illiquid. Limited Partners will not be able to redeem their interests and must rely on distributions and ultimate liquidation of fund assets.</p>
+            </div>
+            
+            <div className="insight-card" style={{ marginBottom: '20px', background: 'rgba(255,99,99,0.1)', border: '1px solid rgba(255,99,99,0.3)' }}>
+              <h4>Leverage Risk</h4>
+              <p>Use of debt financing magnifies both potential returns and losses. Highly leveraged investments may result in total loss of equity in adverse market conditions.</p>
+            </div>
+            
+            <div className="insight-card" style={{ marginBottom: '20px', background: 'rgba(255,99,99,0.1)', border: '1px solid rgba(255,99,99,0.3)' }}>
+              <h4>Operational Risk</h4>
+              <p>Property operations may be adversely affected by tenant defaults, environmental issues, construction delays, regulatory changes, and natural disasters.</p>
+            </div>
+            
+            <div className="insight-card" style={{ marginBottom: '20px', background: 'rgba(255,99,99,0.1)', border: '1px solid rgba(255,99,99,0.3)' }}>
+              <h4>General Economic Risk</h4>
+              <p>Economic recession, inflation, unemployment, and other macroeconomic factors may significantly impact real estate markets and fund performance.</p>
+            </div>
+          </div>
+          
+          <div style={{ marginTop: '30px', padding: '20px', background: 'rgba(255,99,99,0.1)', borderRadius: '10px', border: '1px solid rgba(255,99,99,0.3)' }}>
+            <strong>WARNING:</strong> These risk factors are not exhaustive. Investors should carefully review all offering documents and consult with their advisors before making an investment decision.
+          </div>
+        </div>
+      )
+    },
+    'management-team': {
+      title: 'Management Team',
+      content: (
+        <div>
+          <h3>Leadership Team</h3>
+          <p>Coastal Oak Capital is led by an experienced team of real estate professionals with a proven track record of generating superior returns in distressed and opportunistic investments.</p>
+          
+          <div style={{ marginTop: '30px' }}>
+            <div className="insight-card" style={{ marginBottom: '20px' }}>
+              <h4>Michael Thompson, Managing Partner</h4>
+              <p><strong>Experience:</strong> 20+ years in commercial real estate investment and development</p>
+              <p><strong>Background:</strong> Former Principal at Blackstone Real Estate Partners, MBA from Wharton</p>
+              <p><strong>Track Record:</strong> Led over $2 billion in real estate transactions across multiple cycles</p>
+            </div>
+            
+            <div className="insight-card" style={{ marginBottom: '20px' }}>
+              <h4>Sarah Chen, Investment Director</h4>
+              <p><strong>Experience:</strong> 15+ years in real estate finance and capital markets</p>
+              <p><strong>Background:</strong> Former Vice President at Goldman Sachs Real Estate Principal Investment Area</p>
+              <p><strong>Expertise:</strong> Structured finance, debt restructuring, and distressed asset workouts</p>
+            </div>
+            
+            <div className="insight-card" style={{ marginBottom: '20px' }}>
+              <h4>David Rodriguez, Asset Management Director</h4>
+              <p><strong>Experience:</strong> 18+ years in commercial real estate operations and asset management</p>
+              <p><strong>Background:</strong> Former Senior Director at Brookfield Properties</p>
+              <p><strong>Expertise:</strong> Property operations, leasing, capital improvements, and value creation</p>
+            </div>
+            
+            <div className="insight-card" style={{ marginBottom: '20px' }}>
+              <h4>Jennifer Walsh, Chief Financial Officer</h4>
+              <p><strong>Experience:</strong> 12+ years in real estate accounting and fund administration</p>
+              <p><strong>Background:</strong> Former Manager at KPMG Real Estate Practice, CPA</p>
+              <p><strong>Expertise:</strong> Fund operations, investor reporting, and regulatory compliance</p>
+            </div>
+          </div>
+          
+          <h4>Advisory Board</h4>
+          <p style={{ marginTop: '20px' }}>Our Advisory Board includes industry veterans with deep expertise in commercial real estate, capital markets, and institutional investing.</p>
+          
+          <div style={{ marginTop: '30px', padding: '20px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px' }}>
+            <strong>Combined Experience:</strong> The management team has a combined 65+ years of commercial real estate experience and has been involved in over $5 billion in real estate transactions.
+          </div>
+        </div>
+      )
+    },
+    'legal-terms': {
+      title: 'Legal Terms',
+      content: (
+        <div>
+          <h3>Important Legal Information</h3>
+          <p>This Private Placement Memorandum contains important legal terms and conditions governing investment in the Fund.</p>
+          
+          <div style={{ marginTop: '30px' }}>
+            <h4>Securities Law Compliance</h4>
+            <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '25px', marginBottom: '20px' }}>
+              <p>The securities offered hereby have not been registered under the Securities Act of 1933 or any state securities laws. These securities are being offered and sold in reliance on exemptions from the registration requirements.</p>
+            </div>
+            
+            <h4>Investor Qualifications</h4>
+            <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '25px', marginBottom: '20px' }}>
+              <ul style={{ marginLeft: '20px', lineHeight: '1.6' }}>
+                <li>Accredited Investor status as defined under Rule 501 of Regulation D</li>
+                <li>Minimum investment of $1,000,000</li>
+                <li>Qualified Purchaser status for investments over $5,000,000</li>
+                <li>Institutional investors must meet additional suitability requirements</li>
+              </ul>
+            </div>
+            
+            <h4>Fund Terms</h4>
+            <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '25px', marginBottom: '20px' }}>
+              <div style={{ marginBottom: '15px' }}><strong>Fund Life:</strong> 10 years with two 1-year extensions</div>
+              <div style={{ marginBottom: '15px' }}><strong>Investment Period:</strong> 5 years from first closing</div>
+              <div style={{ marginBottom: '15px' }}><strong>Management Fee:</strong> 2.0% of committed capital</div>
+              <div style={{ marginBottom: '15px' }}><strong>Carried Interest:</strong> 20% above 8% preferred return</div>
+              <div><strong>Key Person Events:</strong> Michael Thompson and Sarah Chen</div>
+            </div>
+            
+            <h4>Transfer Restrictions</h4>
+            <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '25px', marginBottom: '20px' }}>
+              <p>Limited Partner interests may not be transferred without the prior written consent of the General Partner. Any permitted transfers must comply with applicable securities laws and fund documentation.</p>
+            </div>
+            
+            <h4>Confidentiality</h4>
+            <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '15px', padding: '25px', marginBottom: '20px' }}>
+              <p>This document and all information contained herein is confidential and proprietary. Recipients agree to maintain confidentiality and may not reproduce or distribute without express written consent.</p>
+            </div>
+          </div>
+          
+          <div style={{ marginTop: '30px', padding: '20px', background: 'rgba(255,204,0,0.1)', borderRadius: '10px', border: '1px solid rgba(255,204,0,0.3)' }}>
+            <strong>Legal Disclaimer:</strong> This summary does not constitute the complete legal terms of the Fund. Investors must review the complete Limited Partnership Agreement and other fund documents before investing.
+          </div>
+        </div>
+      )
+    }
+  };
+
+  const prospectusNav = [
+    { id: 'executive-summary', label: 'Executive Summary' },
+    { id: 'investment-strategy', label: 'Investment Strategy' },
+    { id: 'market-analysis', label: 'Market Analysis' },
+    { id: 'portfolio', label: 'Portfolio Overview' },
+    { id: 'financial-projections', label: 'Financial Projections' },
+    { id: 'risk-factors', label: 'Risk Factors' },
+    { id: 'management-team', label: 'Management Team' },
+    { id: 'legal-terms', label: 'Legal Terms' }
+  ];
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
