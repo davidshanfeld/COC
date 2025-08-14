@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://5a442b15-dc12-4abb-99ce-ec5c9c6277a1.preview.emergentagent.com/api"
+BACKEND_URL = "https://secure-prospectus.preview.emergentagent.com/api"
 
 # Test credentials
 LP_PASSWORD = "DigitalDepression"
