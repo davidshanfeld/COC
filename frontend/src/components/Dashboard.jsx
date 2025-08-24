@@ -536,19 +536,29 @@ All data subject to quarterly updates and market verification.
       toast.success('🚀 Exporting live Excel data with real-time market feeds...');
       
       // Fetch the latest Excel data from backend
-      const response = await fetch(`${backendUrl}/api/excel/export`);
+      const response = await fetch(`${backendUrl}/api/excel/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
       if (response.ok) {
-        const blob = await response.blob();
+        const data = await response.json();
+        
+        // Create downloadable file from the export data
+        const exportContent = JSON.stringify(data.data, null, 2);
+        const blob = new Blob([exportContent], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `coastal_oak_live_excel_${new Date().getTime()}.xlsx`;
+        a.download = data.filename || `coastal_oak_live_excel_${new Date().getTime()}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        toast.success('✅ Live Excel export completed successfully!');
+        toast.success(`✅ Live Excel export completed successfully! (${data.size_mb.toFixed(2)} MB)`);
       } else {
         throw new Error('Export failed');
       }
