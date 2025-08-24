@@ -60,6 +60,69 @@ class MarketDataResponse(BaseModel):
     leverage: float
     last_update: str
 
+# Excel Data Models
+class DealData(BaseModel):
+    id: str
+    name: str
+    status: str  # active, exited, pipeline
+    market: str
+    strategy: str  # distressed_debt, value_add, opportunistic, net_lease
+    equity_committed: Optional[float] = None
+    irr: Optional[float] = None
+    moic: Optional[float] = None
+    close_date: Optional[str] = None
+    power_mw: Optional[float] = None
+
+class FundKPIs(BaseModel):
+    nav: float
+    gross_irr: float
+    net_irr: float
+    gross_moic: float
+    net_moic: float
+    tvpi: float
+    dpi: float
+    rvpi: float
+    aum: Optional[float] = None
+    committed_capital: Optional[float] = None
+    called_capital: Optional[float] = None
+    uncalled_commitments: Optional[float] = None
+    cash_balance: Optional[float] = None
+    management_fee_accrual: Optional[float] = None
+    carry_accrual: Optional[float] = None
+
+class RiskKPIs(BaseModel):
+    wa_ltv: float
+    wa_dscr: float
+    interest_coverage: float
+    wa_coupon: Optional[float] = None
+    duration_proxy_years: Optional[float] = None
+    default_rate_rolling_12m: Optional[float] = None
+
+class PipelineKPIs(BaseModel):
+    active_deals_count: int
+    pipeline_deals_count: int
+    exited_deals_count: int
+    avg_underwriting_cycle_days: Optional[float] = None
+
+class PowerInfraKPIs(BaseModel):
+    mw_contracted: Optional[float] = None
+    mw_energized: Optional[float] = None
+    mw_under_loa_or_loi: Optional[float] = None
+    run_rate_revenue_per_mw: Optional[float] = None
+    wa_power_cost_per_mwh: Optional[float] = None
+
+class ExcelKPIs(BaseModel):
+    fund: FundKPIs
+    risk: RiskKPIs
+    pipeline: PipelineKPIs
+    power_infra: Optional[PowerInfraKPIs] = None
+
+class ExcelSummaryResponse(BaseModel):
+    as_of_date: str
+    aum: float
+    deals: List[DealData]
+    kpis: ExcelKPIs
+
 # Authentication configuration
 LP_PASSWORD = "DigitalDepression"
 GP_PASSWORD = "NicoleWest0904!!"
