@@ -1329,29 +1329,66 @@ All data subject to quarterly updates and market verification.
                 <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)', marginBottom: '20px' }}>
                   Live data integration • Real-time KPIs • External market feeds • Data as of {excelSummary.as_of_date}
                 </p>
-                
-                {userType === 'gp' && (
-                  <button 
-                    className="export-button" 
-                    onClick={() => handleRealExcelExport()}
-                    style={{ marginBottom: '20px' }}
-                  >
-                    🚀 Export Live Excel Data
-                  </button>
-                )}
-                
-                {userType === 'lp' && (
-                  <div style={{ 
-                    padding: '10px 20px', 
-                    backgroundColor: 'rgba(255, 204, 0, 0.1)', 
-                    border: '1px solid rgba(255, 204, 0, 0.3)', 
-                    borderRadius: '8px',
-                    fontSize: '0.9rem',
-                    marginBottom: '20px'
-                  }}>
-                    ⚠️ Excel export functionality restricted to General Partners only
-                  </div>
-                )}
+
+                <LastUpdatedBanner
+                  lastUpdatedIso={excelSummary._last_updated_iso}
+                  snapshotId={excelSummary._snapshot_id}
+                  onViewLineage={() => setShowLineage(true)}
+                />
+
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
+                  <SnapshotSelector
+                    backendUrl={backendUrl}
+                    gpBasicPass={gpBasicPass}
+                    setGpBasicPass={setGpBasicPass}
+                    selectedSnapshotId={selectedSnapshotId}
+                    onChange={(id) => setSelectedSnapshotId(id)}
+                    userType={userType}
+                  />
+
+                  <ManualRefreshButton
+                    disabled={userType !== 'gp'}
+                    tooltip={userType !== 'gp' ? 'Refresh disabled for LPs' : ''}
+                    onRefresh={async () => {
+                      try {
+                        const resp = await fetch(`${backendUrl}/api/excel/summary?refresh=true`);
+                        if (resp.status === 429) {
+                          toast.warn('Refresh rate-limited. Please wait a minute.');
+                          return;
+                        }
+                        if (!resp.ok) throw new Error('Failed to refresh');
+                        const data = await resp.json();
+                        setSelectedSnapshotId(data._snapshot_id);
+                        setExcelSummary(data);
+                        toast.success('New snapshot created.');
+                      } catch (e) {
+                        toast.error('Failed to create snapshot');
+                      }
+                    }}
+                  />
+
+                  {userType === 'gp' && (
+                    <button 
+                      className="export-button" 
+                      onClick={() => handleRealExcelExport()}
+                      style={{ marginBottom: '20px' }}
+                    >
+                      🚀 Export From Selected Snapshot
+                    </button>
+                  )}
+
+                  {userType === 'lp' && (
+                    <div style={{ 
+                      padding: '10px 20px', 
+                      backgroundColor: 'rgba(255, 204, 0, 0.1)', 
+                      border: '1px solid rgba(255, 204, 0, 0.3)', 
+                      borderRadius: '8px',
+                      fontSize: '0.9rem',
+                      marginBottom: '20px'
+                    }}>
+                      ⚠️ Excel export functionality restricted to General Partners only
+                    </div>
+                  )}
               </div>
 
               {/* KPI Dashboard */}
