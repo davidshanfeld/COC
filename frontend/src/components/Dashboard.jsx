@@ -1298,208 +1298,255 @@ All data subject to quarterly updates and market verification.
 
       {/* Excel Reports View */}
       {currentView === 'excel' && (
-        <div className="excel-container" style={{ display: 'flex', gap: '30px', height: 'calc(100vh - 120px)' }}>
-          {/* Excel Sheets Navigation */}
-          <div className="excel-nav" style={{
-            minWidth: '250px',
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: '15px',
-            padding: '20px',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            height: 'fit-content'
-          }}>
-            <h3 style={{ color: 'var(--coastal-text)', marginBottom: '20px', fontSize: '1.2rem' }}>
-              📊 Excel Workbooks
-            </h3>
-            {excelSheets.map(sheet => (
-              <button
-                key={sheet.id}
-                onClick={() => setActiveExcelSheet(sheet.id)}
-                style={{
-                  display: 'block',
-                  width: '100%',
-                  padding: '12px 16px',
-                  marginBottom: '8px',
-                  background: activeExcelSheet === sheet.id ? 'rgba(0,128,128,0.3)' : 'transparent',
-                  border: activeExcelSheet === sheet.id ? '1px solid var(--coastal-primary)' : '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '8px',
-                  color: 'white',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                {sheet.label}
-              </button>
-            ))}
-            
-            <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-              <div style={{ marginBottom: '15px', fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)' }}>
-                <strong>🔄 Real-Time Data</strong><br/>
-                Last Updated: {marketData.lastUpdate}
-              </div>
-              
-              {userType === 'gp' && (
-                <button 
-                  className="export-button" 
-                  onClick={handleExcelExport}
-                  style={{ width: '100%', fontSize: '0.9rem' }}
-                >
-                  Export All Sheets
-                </button>
-              )}
-              
-              {userType === 'lp' && (
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>
-                  Excel export restricted to General Partners only.
-                </div>
-              )}
-            </div>
-          </div>
+        <div className="excel-container" style={{ padding: '20px' }}>
           
-          {/* Excel Content Area */}
-          <div className="excel-content" style={{
-            flex: 1,
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: '15px',
-            padding: '30px',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            overflowY: 'auto',
-            maxHeight: 'calc(100vh - 140px)'
-          }}>
-            <div style={{ marginBottom: '30px' }}>
-              <h2 style={{ color: 'var(--coastal-text)', fontSize: '1.8rem', marginBottom: '10px' }}>
-                {excelData['deal-analysis'].sheets[activeExcelSheet].name}
-              </h2>
-              <div style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.8)', marginBottom: '10px' }}>
-                {excelData['deal-analysis'].sheets[activeExcelSheet].description}
-              </div>
-              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>
-                📈 {excelData['deal-analysis'].subtitle}
-              </div>
+          {loadingExcelData && (
+            <div style={{ textAlign: 'center', color: 'white', padding: '40px' }}>
+              <div style={{ fontSize: '1.2rem', marginBottom: '10px' }}>🔄 Loading Excel Analytics...</div>
+              <div style={{ fontSize: '0.9rem', opacity: '0.7' }}>Fetching live data from Treasury, BLS, and internal systems</div>
             </div>
-            
-            {/* Excel-style Tables */}
-            <div style={{ marginBottom: '40px' }}>
-              {excelData['deal-analysis'].sheets[activeExcelSheet].data.map((section, sectionIndex) => (
-                <div key={sectionIndex} style={{ marginBottom: '40px' }}>
-                  <h3 style={{ 
-                    color: 'var(--coastal-primary)', 
-                    fontSize: '1.3rem', 
-                    marginBottom: '20px',
-                    padding: '10px 15px',
-                    background: 'rgba(0,128,128,0.2)',
-                    borderRadius: '8px',
-                    border: '1px solid var(--coastal-primary)'
-                  }}>
-                    📊 {section.category}
-                  </h3>
-                  
-                  {/* Excel-like Table */}
+          )}
+
+          {!loadingExcelData && excelSummary && (
+            <div>
+              {/* Header Section */}
+              <div style={{ marginBottom: '30px' }}>
+                <h2 style={{ color: 'var(--coastal-text)', fontSize: '1.8rem', marginBottom: '10px' }}>
+                  📊 Institutional Excel Analytics
+                </h2>
+                <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)', marginBottom: '20px' }}>
+                  Live data integration • Real-time KPIs • External market feeds • Data as of {excelSummary.as_of_date}
+                </p>
+                
+                {userType === 'gp' && (
+                  <button 
+                    className="export-button" 
+                    onClick={() => handleRealExcelExport()}
+                    style={{ marginBottom: '20px' }}
+                  >
+                    🚀 Export Live Excel Data
+                  </button>
+                )}
+                
+                {userType === 'lp' && (
                   <div style={{ 
-                    background: 'rgba(255,255,255,0.02)',
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    overflow: 'hidden'
+                    padding: '10px 20px', 
+                    backgroundColor: 'rgba(255, 204, 0, 0.1)', 
+                    border: '1px solid rgba(255, 204, 0, 0.3)', 
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    marginBottom: '20px'
                   }}>
-                    {/* Table Header */}
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: '2fr 1fr 2fr 2fr',
-                      gap: '1px',
-                      background: 'rgba(0,128,128,0.3)',
-                      padding: '0'
-                    }}>
-                      <div style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.9rem', color: 'white' }}>
-                        METRIC
-                      </div>
-                      <div style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.9rem', color: 'white' }}>
-                        VALUE
-                      </div>
-                      <div style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.9rem', color: 'white' }}>
-                        ASSUMPTION
-                      </div>
-                      <div style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.9rem', color: 'white' }}>
-                        CITATION
-                      </div>
-                    </div>
-                    
-                    {/* Table Rows */}
-                    {section.rows.map((row, rowIndex) => (
-                      <div key={rowIndex} style={{
-                        display: 'grid',
-                        gridTemplateColumns: '2fr 1fr 2fr 2fr',
-                        gap: '1px',
-                        background: rowIndex % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)',
-                        borderBottom: '1px solid rgba(255,255,255,0.05)'
-                      }}>
-                        <div style={{ 
-                          padding: '12px', 
-                          fontSize: '0.9rem', 
-                          color: 'white', 
-                          fontWeight: '500' 
-                        }}>
-                          {row.metric}
-                        </div>
-                        <div style={{ 
-                          padding: '12px', 
-                          fontSize: '0.9rem', 
-                          color: row.value.includes('%') || row.value.includes('$') || row.value.includes('x') ? 'var(--coastal-primary)' : 'white',
-                          fontWeight: 'bold'
-                        }}>
-                          {row.value}
-                        </div>
-                        <div style={{ 
-                          padding: '12px', 
-                          fontSize: '0.8rem', 
-                          color: 'rgba(255,255,255,0.8)',
-                          fontStyle: 'italic'
-                        }}>
-                          {row.assumption}
-                        </div>
-                        <div style={{ 
-                          padding: '12px', 
-                          fontSize: '0.8rem', 
-                          color: 'rgba(255,255,255,0.6)',
-                          textDecoration: 'underline',
-                          cursor: 'pointer'
-                        }}>
-                          {row.citation}
-                        </div>
-                      </div>
-                    ))}
+                    ⚠️ Excel export functionality restricted to General Partners only
+                  </div>
+                )}
+              </div>
+
+              {/* KPI Dashboard */}
+              <div style={{ marginBottom: '40px' }}>
+                <h3 style={{ color: 'var(--coastal-text)', fontSize: '1.4rem', marginBottom: '20px' }}>
+                  📈 Fund Performance KPIs (Live Data)
+                </h3>
+                
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '15px',
+                  marginBottom: '30px'
+                }}>
+                  <div className="metric-card">
+                    <div className="metric-label">Total AUM</div>
+                    <div className="metric-value">{formatCurrency(excelSummary.aum)}</div>
+                  </div>
+                  
+                  <div className="metric-card">
+                    <div className="metric-label">NAV per Share</div>
+                    <div className="metric-value">${excelSummary.kpis.fund.nav.toFixed(2)}</div>
+                  </div>
+                  
+                  <div className="metric-card">
+                    <div className="metric-label">Net IRR</div>
+                    <div className="metric-value">{excelSummary.kpis.fund.net_irr.toFixed(1)}%</div>
+                  </div>
+                  
+                  <div className="metric-card">
+                    <div className="metric-label">Net MOIC</div>
+                    <div className="metric-value">{excelSummary.kpis.fund.net_moic.toFixed(2)}x</div>
+                  </div>
+                  
+                  <div className="metric-card">
+                    <div className="metric-label">TVPI</div>
+                    <div className="metric-value">{excelSummary.kpis.fund.tvpi.toFixed(2)}x</div>
+                  </div>
+                  
+                  <div className="metric-card">
+                    <div className="metric-label">WA LTV</div>
+                    <div className="metric-value">{excelSummary.kpis.risk.wa_ltv.toFixed(1)}%</div>
                   </div>
                 </div>
-              ))}
-            </div>
-            
-            {/* Footer */}
-            <div style={{ 
-              marginTop: '40px', 
-              paddingTop: '20px', 
-              borderTop: '2px solid var(--coastal-primary)',
-              fontSize: '0.8rem', 
-              color: 'rgba(255,255,255,0.6)',
-              textAlign: 'center',
-              background: 'rgba(0,128,128,0.1)',
-              padding: '20px',
-              borderRadius: '10px'
-            }}>
-              <div style={{ marginBottom: '10px' }}>
-                <strong>🔒 CONFIDENTIAL INSTITUTIONAL ANALYSIS</strong>
               </div>
-              This spreadsheet contains proprietary investment analysis with live market data integration.
-              <br />
-              All assumptions and citations are tracked for institutional transparency and compliance.
-              <br />
-              <strong>Real-time data refresh:</strong> Every 5 seconds | <strong>Last update:</strong> {marketData.lastUpdate}
-              <br />
-              © {new Date().getFullYear()} Coastal Oak Capital. All rights reserved.
+
+              {/* Live Deals Grid */}
+              <div style={{ marginBottom: '40px' }}>
+                <h3 style={{ color: 'var(--coastal-text)', fontSize: '1.4rem', marginBottom: '20px' }}>
+                  🏢 Deal Pipeline & Portfolio (Excel Grid View)
+                </h3>
+                
+                <div style={{ 
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '15px',
+                  padding: '25px',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  overflow: 'auto'
+                }}>
+                  <div className="excel-grid" style={{
+                    display: 'grid',
+                    gridTemplateColumns: '2fr 1fr 1fr 1.5fr 1.5fr 1fr 1fr',
+                    gap: '15px',
+                    fontSize: '0.9rem'
+                  }}>
+                    {/* Header Row */}
+                    <div style={{ fontWeight: 'bold', padding: '10px', background: 'rgba(0,128,128,0.2)', borderRadius: '5px' }}>Asset Name</div>
+                    <div style={{ fontWeight: 'bold', padding: '10px', background: 'rgba(0,128,128,0.2)', borderRadius: '5px' }}>Status</div>
+                    <div style={{ fontWeight: 'bold', padding: '10px', background: 'rgba(0,128,128,0.2)', borderRadius: '5px' }}>Market</div>
+                    <div style={{ fontWeight: 'bold', padding: '10px', background: 'rgba(0,128,128,0.2)', borderRadius: '5px' }}>Strategy</div>
+                    <div style={{ fontWeight: 'bold', padding: '10px', background: 'rgba(0,128,128,0.2)', borderRadius: '5px' }}>Equity ($M)</div>
+                    <div style={{ fontWeight: 'bold', padding: '10px', background: 'rgba(0,128,128,0.2)', borderRadius: '5px' }}>IRR %</div>
+                    <div style={{ fontWeight: 'bold', padding: '10px', background: 'rgba(0,128,128,0.2)', borderRadius: '5px' }}>MOIC x</div>
+                    
+                    {/* Data Rows */}
+                    {excelSummary.deals.map(deal => (
+                      <React.Fragment key={deal.id}>
+                        <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '5px' }}>
+                          {deal.name}
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '5px' }}>
+                          <span className={`status-badge ${deal.status}`} style={{
+                            padding: '4px 8px',
+                            borderRadius: '12px',
+                            fontSize: '0.8rem',
+                            backgroundColor: deal.status === 'active' ? 'rgba(0,200,0,0.2)' : 
+                                           deal.status === 'pipeline' ? 'rgba(255,200,0,0.2)' : 'rgba(200,200,200,0.2)',
+                            color: deal.status === 'active' ? '#00ff00' : 
+                                   deal.status === 'pipeline' ? '#ffcc00' : '#cccccc'
+                          }}>
+                            {deal.status.charAt(0).toUpperCase() + deal.status.slice(1)}
+                          </span>
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '5px' }}>
+                          {deal.market}
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '5px' }}>
+                          {deal.strategy.replace(/_/g, ' ')}
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '5px' }}>
+                          ${deal.equity_committed ? (deal.equity_committed / 1000000).toFixed(1) : 'TBD'}
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '5px' }}>
+                          {deal.irr ? deal.irr.toFixed(1) + '%' : 'TBD'}
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '5px' }}>
+                          {deal.moic ? deal.moic.toFixed(1) + 'x' : 'TBD'}
+                        </div>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                  
+                  <div style={{ 
+                    marginTop: '20px', 
+                    padding: '15px',
+                    background: 'rgba(0,128,128,0.1)',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem'
+                  }}>
+                    <strong>Portfolio Summary:</strong> {excelSummary.kpis.pipeline.active_deals_count} Active • {excelSummary.kpis.pipeline.pipeline_deals_count} Pipeline • {excelSummary.kpis.pipeline.exited_deals_count} Exited
+                  </div>
+                </div>
+              </div>
+
+              {/* External Data Integration */}
+              <div style={{ marginBottom: '40px' }}>
+                <h3 style={{ color: 'var(--coastal-text)', fontSize: '1.4rem', marginBottom: '20px' }}>
+                  🌍 External Market Data Integration
+                </h3>
+                
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                  gap: '20px'
+                }}>
+                  <div className="insight-card">
+                    <h4>📊 Federal Reserve Data (FRED)</h4>
+                    <div style={{ fontSize: '0.9rem', lineHeight: '1.6' }}>
+                      <div><strong>10-Year Treasury:</strong> Live feed integration</div>
+                      <div><strong>2-Year Treasury:</strong> Live feed integration</div>
+                      <div><strong>3-Month Treasury:</strong> Live feed integration</div>
+                      <div style={{ marginTop: '10px', color: 'rgba(255,255,255,0.7)' }}>
+                        Data refreshed every 30 minutes from official Federal Reserve Economic Data API
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="insight-card">
+                    <h4>💹 Bureau of Labor Statistics</h4>
+                    <div style={{ fontSize: '0.9rem', lineHeight: '1.6' }}>
+                      <div><strong>Core CPI:</strong> Live inflation tracking</div>
+                      <div><strong>CPI-U SA:</strong> Consumer price index</div>
+                      <div><strong>YoY Inflation:</strong> Annual change calculation</div>
+                      <div style={{ marginTop: '10px', color: 'rgba(255,255,255,0.7)' }}>
+                        Official BLS data integration for real-time economic indicators
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="insight-card">
+                    <h4>🏦 Internal Fund Systems</h4>
+                    <div style={{ fontSize: '0.9rem', lineHeight: '1.6' }}>
+                      <div><strong>Property Management:</strong> Live occupancy data</div>
+                      <div><strong>Accounting System:</strong> Real-time NAV calculation</div>
+                      <div><strong>Valuation Reports:</strong> Quarterly mark-to-market</div>
+                      <div style={{ marginTop: '10px', color: 'rgba(255,255,255,0.7)' }}>
+                        Integrated internal systems for comprehensive fund performance tracking
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Methodology & Citations */}
+              <div style={{ 
+                marginTop: '40px', 
+                padding: '20px', 
+                background: 'rgba(255,255,255,0.03)', 
+                borderRadius: '10px',
+                border: '1px solid rgba(255,255,255,0.1)'
+              }}>
+                <h4 style={{ color: 'var(--coastal-text)', marginBottom: '15px' }}>📋 Data Sources & Methodology</h4>
+                <div style={{ fontSize: '0.9rem', lineHeight: '1.6' }}>
+                  <div style={{ marginBottom: '10px' }}>
+                    <strong>External Sources:</strong> Federal Reserve Economic Data (FRED), Bureau of Labor Statistics (BLS), US Treasury Department
+                  </div>
+                  <div style={{ marginBottom: '10px' }}>
+                    <strong>Calculation Methods:</strong> XIRR for IRR, DPI + RVPI for TVPI, Fair Value for NAV (ASC 820/IFRS 13)
+                  </div>
+                  <div style={{ marginBottom: '10px' }}>
+                    <strong>Update Frequency:</strong> Real-time for fund metrics, 30-minute cache for external market data
+                  </div>
+                  <div style={{ color: 'rgba(255,255,255,0.7)' }}>
+                    All data subject to quarterly independent verification and audit. For institutional use only.
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {!loadingExcelData && !excelSummary && (
+            <div style={{ textAlign: 'center', color: 'white', padding: '40px' }}>
+              <div style={{ fontSize: '1.2rem', marginBottom: '10px' }}>⚠️ No Excel Data Available</div>
+              <div style={{ fontSize: '0.9rem', opacity: '0.7' }}>Unable to connect to backend Excel analytics system</div>
+            </div>
+          )}
         </div>
       )}
     </div>
