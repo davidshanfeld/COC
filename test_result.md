@@ -261,7 +261,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Masterdeck/Prospectus Document Access"
     - "Institutional Excel Spreadsheets Integration"
   stuck_tasks: []
   test_all: false
