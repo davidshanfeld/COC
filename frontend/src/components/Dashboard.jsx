@@ -1373,6 +1373,7 @@ All data subject to quarterly updates and market verification.
                       ⚠️ Excel export functionality restricted to General Partners only
                     </div>
                   )}
+                </div>
               </div>
 
               {/* KPI Dashboard */}
