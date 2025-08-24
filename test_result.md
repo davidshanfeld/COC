@@ -219,6 +219,21 @@ frontend:
         - working: true
           agent: "main"
           comment: "✅ MASTERDECK/PROSPECTUS IMPLEMENTED: Added comprehensive prospectus document viewer with 8 sections (Executive Summary, Investment Strategy, Market Analysis, Portfolio Overview, Financial Projections, Risk Factors, Management Team, Legal Terms). Features include: 1) Toggle between Dashboard and Prospectus views 2) Left navigation sidebar for document sections 3) Role-based access - LP view-only, GP download functionality 4) Professional document layout with comprehensive investment information 5) Download functionality for GPs to get full prospectus document 6) Proper security and confidentiality notices. Backend testing confirmed all existing functionality intact."
+        - working: "NA"
+          agent: "main"
+          comment: "Need to test GP download functionality for masterdeck/prospectus and then implement institutional-level Excel spreadsheets with real-time data integration"
+
+  - task: "Institutional Excel Spreadsheets Integration"
+    implemented: false
+    working: "NA"
+    file: "components/Dashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "NEW REQUIREMENT: User wants institutional-level Excel spreadsheets integrated into the dashboard with trackable cells, formatted assumptions, real-time data, case studies like 'pico blvd deal', and WHAT-WHY-HOW narrative for market dynamics"
 
   - task: "Theme styling with teal gradient"
     implemented: true
