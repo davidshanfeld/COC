@@ -468,6 +468,16 @@ def run_all_tests():
     # Test market data
     results['market_data'] = test_market_data()
     
+    # Test Excel Analytics Endpoints (NEW)
+    print("\n" + "="*60)
+    print("📊 TESTING EXCEL ANALYTICS ENDPOINTS")
+    print("="*60)
+    
+    results['excel_summary'] = test_excel_summary()
+    results['excel_data'] = test_excel_data()
+    results['excel_deals'] = test_excel_deals()
+    results['excel_generate'] = test_excel_generate()
+    
     # Summary
     print("\n" + "="*50)
     print("🏁 TEST SUMMARY")
@@ -481,6 +491,13 @@ def run_all_tests():
         print(f"{test_name.replace('_', ' ').title()}: {status}")
     
     print(f"\nOverall: {passed}/{total} tests passed")
+    
+    # Separate summary for Excel endpoints
+    excel_tests = {k: v for k, v in results.items() if k.startswith('excel_')}
+    excel_passed = sum(1 for result in excel_tests.values() if result)
+    excel_total = len(excel_tests)
+    
+    print(f"\n📊 Excel Analytics: {excel_passed}/{excel_total} tests passed")
     
     if passed == total:
         print("🎉 All tests passed! Backend is working correctly.")
