@@ -980,6 +980,9 @@ All data subject to quarterly updates and market verification.
     { id: 'legal-terms', label: 'Legal Terms' }
   ];
 
+  // Gate ExcelAnalytics view to GP only
+  const isExcelAllowed = userType === 'gp';
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
