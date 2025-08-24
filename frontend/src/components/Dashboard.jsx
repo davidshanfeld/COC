@@ -817,6 +817,21 @@ Document Version: 1.0
             >
               Prospectus
             </button>
+            <button 
+              className={`toggle-button ${currentView === 'excel' ? 'active' : ''}`}
+              onClick={() => setCurrentView('excel')}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '20px',
+                border: currentView === 'excel' ? '2px solid var(--coastal-primary)' : '2px solid rgba(255,255,255,0.2)',
+                background: currentView === 'excel' ? 'rgba(0,128,128,0.3)' : 'transparent',
+                color: 'white',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Excel Reports
+            </button>
           </div>
           
           <div className={`user-badge ${userType === 'gp' ? 'gp' : ''}`}>
