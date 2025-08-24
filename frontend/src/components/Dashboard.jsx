@@ -889,7 +889,9 @@ All data subject to quarterly updates and market verification.
         <div className="dashboard-logo">
           <h1>COASTAL OAK CAPITAL</h1>
           <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', marginTop: '5px' }}>
-            {currentView === 'dashboard' ? 'Real-Time Fund Performance Dashboard' : 'Investment Prospectus'}
+            {currentView === 'dashboard' ? 'Real-Time Fund Performance Dashboard' : 
+             currentView === 'prospectus' ? 'Investment Prospectus' : 
+             'Institutional Excel Reports & Analytics'}
           </p>
         </div>
         
