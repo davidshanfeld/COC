@@ -1375,6 +1375,14 @@ All data subject to quarterly updates and market verification.
                   )}
               </div>
 
+              {showLineage && (
+                <LineageModal
+                  open={showLineage}
+                  onClose={() => setShowLineage(false)}
+                  lineage={excelSummary._lineage}
+                />
+              )}
+
               {/* KPI Dashboard */}
               <div style={{ marginBottom: '40px' }}>
                 <h3 style={{ color: 'var(--coastal-text)', fontSize: '1.4rem', marginBottom: '20px' }}>
