@@ -91,13 +91,10 @@ const Dashboard = ({ userType, onLogout }) => {
   useEffect(() => {
     let interval;
     if (currentView === 'excel') {
-      interval = setInterval(fetchExcelData, 30000); // Refresh every 30 seconds
+      interval = setInterval(() => fetchExcelData({ snapshotId: selectedSnapshotId }), 30000);
     }
-    
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [currentView]);
+    return () => { if (interval) clearInterval(interval); };
+  }, [currentView, selectedSnapshotId]);
 
   const [deals, setDeals] = useState([
     {
