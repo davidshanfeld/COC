@@ -526,6 +526,38 @@ All data subject to quarterly updates and market verification.
     URL.revokeObjectURL(url);
   };
 
+  const handleRealExcelExport = async () => {
+    if (userType !== 'gp') {
+      toast.error('Excel export is restricted to General Partners only.');
+      return;
+    }
+    
+    try {
+      toast.success('🚀 Exporting live Excel data with real-time market feeds...');
+      
+      // Fetch the latest Excel data from backend
+      const response = await fetch(`${backendUrl}/api/excel/export`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `coastal_oak_live_excel_${new Date().getTime()}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        toast.success('✅ Live Excel export completed successfully!');
+      } else {
+        throw new Error('Export failed');
+      }
+    } catch (error) {
+      console.error('Excel export error:', error);
+      toast.error('Failed to export live Excel data. Please try again.');
+    }
+  };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
