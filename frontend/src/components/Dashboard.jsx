@@ -24,6 +24,9 @@ const Dashboard = ({ userType, onLogout }) => {
   const [excelGridData, setExcelGridData] = useState([]);
   const [externalData, setExternalData] = useState(null);
   const [loadingExcelData, setLoadingExcelData] = useState(false);
+  const [selectedSnapshotId, setSelectedSnapshotId] = useState(null);
+  const [showLineage, setShowLineage] = useState(false);
+  const [gpBasicPass, setGpBasicPass] = useState('');
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
