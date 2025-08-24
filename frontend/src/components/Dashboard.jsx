@@ -23,7 +23,66 @@ const Dashboard = ({ userType, onLogout }) => {
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
-  const [deals, setDeals] = useState([
+  // Fetch real Excel data from backend
+  const fetchExcelData = async () => {
+    if (currentView !== 'excel') return;
+    
+    try {
+      setLoadingExcelData(true);
+      
+      // Fetch Excel summary data
+      const summaryResponse = await fetch(`${backendUrl}/api/excel/summary`);
+      if (summaryResponse.ok) {
+        const summaryData = await summaryResponse.json();
+        setExcelSummary(summaryData);
+        
+        // Update market data with real backend data
+        if (summaryData.kpis && summaryData.kpis.fund) {
+          const fundKpis = summaryData.kpis.fund;
+          setMarketData(prev => ({
+            ...prev,
+            fundValue: summaryData.aum || prev.fundValue,
+            nav: fundKpis.nav || prev.nav,
+            irr: fundKpis.net_irr || prev.irr,
+            multiple: fundKpis.net_moic || prev.multiple,
+            lastUpdate: new Date().toLocaleString()
+          }));
+        }
+      }
+      
+      // Fetch Excel grid data
+      const gridResponse = await fetch(`${backendUrl}/api/excel/data`);
+      if (gridResponse.ok) {
+        const gridData = await gridResponse.json();
+        setExcelGridData(gridData.rows || []);
+      }
+      
+    } catch (error) {
+      console.error('Error fetching Excel data:', error);
+      toast.error('Failed to load Excel data from backend');
+    } finally {
+      setLoadingExcelData(false);
+    }
+  };
+
+  // Load Excel data when switching to Excel view
+  useEffect(() => {
+    if (currentView === 'excel') {
+      fetchExcelData();
+    }
+  }, [currentView]);
+
+  // Refresh Excel data periodically when in Excel view
+  useEffect(() => {
+    let interval;
+    if (currentView === 'excel') {
+      interval = setInterval(fetchExcelData, 30000); // Refresh every 30 seconds
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [currentView]);
     {
       id: 1,
       name: 'Metro Office Complex - Atlanta',
