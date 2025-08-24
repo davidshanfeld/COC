@@ -1028,15 +1028,19 @@ def run_all_tests():
     # Test market data
     results['market_data'] = test_market_data()
     
-    # Test Excel Analytics Endpoints (NEW)
+    # Test Excel Analytics Endpoints (Legacy)
     print("\n" + "="*60)
-    print("📊 TESTING EXCEL ANALYTICS ENDPOINTS")
+    print("📊 TESTING EXCEL ANALYTICS ENDPOINTS (LEGACY)")
     print("="*60)
     
     results['excel_summary'] = test_excel_summary()
     results['excel_data'] = test_excel_data()
     results['excel_deals'] = test_excel_deals()
     results['excel_generate'] = test_excel_generate()
+    
+    # Test Data Lineage & Auditability (NEW SPRINT)
+    lineage_results = test_data_lineage_auditability()
+    results.update(lineage_results)
     
     # Summary
     print("\n" + "="*50)
@@ -1058,6 +1062,17 @@ def run_all_tests():
     excel_total = len(excel_tests)
     
     print(f"\n📊 Excel Analytics: {excel_passed}/{excel_total} tests passed")
+    
+    # Separate summary for Data Lineage & Auditability
+    lineage_tests = {k: v for k, v in results.items() if k in [
+        'snapshot_creation', 'snapshot_list', 'snapshot_get_by_id', 
+        'excel_summary_refresh', 'excel_summary_with_snapshot_id', 
+        'excel_generate_with_snapshot_id', 'lineage_allowlist', 'nonexistent_snapshot_404'
+    ]}
+    lineage_passed = sum(1 for result in lineage_tests.values() if result)
+    lineage_total = len(lineage_tests)
+    
+    print(f"\n🔍 Data Lineage & Auditability: {lineage_passed}/{lineage_total} tests passed")
     
     if passed == total:
         print("🎉 All tests passed! Backend is working correctly.")
