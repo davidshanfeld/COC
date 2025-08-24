@@ -1313,6 +1313,11 @@ All data subject to quarterly updates and market verification.
                 <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)', marginBottom: '20px' }}>
                   Live data integration • Real-time KPIs • External market feeds • Data as of {excelSummary.as_of_date}
                 </p>
+                <LastUpdatedBanner
+                  lastUpdatedIso={excelSummary._last_updated_iso}
+                  snapshotId={excelSummary._snapshot_id}
+                  onViewLineage={() => setShowLineage(true)}
+                />
 
                 <LastUpdatedBanner
                   lastUpdatedIso={excelSummary._last_updated_iso}
