@@ -1194,6 +1194,213 @@ All data subject to quarterly updates and market verification.
           </div>
         </div>
       )}
+
+      {/* Excel Reports View */}
+      {currentView === 'excel' && (
+        <div className="excel-container" style={{ display: 'flex', gap: '30px', height: 'calc(100vh - 120px)' }}>
+          {/* Excel Sheets Navigation */}
+          <div className="excel-nav" style={{
+            minWidth: '250px',
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: '15px',
+            padding: '20px',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            height: 'fit-content'
+          }}>
+            <h3 style={{ color: 'var(--coastal-text)', marginBottom: '20px', fontSize: '1.2rem' }}>
+              📊 Excel Workbooks
+            </h3>
+            {excelSheets.map(sheet => (
+              <button
+                key={sheet.id}
+                onClick={() => setActiveExcelSheet(sheet.id)}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  padding: '12px 16px',
+                  marginBottom: '8px',
+                  background: activeExcelSheet === sheet.id ? 'rgba(0,128,128,0.3)' : 'transparent',
+                  border: activeExcelSheet === sheet.id ? '1px solid var(--coastal-primary)' : '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '8px',
+                  color: 'white',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                {sheet.label}
+              </button>
+            ))}
+            
+            <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ marginBottom: '15px', fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)' }}>
+                <strong>🔄 Real-Time Data</strong><br/>
+                Last Updated: {marketData.lastUpdate}
+              </div>
+              
+              {userType === 'gp' && (
+                <button 
+                  className="export-button" 
+                  onClick={handleExcelExport}
+                  style={{ width: '100%', fontSize: '0.9rem' }}
+                >
+                  Export All Sheets
+                </button>
+              )}
+              
+              {userType === 'lp' && (
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>
+                  Excel export restricted to General Partners only.
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* Excel Content Area */}
+          <div className="excel-content" style={{
+            flex: 1,
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: '15px',
+            padding: '30px',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            overflowY: 'auto',
+            maxHeight: 'calc(100vh - 140px)'
+          }}>
+            <div style={{ marginBottom: '30px' }}>
+              <h2 style={{ color: 'var(--coastal-text)', fontSize: '1.8rem', marginBottom: '10px' }}>
+                {excelData['deal-analysis'].sheets[activeExcelSheet].name}
+              </h2>
+              <div style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.8)', marginBottom: '10px' }}>
+                {excelData['deal-analysis'].sheets[activeExcelSheet].description}
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>
+                📈 {excelData['deal-analysis'].subtitle}
+              </div>
+            </div>
+            
+            {/* Excel-style Tables */}
+            <div style={{ marginBottom: '40px' }}>
+              {excelData['deal-analysis'].sheets[activeExcelSheet].data.map((section, sectionIndex) => (
+                <div key={sectionIndex} style={{ marginBottom: '40px' }}>
+                  <h3 style={{ 
+                    color: 'var(--coastal-primary)', 
+                    fontSize: '1.3rem', 
+                    marginBottom: '20px',
+                    padding: '10px 15px',
+                    background: 'rgba(0,128,128,0.2)',
+                    borderRadius: '8px',
+                    border: '1px solid var(--coastal-primary)'
+                  }}>
+                    📊 {section.category}
+                  </h3>
+                  
+                  {/* Excel-like Table */}
+                  <div style={{ 
+                    background: 'rgba(255,255,255,0.02)',
+                    borderRadius: '10px',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    overflow: 'hidden'
+                  }}>
+                    {/* Table Header */}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: '2fr 1fr 2fr 2fr',
+                      gap: '1px',
+                      background: 'rgba(0,128,128,0.3)',
+                      padding: '0'
+                    }}>
+                      <div style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.9rem', color: 'white' }}>
+                        METRIC
+                      </div>
+                      <div style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.9rem', color: 'white' }}>
+                        VALUE
+                      </div>
+                      <div style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.9rem', color: 'white' }}>
+                        ASSUMPTION
+                      </div>
+                      <div style={{ padding: '12px', fontWeight: 'bold', fontSize: '0.9rem', color: 'white' }}>
+                        CITATION
+                      </div>
+                    </div>
+                    
+                    {/* Table Rows */}
+                    {section.rows.map((row, rowIndex) => (
+                      <div key={rowIndex} style={{
+                        display: 'grid',
+                        gridTemplateColumns: '2fr 1fr 2fr 2fr',
+                        gap: '1px',
+                        background: rowIndex % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)',
+                        borderBottom: '1px solid rgba(255,255,255,0.05)'
+                      }}>
+                        <div style={{ 
+                          padding: '12px', 
+                          fontSize: '0.9rem', 
+                          color: 'white', 
+                          fontWeight: '500' 
+                        }}>
+                          {row.metric}
+                        </div>
+                        <div style={{ 
+                          padding: '12px', 
+                          fontSize: '0.9rem', 
+                          color: row.value.includes('%') || row.value.includes('$') || row.value.includes('x') ? 'var(--coastal-primary)' : 'white',
+                          fontWeight: 'bold'
+                        }}>
+                          {row.value}
+                        </div>
+                        <div style={{ 
+                          padding: '12px', 
+                          fontSize: '0.8rem', 
+                          color: 'rgba(255,255,255,0.8)',
+                          fontStyle: 'italic'
+                        }}>
+                          {row.assumption}
+                        </div>
+                        <div style={{ 
+                          padding: '12px', 
+                          fontSize: '0.8rem', 
+                          color: 'rgba(255,255,255,0.6)',
+                          textDecoration: 'underline',
+                          cursor: 'pointer'
+                        }}>
+                          {row.citation}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Footer */}
+            <div style={{ 
+              marginTop: '40px', 
+              paddingTop: '20px', 
+              borderTop: '2px solid var(--coastal-primary)',
+              fontSize: '0.8rem', 
+              color: 'rgba(255,255,255,0.6)',
+              textAlign: 'center',
+              background: 'rgba(0,128,128,0.1)',
+              padding: '20px',
+              borderRadius: '10px'
+            }}>
+              <div style={{ marginBottom: '10px' }}>
+                <strong>🔒 CONFIDENTIAL INSTITUTIONAL ANALYSIS</strong>
+              </div>
+              This spreadsheet contains proprietary investment analysis with live market data integration.
+              <br />
+              All assumptions and citations are tracked for institutional transparency and compliance.
+              <br />
+              <strong>Real-time data refresh:</strong> Every 5 seconds | <strong>Last update:</strong> {marketData.lastUpdate}
+              <br />
+              © {new Date().getFullYear()} Coastal Oak Capital. All rights reserved.
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
