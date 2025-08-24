@@ -45,6 +45,164 @@ const Dashboard = ({ userType, onLogout }) => {
     }
   ]);
 
+  // Excel Spreadsheet Data with Case Studies
+  const excelData = {
+    'deal-analysis': {
+      title: 'Deal Analysis & Market Dynamics',
+      subtitle: 'WHAT-WHY-HOW: Investment Rationale & Case Studies',
+      sheets: {
+        'pico-blvd-case': {
+          name: 'Pico Blvd Case Study',
+          description: 'WHAT: 125,000 SF office building acquisition in West LA. WHY: 40% below replacement cost in supply-constrained market. HOW: Value-add repositioning strategy.',
+          data: [
+            {
+              category: 'ACQUISITION METRICS',
+              rows: [
+                { metric: 'Purchase Price', value: '$18,500,000', assumption: 'Contract price based on distressed sale', citation: 'Purchase Agreement, Sec 2.1' },
+                { metric: 'Price per SF', value: '$148', assumption: 'Total SF: 125,000', citation: 'Property Survey, Page 3' },
+                { metric: 'Replacement Cost per SF', value: '$250', assumption: 'Current construction costs', citation: 'Marshall & Swift Cost Manual 2024' },
+                { metric: 'Discount to Replacement', value: '40.8%', assumption: '($250-$148)/$250', citation: 'Internal Analysis' },
+                { metric: 'Cap Rate In', value: '5.2%', assumption: 'Current NOI / Purchase Price', citation: 'Underwriting Model' }
+              ]
+            },
+            {
+              category: 'VALUE CREATION STRATEGY',
+              rows: [
+                { metric: 'Current Occupancy', value: `${(marketData.occupancy - 15).toFixed(1)}%`, assumption: 'Tenant roll as of acquisition', citation: 'Rent Roll, Current' },
+                { metric: 'Stabilized Occupancy', value: '92.0%', assumption: 'Market stabilized rate', citation: 'CoStar Market Report Q4 2024' },
+                { metric: 'Current Avg Rent PSF', value: '$42.50', assumption: 'Weighted avg existing leases', citation: 'Lease Abstract Summary' },
+                { metric: 'Market Rent PSF', value: '$55.00', assumption: 'West LA Class A comparable', citation: 'CBRE Market Survey Q4 2024' },
+                { metric: 'Renovation Budget', value: '$3,200,000', assumption: '$25.60/SF full renovation', citation: 'General Contractor Bid' }
+              ]
+            },
+            {
+              category: 'FINANCIAL PROJECTIONS',
+              rows: [
+                { metric: 'Year 1 NOI', value: '$960,000', assumption: 'Current in-place rents', citation: 'Underwriting Model, Yr 1' },
+                { metric: 'Stabilized NOI (Yr 3)', value: '$5,720,000', assumption: 'Post-renovation market rents', citation: 'Underwriting Model, Yr 3' },
+                { metric: 'Exit Cap Rate', value: '4.8%', assumption: 'Compressed cap due to value-add', citation: 'Comparable Sales Analysis' },
+                { metric: 'Exit Value (Yr 5)', value: '$119,200,000', assumption: 'Stabilized NOI / Exit Cap', citation: 'Underwriting Model, Exit' },
+                { metric: 'Total Return Multiple', value: '3.2x', assumption: 'Including distributions', citation: 'Underwriting Model, Summary' },
+                { metric: 'Net IRR', value: '28.4%', assumption: 'Levered returns to equity', citation: 'Underwriting Model, IRR Calc' }
+              ]
+            },
+            {
+              category: 'MARKET DYNAMICS - WHY NOW',
+              rows: [
+                { metric: 'West LA Vacancy Rate', value: '12.8%', assumption: 'Current market conditions', citation: 'CBRE Market Report Q4 2024' },
+                { metric: 'Historical Avg Vacancy', value: '8.2%', assumption: '10-year average', citation: 'CBRE Historical Data' },
+                { metric: 'New Supply Pipeline', value: '2.1M SF', assumption: 'Deliveries next 24 months', citation: 'CoStar Development Pipeline' },
+                { metric: 'Construction Starts YoY', value: '-67%', assumption: 'Current vs prior year', citation: 'Dodge Analytics Q4 2024' },
+                { metric: 'Interest Rate Impact', value: '+180bps', assumption: 'Fed funds vs 2021 low', citation: 'Federal Reserve Economic Data' }
+              ]
+            },
+            {
+              category: 'RISK FACTORS & MITIGATION',
+              rows: [
+                { metric: 'Interest Rate Risk', value: 'HIGH', assumption: 'Floating rate construction loan', citation: 'Loan Terms Sheet' },
+                { metric: 'Lease-Up Risk', value: 'MEDIUM', assumption: '18-month lease-up timeline', citation: 'Leasing Strategy Plan' },
+                { metric: 'Construction Cost Risk', value: 'MEDIUM', assumption: 'Fixed-price GC contract', citation: 'Construction Agreement' },
+                { metric: 'Market Cycle Risk', value: 'LOW', assumption: 'Counter-cyclical timing', citation: 'Market Analysis Report' },
+                { metric: 'Tenant Credit Risk', value: 'LOW', assumption: 'Target investment grade tenants', citation: 'Tenant Criteria Matrix' }
+              ]
+            }
+          ]
+        },
+        'portfolio-performance': {
+          name: 'Real-Time Portfolio Performance',
+          description: 'Live tracking of fund performance with automatically updated metrics and assumptions.',
+          data: [
+            {
+              category: 'FUND-LEVEL METRICS (REAL-TIME)',
+              rows: [
+                { metric: 'Total Fund Value', value: formatCurrency(marketData.fundValue), assumption: 'Mark-to-market quarterly', citation: 'Appraisal Reports Q4 2024' },
+                { metric: 'NAV per Share', value: `$${marketData.nav.toFixed(2)}`, assumption: 'Fund Value / Shares Outstanding', citation: 'Fund Accounting System' },
+                { metric: 'Net IRR', value: formatPercent(marketData.irr), assumption: 'XIRR calculation method', citation: 'Performance Reporting System' },
+                { metric: 'Total Return Multiple', value: `${marketData.multiple.toFixed(2)}x`, assumption: 'DPI + RVPI calculation', citation: 'ILPA Reporting Standards' },
+                { metric: 'Portfolio Occupancy', value: formatPercent(marketData.occupancy), assumption: 'Weighted avg by sq ft', citation: 'Property Management Reports' },
+                { metric: 'Average Leverage', value: formatPercent(marketData.leverage), assumption: 'Debt-to-total capitalization', citation: 'Loan Portfolio Summary' }
+              ]
+            },
+            {
+              category: 'PROPERTY-LEVEL PERFORMANCE',
+              rows: [
+                { metric: 'Metro Office Complex NOI', value: '$3,850,000', assumption: 'Trailing 12-month actual', citation: 'Property Financials Dec 2024' },
+                { metric: 'Metro Office Occupancy', value: '94.2%', assumption: 'Leased SF / Total SF', citation: 'Property Management Report' },
+                { metric: 'Riverside Retail NOI', value: '$2,240,000', assumption: 'Trailing 12-month actual', citation: 'Property Financials Dec 2024' },
+                { metric: 'Riverside Retail Occupancy', value: '89.1%', assumption: 'Leased SF / Total SF', citation: 'Property Management Report' },
+                { metric: 'Industrial Park NOI', value: '$4,920,000', assumption: 'Trailing 12-month actual', citation: 'Property Financials Dec 2024' },
+                { metric: 'Industrial Park Occupancy', value: '97.8%', assumption: 'Leased SF / Total SF', citation: 'Property Management Report' }
+              ]
+            },
+            {
+              category: 'MARKET INTELLIGENCE (LIVE DATA)',
+              rows: [
+                { metric: 'Fed Funds Rate', value: '5.25%', assumption: 'Current FOMC target rate', citation: 'Federal Reserve Board' },
+                { metric: '10-Year Treasury', value: '4.18%', assumption: 'Current market rate', citation: 'Bloomberg Terminal' },
+                { metric: 'Commercial Property Index', value: '+2.8% YoY', assumption: 'NCREIF Property Index', citation: 'NCREIF Quarterly Report' },
+                { metric: 'Office Vacancy - National', value: '13.2%', assumption: 'Class A office buildings', citation: 'CBRE Research Q4 2024' },
+                { metric: 'Industrial Vacancy - National', value: '5.1%', assumption: 'Warehouse/distribution', citation: 'JLL Research Q4 2024' },
+                { metric: 'Retail Vacancy - National', value: '9.8%', assumption: 'Shopping centers', citation: 'CoStar Market Analytics' }
+              ]
+            },
+            {
+              category: 'CAPITAL MARKETS ACTIVITY',
+              rows: [
+                { metric: 'Transaction Volume YoY', value: '-23%', assumption: 'Commercial sales volume', citation: 'RCA Commercial Transaction Database' },
+                { metric: 'Cap Rate Compression', value: '+45bps', assumption: 'Average across property types', citation: 'CBRE Cap Rate Survey Q4 2024' },
+                { metric: 'CMBS Issuance YoY', value: '-41%', assumption: 'New issuance volume', citation: 'Commercial Mortgage Alert' },
+                { metric: 'Bank CRE Lending', value: '-18%', assumption: 'New originations', citation: 'Federal Reserve H.8 Report' },
+                { metric: 'Distressed Sales Volume', value: '+89%', assumption: 'Properties sold at discount', citation: 'Distressed Property Analytics' }
+              ]
+            }
+          ]
+        },
+        'market-assumptions': {
+          name: 'Market Assumptions & Methodology',
+          description: 'Detailed breakdown of all assumptions used in investment analysis and performance calculations.',
+          data: [
+            {
+              category: 'VALUATION METHODOLOGY',
+              rows: [
+                { metric: 'Discount Rate', value: '12.0%', assumption: 'Risk-free rate + risk premium', citation: 'Investment Committee Guidelines' },
+                { metric: 'Exit Cap Rates', value: '4.5% - 6.5%', assumption: 'Based on property type/location', citation: 'Historical Cap Rate Analysis' },
+                { metric: 'Market Rent Growth', value: '2.5% annually', assumption: 'Long-term inflation + 50bps', citation: 'Bureau of Labor Statistics' },
+                { metric: 'Expense Growth', value: '3.0% annually', assumption: 'Historical average expense growth', citation: 'Property Management Analysis' },
+                { metric: 'Terminal Value', value: 'Direct Cap Method', assumption: 'Year 5 NOI / Exit Cap Rate', citation: 'Valuation Standards' }
+              ]
+            },
+            {
+              category: 'MARKET RESEARCH SOURCES',
+              rows: [
+                { metric: 'Property Data', value: 'CoStar, CBRE', assumption: 'Subscription services', citation: 'Third-party data providers' },
+                { metric: 'Transaction Comps', value: 'RCA, Real Capital', assumption: 'Commercial transaction database', citation: 'Market data subscription' },
+                { metric: 'Economic Data', value: 'Bloomberg, Fed', assumption: 'Government and financial data', citation: 'Federal Reserve FRED database' },
+                { metric: 'Rent Surveys', value: 'JLL, C&W', assumption: 'Quarterly market surveys', citation: 'Brokerage research reports' },
+                { metric: 'Construction Costs', value: 'Marshall & Swift', assumption: 'Replacement cost manual', citation: 'CoreLogic construction database' }
+              ]
+            },
+            {
+              category: 'PERFORMANCE CALCULATION METHODS',
+              rows: [
+                { metric: 'IRR Calculation', value: 'XIRR Function', assumption: 'Excel/Bloomberg methodology', citation: 'GIPS Performance Standards' },
+                { metric: 'Multiple Calculation', value: 'DPI + RVPI', assumption: 'ILPA reporting guidelines', citation: 'Private Equity Industry Guidelines' },
+                { metric: 'NAV Methodology', value: 'Fair Value', assumption: 'ASC 820 / IFRS 13', citation: 'Accounting Standards' },
+                { metric: 'Benchmark Comparison', value: 'NCREIF ODCE', assumption: 'Open-end core fund index', citation: 'Industry benchmark standards' },
+                { metric: 'Risk Metrics', value: 'Standard Deviation', assumption: 'Quarterly return volatility', citation: 'Modern Portfolio Theory' }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  };
+
+  const excelSheets = [
+    { id: 'pico-blvd-case', label: 'Pico Blvd Case Study' },
+    { id: 'portfolio-performance', label: 'Live Portfolio Data' },
+    { id: 'market-assumptions', label: 'Assumptions & Methodology' }
+  ];
+
   // Simulate real-time data updates
   useEffect(() => {
     const interval = setInterval(() => {
