@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import LastUpdatedBanner from './LastUpdatedBanner';
+import ManualRefreshButton from './ManualRefreshButton';
+import LineageModal from './LineageModal';
+import SnapshotSelector from './SnapshotSelector';
 
 const Dashboard = ({ userType, onLogout }) => {
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'prospectus', or 'excel'
