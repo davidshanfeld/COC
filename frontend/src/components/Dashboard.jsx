@@ -83,6 +83,8 @@ const Dashboard = ({ userType, onLogout }) => {
       if (interval) clearInterval(interval);
     };
   }, [currentView]);
+
+  const [deals, setDeals] = useState([
     {
       id: 1,
       name: 'Metro Office Complex - Atlanta',
