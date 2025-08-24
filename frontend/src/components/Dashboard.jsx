@@ -582,19 +582,6 @@ All data subject to quarterly updates and market verification.
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
-
-  const formatPercent = (value) => {
-    return `${value.toFixed(1)}%`;
-  };
-
   // Prospectus sections data
   const prospectusData = {
     'executive-summary': {
