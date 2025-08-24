@@ -1585,7 +1585,7 @@ All data subject to quarterly updates and market verification.
             <LineageModal
               open={showLineage}
               onClose={() => setShowLineage(false)}
-              lineage={excelSummary?._lineage}
+              lineage={excelSummary && excelSummary._lineage}
             />
           )}
         </div>
