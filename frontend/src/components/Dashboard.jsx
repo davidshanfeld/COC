@@ -1296,6 +1296,15 @@ All data subject to quarterly updates and market verification.
       )}
 
       {/* Excel Reports View */}
+      {currentView === 'excel' && !isExcelAllowed && (
+        <div className="excel-container" style={{ padding: '20px' }}>
+          <div style={{ textAlign: 'center', color: 'white', padding: '60px' }}>
+            <div style={{ fontSize: '1.2rem', marginBottom: 10 }}>Restricted</div>
+            <div style={{ fontSize: '0.95rem', opacity: 0.8 }}>Excel Analytics is restricted to General Partners only.</div>
+          </div>
+        </div>
+      )}
+
       {currentView === 'excel' && isExcelAllowed && (
         <div className="excel-container" style={{ padding: '20px' }}>
           
