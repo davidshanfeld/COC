@@ -1580,6 +1580,14 @@ All data subject to quarterly updates and market verification.
               <div style={{ fontSize: '0.9rem', opacity: '0.7' }}>Unable to connect to backend Excel analytics system</div>
             </div>
           )}
+
+          {showLineage && (
+            <LineageModal
+              open={showLineage}
+              onClose={() => setShowLineage(false)}
+              lineage={excelSummary?._lineage}
+            />
+          )}
         </div>
       )}
     </div>
