@@ -23,6 +23,20 @@ const Dashboard = ({ userType, onLogout }) => {
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
+  // Helper functions
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const formatPercent = (value) => {
+    return `${value.toFixed(1)}%`;
+  };
+
   // Fetch real Excel data from backend
   const fetchExcelData = async () => {
     if (currentView !== 'excel') return;
