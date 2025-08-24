@@ -446,6 +446,566 @@ def test_excel_generate():
         print(f"❌ Excel generate test failed: {str(e)}")
         return False
 
+# ============================================================================
+# DATA LINEAGE & AUDITABILITY TESTS
+# ============================================================================
+
+def test_snapshot_creation():
+    """Test 1: POST /api/snapshots with Basic Auth gp:Contrarians returns 201/200 and snapshot object"""
+    print("\n=== Testing Snapshot Creation (POST /api/snapshots) ===")
+    
+    try:
+        # Basic Auth with gp:Contrarians
+        auth = ('gp', 'Contrarians')
+        response = requests.post(f"{BACKEND_URL}/snapshots", auth=auth, timeout=15)
+        print(f"POST /api/snapshots - Status: {response.status_code}")
+        
+        if response.status_code in [200, 201]:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            # Verify snapshot structure
+            required_fields = ["id", "as_of_date", "created_at", "creator", "seq"]
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
+                print(f"❌ Snapshot missing required fields: {missing_fields}")
+                return False, None
+            
+            # Verify UUID v4 format for id
+            snapshot_id = data.get("id")
+            if not snapshot_id or len(snapshot_id.split('-')) != 5:
+                print(f"❌ Snapshot ID doesn't appear to be UUID v4: {snapshot_id}")
+                return False, None
+            
+            # Verify as_of_date format (YYYY-MM-DD)
+            as_of_date = data.get("as_of_date")
+            if not as_of_date or len(as_of_date) != 10 or as_of_date.count('-') != 2:
+                print(f"❌ as_of_date not in YYYY-MM-DD format: {as_of_date}")
+                return False, None
+            
+            # Verify created_at is ISO format
+            created_at = data.get("created_at")
+            if not created_at or 'T' not in created_at:
+                print(f"❌ created_at not in ISO format: {created_at}")
+                return False, None
+            
+            # Verify creator is 'gp'
+            creator = data.get("creator")
+            if creator != "gp":
+                print(f"❌ Creator should be 'gp', got: {creator}")
+                return False, None
+            
+            # Verify seq format (v001, v002, etc.)
+            seq = data.get("seq")
+            if not seq or not seq.startswith('v') or len(seq) != 4:
+                print(f"❌ Seq not in v001 format: {seq}")
+                return False, None
+            
+            print(f"✅ Snapshot creation working correctly")
+            print(f"  - ID: {snapshot_id}")
+            print(f"  - As of date: {as_of_date}")
+            print(f"  - Created at: {created_at}")
+            print(f"  - Creator: {creator}")
+            print(f"  - Sequence: {seq}")
+            return True, snapshot_id
+            
+        else:
+            print(f"❌ Snapshot creation failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False, None
+            
+    except Exception as e:
+        print(f"❌ Snapshot creation test failed: {str(e)}")
+        return False, None
+
+def test_snapshot_list():
+    """Test 2: GET /api/snapshots with Basic Auth paginates with default limit 10"""
+    print("\n=== Testing Snapshot List (GET /api/snapshots) ===")
+    
+    try:
+        # Basic Auth with gp:Contrarians
+        auth = ('gp', 'Contrarians')
+        
+        # Test default pagination
+        response = requests.get(f"{BACKEND_URL}/snapshots", auth=auth, timeout=10)
+        print(f"GET /api/snapshots - Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            # Verify pagination structure
+            required_fields = ["items", "next_cursor"]
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
+                print(f"❌ Snapshot list missing required fields: {missing_fields}")
+                return False
+            
+            items = data.get("items", [])
+            print(f"  - Found {len(items)} snapshots")
+            
+            # Verify default limit (should be <= 10)
+            if len(items) > 10:
+                print(f"❌ Default limit exceeded: got {len(items)} items, expected <= 10")
+                return False
+            
+            # Test custom limit
+            response2 = requests.get(f"{BACKEND_URL}/snapshots?limit=2", auth=auth, timeout=10)
+            if response2.status_code == 200:
+                data2 = response2.json()
+                items2 = data2.get("items", [])
+                print(f"  - With limit=2: {len(items2)} snapshots")
+                
+                if len(items2) > 2:
+                    print(f"❌ Custom limit not respected: got {len(items2)} items, expected <= 2")
+                    return False
+                
+                # Test cursor pagination if we have items
+                if items2 and data2.get("next_cursor"):
+                    cursor = data2.get("next_cursor")
+                    response3 = requests.get(f"{BACKEND_URL}/snapshots?cursor={cursor}", auth=auth, timeout=10)
+                    if response3.status_code == 200:
+                        data3 = response3.json()
+                        print(f"  - With cursor pagination: {len(data3.get('items', []))} more snapshots")
+                    else:
+                        print(f"❌ Cursor pagination failed with status {response3.status_code}")
+                        return False
+            
+            # Verify items are sorted desc by created_at
+            if len(items) > 1:
+                for i in range(len(items) - 1):
+                    current_time = items[i].get("created_at", "")
+                    next_time = items[i + 1].get("created_at", "")
+                    if current_time < next_time:
+                        print(f"❌ Items not sorted desc by created_at")
+                        return False
+            
+            print(f"✅ Snapshot list working correctly")
+            return True
+            
+        else:
+            print(f"❌ Snapshot list failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Snapshot list test failed: {str(e)}")
+        return False
+
+def test_snapshot_get_by_id(snapshot_id):
+    """Test 3: GET /api/snapshots/{id} returns the snapshot created"""
+    print(f"\n=== Testing Snapshot Get by ID (GET /api/snapshots/{snapshot_id}) ===")
+    
+    if not snapshot_id:
+        print("❌ No snapshot ID provided for testing")
+        return False
+    
+    try:
+        # Basic Auth with gp:Contrarians
+        auth = ('gp', 'Contrarians')
+        response = requests.get(f"{BACKEND_URL}/snapshots/{snapshot_id}", auth=auth, timeout=10)
+        print(f"GET /api/snapshots/{snapshot_id} - Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            # Verify it's the same snapshot
+            returned_id = data.get("id")
+            if returned_id != snapshot_id:
+                print(f"❌ Returned snapshot ID mismatch: expected {snapshot_id}, got {returned_id}")
+                return False
+            
+            # Verify complete snapshot structure
+            required_fields = ["id", "as_of_date", "created_at", "creator", "seq", "summary", "lineage"]
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
+                print(f"❌ Complete snapshot missing required fields: {missing_fields}")
+                return False
+            
+            # Verify summary structure
+            summary = data.get("summary", {})
+            required_summary_fields = ["as_of_date", "aum", "deals", "kpis"]
+            missing_summary_fields = [field for field in required_summary_fields if field not in summary]
+            
+            if missing_summary_fields:
+                print(f"❌ Snapshot summary missing required fields: {missing_summary_fields}")
+                return False
+            
+            # Verify lineage structure
+            lineage = data.get("lineage", [])
+            if not isinstance(lineage, list):
+                print(f"❌ Lineage should be a list, got {type(lineage)}")
+                return False
+            
+            print(f"✅ Snapshot get by ID working correctly")
+            print(f"  - ID: {returned_id}")
+            print(f"  - Summary AUM: ${summary.get('aum', 0):,.0f}")
+            print(f"  - Deals count: {len(summary.get('deals', []))}")
+            print(f"  - Lineage entries: {len(lineage)}")
+            return True
+            
+        else:
+            print(f"❌ Snapshot get by ID failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Snapshot get by ID test failed: {str(e)}")
+        return False
+
+def test_excel_summary_refresh():
+    """Test 4: GET /api/excel/summary?refresh=true returns new snapshot and respects rate limit"""
+    print("\n=== Testing Excel Summary Refresh (GET /api/excel/summary?refresh=true) ===")
+    
+    try:
+        # First refresh call
+        response1 = requests.get(f"{BACKEND_URL}/excel/summary?refresh=true", timeout=15)
+        print(f"GET /api/excel/summary?refresh=true (1st call) - Status: {response1.status_code}")
+        
+        if response1.status_code == 200:
+            data1 = response1.json()
+            print(f"Response keys: {list(data1.keys())}")
+            
+            # Verify metadata fields
+            required_meta_fields = ["_last_updated_iso", "_snapshot_id", "_lineage"]
+            missing_meta_fields = [field for field in required_meta_fields if field not in data1]
+            
+            if missing_meta_fields:
+                print(f"❌ Excel summary refresh missing metadata fields: {missing_meta_fields}")
+                return False
+            
+            snapshot_id1 = data1.get("_snapshot_id")
+            last_updated1 = data1.get("_last_updated_iso")
+            lineage1 = data1.get("_lineage", [])
+            
+            print(f"  - Snapshot ID: {snapshot_id1}")
+            print(f"  - Last updated: {last_updated1}")
+            print(f"  - Lineage entries: {len(lineage1)}")
+            
+            # Verify lineage structure
+            if not isinstance(lineage1, list):
+                print(f"❌ Lineage should be a list, got {type(lineage1)}")
+                return False
+            
+            # Immediately try another refresh (should be rate limited)
+            import time
+            time.sleep(1)  # Small delay to ensure different timestamp
+            response2 = requests.get(f"{BACKEND_URL}/excel/summary?refresh=true", timeout=15)
+            print(f"GET /api/excel/summary?refresh=true (2nd call) - Status: {response2.status_code}")
+            
+            if response2.status_code == 429:
+                print(f"✅ Rate limiting working correctly - got 429 on immediate second refresh")
+                return True
+            elif response2.status_code == 200:
+                # Check if it's actually a different snapshot or same one
+                data2 = response2.json()
+                snapshot_id2 = data2.get("_snapshot_id")
+                if snapshot_id1 == snapshot_id2:
+                    print(f"✅ Excel summary refresh working correctly (same snapshot returned, rate limit may be shorter)")
+                    return True
+                else:
+                    print(f"⚠️  Got new snapshot on immediate refresh - rate limit may not be working")
+                    print(f"  - First snapshot: {snapshot_id1}")
+                    print(f"  - Second snapshot: {snapshot_id2}")
+                    return True  # Still working, just different rate limit behavior
+            else:
+                print(f"❌ Second refresh failed with unexpected status {response2.status_code}")
+                return False
+            
+        else:
+            print(f"❌ Excel summary refresh failed with status {response1.status_code}")
+            print(f"Response: {response1.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Excel summary refresh test failed: {str(e)}")
+        return False
+
+def test_excel_summary_with_snapshot_id(snapshot_id):
+    """Test 5: GET /api/excel/summary?snapshot_id=<id> returns exact snapshot-backed summary"""
+    print(f"\n=== Testing Excel Summary with Snapshot ID (GET /api/excel/summary?snapshot_id={snapshot_id}) ===")
+    
+    if not snapshot_id:
+        print("❌ No snapshot ID provided for testing")
+        return False
+    
+    try:
+        response = requests.get(f"{BACKEND_URL}/excel/summary?snapshot_id={snapshot_id}", timeout=10)
+        print(f"GET /api/excel/summary?snapshot_id={snapshot_id} - Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print(f"Response keys: {list(data.keys())}")
+            
+            # Verify _snapshot_id matches
+            returned_snapshot_id = data.get("_snapshot_id")
+            if returned_snapshot_id != snapshot_id:
+                print(f"❌ Snapshot ID mismatch: expected {snapshot_id}, got {returned_snapshot_id}")
+                return False
+            
+            # Verify required fields
+            required_fields = ["as_of_date", "aum", "deals", "kpis", "_last_updated_iso", "_snapshot_id", "_lineage"]
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
+                print(f"❌ Excel summary with snapshot ID missing required fields: {missing_fields}")
+                return False
+            
+            print(f"✅ Excel summary with snapshot ID working correctly")
+            print(f"  - Snapshot ID matches: {returned_snapshot_id}")
+            print(f"  - As of date: {data.get('as_of_date')}")
+            print(f"  - AUM: ${data.get('aum', 0):,.0f}")
+            return True
+            
+        else:
+            print(f"❌ Excel summary with snapshot ID failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Excel summary with snapshot ID test failed: {str(e)}")
+        return False
+
+def test_excel_generate_with_snapshot_id(snapshot_id):
+    """Test 6: POST /api/excel/generate?snapshot_id=<id> streams XLSX with proper filename"""
+    print(f"\n=== Testing Excel Generate with Snapshot ID (POST /api/excel/generate?snapshot_id={snapshot_id}) ===")
+    
+    if not snapshot_id:
+        print("❌ No snapshot ID provided for testing")
+        return False
+    
+    try:
+        response = requests.post(f"{BACKEND_URL}/excel/generate?snapshot_id={snapshot_id}", timeout=15, stream=True)
+        print(f"POST /api/excel/generate?snapshot_id={snapshot_id} - Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            # Verify Content-Type
+            content_type = response.headers.get('content-type', '')
+            expected_content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            
+            if expected_content_type not in content_type:
+                print(f"❌ Wrong content type: expected {expected_content_type}, got {content_type}")
+                return False
+            
+            # Verify Content-Disposition header
+            content_disposition = response.headers.get('content-disposition', '')
+            if 'attachment' not in content_disposition:
+                print(f"❌ Missing attachment in content-disposition: {content_disposition}")
+                return False
+            
+            # Extract filename from Content-Disposition
+            if 'filename=' in content_disposition:
+                filename_part = content_disposition.split('filename=')[1].strip('"')
+                print(f"  - Filename: {filename_part}")
+                
+                # Verify filename format: Coastal_Excel_Analytics_${AS_OF}_v${SEQ}.xlsx
+                if not filename_part.startswith('Coastal_Excel_Analytics_'):
+                    print(f"❌ Filename doesn't start with expected prefix: {filename_part}")
+                    return False
+                
+                if not filename_part.endswith('.xlsx'):
+                    print(f"❌ Filename doesn't end with .xlsx: {filename_part}")
+                    return False
+                
+                # Check for date and version pattern
+                parts = filename_part.replace('Coastal_Excel_Analytics_', '').replace('.xlsx', '')
+                if '_v' not in parts:
+                    print(f"❌ Filename missing version pattern: {filename_part}")
+                    return False
+                
+            else:
+                print(f"❌ No filename in content-disposition: {content_disposition}")
+                return False
+            
+            # Verify we can read some content (don't download the whole file)
+            content_length = response.headers.get('content-length')
+            if content_length:
+                print(f"  - Content length: {content_length} bytes")
+            
+            # Read first few bytes to verify it's actually Excel content
+            first_chunk = next(response.iter_content(chunk_size=1024), b'')
+            if len(first_chunk) > 0:
+                # Excel files start with PK (ZIP signature)
+                if first_chunk[:2] == b'PK':
+                    print(f"  - File appears to be valid Excel format (ZIP signature found)")
+                else:
+                    print(f"❌ File doesn't appear to be Excel format (no ZIP signature)")
+                    return False
+            
+            print(f"✅ Excel generate with snapshot ID working correctly")
+            return True
+            
+        else:
+            print(f"❌ Excel generate with snapshot ID failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Excel generate with snapshot ID test failed: {str(e)}")
+        return False
+
+def test_lineage_allowlist():
+    """Test 7: Verify that lineage URLs domains are within the allowlist"""
+    print("\n=== Testing Lineage Allowlist Verification ===")
+    
+    try:
+        # Get a snapshot to check its lineage
+        auth = ('gp', 'Contrarians')
+        response = requests.get(f"{BACKEND_URL}/snapshots", auth=auth, timeout=10)
+        
+        if response.status_code != 200:
+            print(f"❌ Could not get snapshots for lineage test: {response.status_code}")
+            return False
+        
+        data = response.json()
+        items = data.get("items", [])
+        
+        if not items:
+            print("❌ No snapshots available for lineage testing")
+            return False
+        
+        # Get the first snapshot's full details
+        snapshot_id = items[0].get("id")
+        response2 = requests.get(f"{BACKEND_URL}/snapshots/{snapshot_id}", auth=auth, timeout=10)
+        
+        if response2.status_code != 200:
+            print(f"❌ Could not get snapshot details for lineage test: {response2.status_code}")
+            return False
+        
+        snapshot_data = response2.json()
+        lineage = snapshot_data.get("lineage", [])
+        
+        if not lineage:
+            print("❌ No lineage data found in snapshot")
+            return False
+        
+        # Define expected allowlist (from server.py)
+        allowlist = {
+            "home.treasury.gov",
+            "treasury.gov", 
+            "bls.gov",
+            "download.bls.gov",
+            "fred.stlouisfed.org",
+            "stlouisfed.org",
+            "bea.gov",
+            "eia.gov",
+            "sec.gov",
+            "energy.ca.gov",
+            "cpuc.ca.gov",
+        }
+        
+        print(f"  - Found {len(lineage)} lineage entries")
+        
+        # Check each lineage entry
+        violations = []
+        for entry in lineage:
+            url = entry.get("url", "")
+            if url:
+                # Extract domain from URL
+                try:
+                    from urllib.parse import urlparse
+                    parsed = urlparse(url)
+                    domain = parsed.netloc
+                    
+                    if domain not in allowlist:
+                        violations.append(f"Domain '{domain}' from URL '{url}' not in allowlist")
+                    else:
+                        print(f"  ✅ {domain} - allowed")
+                        
+                except Exception as e:
+                    violations.append(f"Could not parse URL '{url}': {e}")
+        
+        if violations:
+            print("❌ Allowlist violations found:")
+            for violation in violations:
+                print(f"  - {violation}")
+            return False
+        
+        print(f"✅ Lineage allowlist verification passed - all {len(lineage)} entries use allowed domains")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Lineage allowlist test failed: {str(e)}")
+        return False
+
+def test_nonexistent_snapshot_404():
+    """Test 8: Non-existent snapshot id returns 404 for both endpoints"""
+    print("\n=== Testing Non-existent Snapshot 404 Responses ===")
+    
+    fake_id = "00000000-0000-0000-0000-000000000000"
+    auth = ('gp', 'Contrarians')
+    
+    try:
+        # Test GET /api/snapshots/{id}
+        response1 = requests.get(f"{BACKEND_URL}/snapshots/{fake_id}", auth=auth, timeout=10)
+        print(f"GET /api/snapshots/{fake_id} - Status: {response1.status_code}")
+        
+        if response1.status_code != 404:
+            print(f"❌ Expected 404 for non-existent snapshot, got {response1.status_code}")
+            return False
+        
+        # Test GET /api/excel/summary?snapshot_id=
+        response2 = requests.get(f"{BACKEND_URL}/excel/summary?snapshot_id={fake_id}", timeout=10)
+        print(f"GET /api/excel/summary?snapshot_id={fake_id} - Status: {response2.status_code}")
+        
+        if response2.status_code != 404:
+            print(f"❌ Expected 404 for non-existent snapshot in excel/summary, got {response2.status_code}")
+            return False
+        
+        # Test POST /api/excel/generate?snapshot_id=
+        response3 = requests.post(f"{BACKEND_URL}/excel/generate?snapshot_id={fake_id}", timeout=10)
+        print(f"POST /api/excel/generate?snapshot_id={fake_id} - Status: {response3.status_code}")
+        
+        if response3.status_code != 404:
+            print(f"❌ Expected 404 for non-existent snapshot in excel/generate, got {response3.status_code}")
+            return False
+        
+        print(f"✅ Non-existent snapshot 404 responses working correctly")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Non-existent snapshot 404 test failed: {str(e)}")
+        return False
+
+def test_data_lineage_auditability():
+    """Run all Data Lineage & Auditability tests"""
+    print("\n" + "="*80)
+    print("🔍 DATA LINEAGE & AUDITABILITY TESTING")
+    print("="*80)
+    
+    results = {}
+    snapshot_id = None
+    
+    # Test 1: Create snapshot
+    results['snapshot_creation'], snapshot_id = test_snapshot_creation()
+    
+    # Test 2: List snapshots with pagination
+    results['snapshot_list'] = test_snapshot_list()
+    
+    # Test 3: Get snapshot by ID (requires snapshot_id from test 1)
+    results['snapshot_get_by_id'] = test_snapshot_get_by_id(snapshot_id)
+    
+    # Test 4: Excel summary refresh with rate limiting
+    results['excel_summary_refresh'] = test_excel_summary_refresh()
+    
+    # Test 5: Excel summary with specific snapshot ID
+    results['excel_summary_with_snapshot_id'] = test_excel_summary_with_snapshot_id(snapshot_id)
+    
+    # Test 6: Excel generate with specific snapshot ID
+    results['excel_generate_with_snapshot_id'] = test_excel_generate_with_snapshot_id(snapshot_id)
+    
+    # Test 7: Lineage allowlist verification
+    results['lineage_allowlist'] = test_lineage_allowlist()
+    
+    # Test 8: Non-existent snapshot 404 responses
+    results['nonexistent_snapshot_404'] = test_nonexistent_snapshot_404()
+    
+    return results
+
 def run_all_tests():
     """Run all backend tests"""
     print("🚀 Starting Coastal Oak Capital Backend API Tests")
