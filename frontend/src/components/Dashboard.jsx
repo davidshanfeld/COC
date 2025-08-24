@@ -15,6 +15,14 @@ const Dashboard = ({ userType, onLogout }) => {
     lastUpdate: new Date().toLocaleString()
   });
 
+  // State for real Excel data from backend
+  const [excelSummary, setExcelSummary] = useState(null);
+  const [excelGridData, setExcelGridData] = useState([]);
+  const [externalData, setExternalData] = useState(null);
+  const [loadingExcelData, setLoadingExcelData] = useState(false);
+
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
   const [deals, setDeals] = useState([
     {
       id: 1,
