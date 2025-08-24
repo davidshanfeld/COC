@@ -200,16 +200,16 @@ frontend:
           comment: "✅ Dashboard works."
 
   - task: "Data lineage and auditability - frontend components"
-    implemented: false
+    implemented: true
     working: "NA"
-    file: "components/*.jsx"
+    file: "components/LastUpdatedBanner.jsx, components/ManualRefreshButton.jsx, components/LineageModal.jsx, components/SnapshotSelector.jsx, components/Dashboard.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "To be implemented after backend passes."
+          comment: "Implemented LastUpdatedBanner, ManualRefreshButton, LineageModal, SnapshotSelector, threaded snapshot_id, GP-only gate for ExcelAnalytics, wired export to snapshot, lineage modal, and refresh. Ready for frontend UI automation tests."
 
 metadata:
   created_by: "main_agent"
