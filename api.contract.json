@@ -2,7 +2,7 @@
   "api_contract": {
     "title": "Coastal Oak Capital - Data Lineage & Auditability API",
     "version": "1.0",
-    "base_url": "https://lineage-tracker-7.preview.emergentagent.com/api",
+    "base_url": "https://data-lineage.preview.emergentagent.com/api",
     "authentication": {
       "type": "HTTP Basic Auth",
       "username": "gp",
