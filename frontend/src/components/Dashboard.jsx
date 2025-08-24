@@ -83,9 +83,9 @@ const Dashboard = ({ userType, onLogout }) => {
   // Load Excel data when switching to Excel view
   useEffect(() => {
     if (currentView === 'excel') {
-      fetchExcelData();
+      fetchExcelData({ snapshotId: selectedSnapshotId });
     }
-  }, [currentView]);
+  }, [currentView, selectedSnapshotId]);
 
   // Refresh Excel data periodically when in Excel view
   useEffect(() => {
