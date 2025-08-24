@@ -1296,7 +1296,7 @@ All data subject to quarterly updates and market verification.
       )}
 
       {/* Excel Reports View */}
-      {currentView === 'excel' && (
+      {currentView === 'excel' && isExcelAllowed && (
         <div className="excel-container" style={{ padding: '20px' }}>
           
           {loadingExcelData && (
