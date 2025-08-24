@@ -42,19 +42,16 @@ const Dashboard = ({ userType, onLogout }) => {
   };
 
   // Fetch real Excel data from backend
-  const fetchExcelData = async () => {
+  const fetchExcelData = async (opts = {}) => {
     if (currentView !== 'excel') return;
-    
+    const { snapshotId = selectedSnapshotId } = opts;
     try {
       setLoadingExcelData(true);
-      
-      // Fetch Excel summary data
-      const summaryResponse = await fetch(`${backendUrl}/api/excel/summary`);
+      const summaryUrl = snapshotId ? `${backendUrl}/api/excel/summary?snapshot_id=${encodeURIComponent(snapshotId)}` : `${backendUrl}/api/excel/summary`;
+      const summaryResponse = await fetch(summaryUrl);
       if (summaryResponse.ok) {
         const summaryData = await summaryResponse.json();
         setExcelSummary(summaryData);
-        
-        // Update market data with real backend data
         if (summaryData.kpis && summaryData.kpis.fund) {
           const fundKpis = summaryData.kpis.fund;
           setMarketData(prev => ({
@@ -67,14 +64,11 @@ const Dashboard = ({ userType, onLogout }) => {
           }));
         }
       }
-      
-      // Fetch Excel grid data
       const gridResponse = await fetch(`${backendUrl}/api/excel/data`);
       if (gridResponse.ok) {
         const gridData = await gridResponse.json();
         setExcelGridData(gridData.rows || []);
       }
-      
     } catch (error) {
       console.error('Error fetching Excel data:', error);
       toast.error('Failed to load Excel data from backend');
