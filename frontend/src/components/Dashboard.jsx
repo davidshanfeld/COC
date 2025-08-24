@@ -546,40 +546,27 @@ All data subject to quarterly updates and market verification.
       toast.error('Excel export is restricted to General Partners only.');
       return;
     }
-    
     try {
-      toast.success('🚀 Exporting live Excel data with real-time market feeds...');
-      
-      // Fetch the latest Excel data from backend
-      const response = await fetch(`${backendUrl}/api/excel/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Create downloadable file from the export data
-        const exportContent = JSON.stringify(data.data, null, 2);
-        const blob = new Blob([exportContent], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = data.filename || `coastal_oak_live_excel_${new Date().getTime()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        toast.success(`✅ Live Excel export completed successfully! (${data.size_mb.toFixed(2)} MB)`);
-      } else {
-        throw new Error('Export failed');
-      }
+      const qs = selectedSnapshotId ? `?snapshot_id=${encodeURIComponent(selectedSnapshotId)}` : '';
+      const response = await fetch(`${backendUrl}/api/excel/generate${qs}`, { method: 'POST' });
+      if (!response.ok) throw new Error('Export failed');
+      // Stream XLSX
+      const blob = await response.blob();
+      const cd = response.headers.get('Content-Disposition') || '';
+      const match = cd.match(/filename="?([^";]+)"?/);
+      const filename = match ? match[1] : `Coastal_Excel_Analytics_${Date.now()}.xlsx`;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('✅ Excel export started');
     } catch (error) {
       console.error('Excel export error:', error);
-      toast.error('Failed to export live Excel data. Please try again.');
+      toast.error('Failed to export Excel');
     }
   };
 
