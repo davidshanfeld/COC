@@ -1,22 +1,22 @@
 <analysis>
-The AI engineer's journey began with a successful initial build of the Coastal Oak Capital web application, delivering dual-password authentication, a legal disclaimer gateway, role-based access, and a real-time (mocked) data dashboard with specific design themes and security features. After confirming this production-ready state, the user reported a critical missing feature: access to the masterdeck or investment prospectus document, not just the performance dashboard. The engineer meticulously addressed this by integrating a comprehensive document viewer directly into the  component. This involved adding navigation, populating mock document sections (Executive Summary, Investment Strategy, etc.), and implementing role-based download functionality for GPs, while LPs retain view-only access. The backend was verified post-changes, and preliminary frontend screenshots confirmed the new masterdeck UI. The final pending item is to explicitly test the GP-specific download feature.
+The AI engineer successfully built the Coastal Oak Capital application from scratch, incorporating dual-password authentication, a legal disclaimer, role-based access, and a mock data dashboard with a specific teal theme and robust security. A critical missing feature, the investment prospectus (masterdeck), was subsequently integrated. This involved significant modifications to  to include a toggle for dashboard/prospectus views, a navigable sidebar for document sections (with mock content), and role-based download functionality (GPs can download, LPs view only). Backend stability was confirmed. The immediate pending task from this phase is to test the GP-specific download feature. Following this, the user introduced a new, substantial requirement: integrating institutional-level, polished Excel spreadsheets into the dashboard, featuring trackable cells, cited assumptions, real-time data, and case studies to explain market dynamics and investment rationale (WHAT-WHY-HOW narrative). The user is set to provide deliverables for this new feature.
 </analysis>
 
 <product_requirements>
-The primary objective is to create Coastal Oak Capital, a real-time web application serving as an investment prospectus for a distressed and opportunistic real estate fund. It requires dynamic updates from financial data sources. Security is paramount: a universal password for Limited Partners (LPs) allows view-only access (no export, copy, paste, or screenshots), while a special password for General Partners (GPs) includes export functionality. All users must first agree to detailed legal disclaimers and an NDA. The application's design must align with a corporate logo, featuring a teal gradient, and be responsive. Data should update 24/7/365. The initial implementation successfully delivered dual-password login, a legal gateway, role-based access, the specified design, and mock real-time data on a dashboard. The recent update further enhances the application by integrating the actual investment prospectus (masterdeck) with detailed sections, providing a critical document viewing and download (for GPs) capability.
+The Coastal Oak Capital application aims to be an investment prospectus for a distressed real estate fund, requiring real-time data and high security. Initial requirements included: dual-password login (LP: view-only, GP: export), a multi-checkbox legal disclaimer/NDA gateway, a teal gradient design, and 24/7/365 mock data updates. The system implemented these, adding security features like disabling copy/paste and right-click. The masterdeck (investment prospectus) was then integrated into the dashboard, providing detailed sections with role-based viewing and GP-specific download.
+
+A new, significant requirement involves displaying institutional-level Excel spreadsheets within the dashboard. These spreadsheets must feature fully trackable, cell-by-cell data, clearly stated and well-formatted assumptions, and ensure all figures are cited back to the prospectus for credibility. The Excel integration needs to include real-time, accurate data and incorporate case studies (like the pico blvd deal) to narrate the WHAT-WHY-HOW story of market dynamics and investment opportunities.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Full-stack Architecture**: React.js (frontend), FastAPI (backend), MongoDB (database).
 -   **Authentication & Authorization**: JWT-based dual-password (LP/GP) login with role-based access control.
 -   **Real-time Data Simulation**: Mocked data updates for financial metrics and document content.
--   **UI/UX**: Shadcn UI components, custom CSS for branding, disabling client-side interactions.
--   **Document Viewer**: Integration of multi-section document display and navigation within the frontend.
+-   **UI/UX**: Shadcn UI, custom CSS, client-side interaction disabling.
+-   **Document Viewer**: Frontend integration of multi-section document display and navigation.
 </key_technical_concepts>
 
 <code_architecture>
-The codebase is structured as a full-stack application within the  directory, comprising a React frontend and a FastAPI backend, interacting with a MongoDB database.
-
 
 
 -   ****:
@@ -41,13 +41,7 @@ The codebase is structured as a full-stack application within the  directory, co
 
 -   ****:
     -   **Summary**: Initially displayed mock real-time market data, fund performance, active portfolio, and market intelligence. It included conditional rendering for GP-specific export functionality and security features.
-    -   **Changes Made**:
-        -   Significantly modified to integrate a comprehensive masterdeck (investment prospectus) viewer.
-        -   Added state management (, ) to toggle between dashboard and prospectus views.
-        -   Implemented navigation buttons ( / ).
-        -   Incorporated a left sidebar for navigating different prospectus sections (Executive Summary, Investment Strategy, Market Analysis, etc.).
-        -   Added conditional rendering for GP-specific Download Prospectus button and Document download restricted to General Partners only message for LPs.
-        -   The content for prospectus sections is mocked directly within this component.
+    -   **Changes Made**: Significantly modified to integrate a comprehensive masterdeck (investment prospectus) viewer. Added state management (, ) to toggle between dashboard and prospectus views. Implemented navigation buttons ( / ). Incorporated a left sidebar for navigating different prospectus sections (Executive Summary, Investment Strategy, Market Analysis, etc.). Added conditional rendering for GP-specific Download Prospectus button and Document download restricted to General Partners only message for LPs. The content for prospectus sections is mocked directly within this component.
     -   **Importance**: The core content area of the application; now displays both investment data and the full investment prospectus, enforcing role-based access and security.
 
 -   ****:
@@ -82,5 +76,5 @@ However, the user reported a critical functional gap: the absence of the actual 
 </current_work>
 
 <optional_next_step>
-Test the General Partner (GP) download functionality for the masterdeck.
+Test the General Partner (GP) download functionality for the masterdeck/prospectus.
 </optional_next_step>
