@@ -850,6 +850,12 @@ Document Version: 1.0
             </button>
           )}
           
+          {userType === 'gp' && currentView === 'excel' && (
+            <button className="export-button" onClick={handleExcelExport}>
+              Export Excel Data
+            </button>
+          )}
+          
           <button className="logout-button" onClick={onLogout}>
             Logout
           </button>
