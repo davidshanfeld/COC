@@ -1,0 +1,162 @@
+{
+  "api_contract": {
+    "title": "Coastal Oak Capital - Data Lineage & Auditability API",
+    "version": "1.0",
+    "base_url": "https://lineage-tracker-7.preview.emergentagent.com/api",
+    "authentication": {
+      "type": "HTTP Basic Auth",
+      "username": "gp",
+      "password": "Contrarians",
+      "required_for": [
+        "POST /snapshots",
+        "GET /snapshots",
+        "GET /snapshots/{id}"
+      ]
+    },
+    "rate_limiting": {
+      "refresh_lock_ms": 60000,
+      "description": "Consecutive snapshot creation or refresh calls within 60 seconds return 429"
+    },
+    "endpoints": {
+      "POST /snapshots": {
+        "description": "Create a new data snapshot with lineage tracking",
+        "auth_required": true,
+        "rate_limited": true,
+        "responses": {
+          "200": {
+            "description": "Snapshot created successfully",
+            "schema": {
+              "id": "string (UUID v4)",
+              "as_of_date": "string (YYYY-MM-DD)",
+              "created_at": "string (ISO 8601)",
+              "creator": "string (gp)",
+              "seq": "string (v001, v002, etc.)",
+              "summary": "object",
+              "lineage": "array"
+            }
+          },
+          "401": "Unauthorized - Basic auth required",
+          "429": "Rate limited - wait before creating another snapshot"
+        }
+      },
+      "GET /snapshots": {
+        "description": "List snapshots with pagination",
+        "auth_required": true,
+        "parameters": {
+          "limit": "integer (1-100, default: 10)",
+          "cursor": "string (ISO timestamp for pagination)"
+        },
+        "responses": {
+          "200": {
+            "description": "Paginated list of snapshots",
+            "schema": {
+              "items": "array of snapshot summaries",
+              "next_cursor": "string or null"
+            }
+          },
+          "401": "Unauthorized - Basic auth required"
+        }
+      },
+      "GET /snapshots/{id}": {
+        "description": "Get complete snapshot by ID",
+        "auth_required": true,
+        "parameters": {
+          "id": "string (UUID v4)"
+        },
+        "responses": {
+          "200": "Complete snapshot object with summary, deals, kpis, and lineage",
+          "401": "Unauthorized - Basic auth required",
+          "404": "Snapshot not found"
+        }
+      },
+      "GET /excel/summary": {
+        "description": "Get Excel summary data with optional snapshot creation or retrieval",
+        "auth_required": false,
+        "parameters": {
+          "refresh": "boolean (creates new snapshot if true)",
+          "snapshot_id": "string (UUID v4, retrieves specific snapshot)"
+        },
+        "rate_limited": "Only when refresh=true",
+        "responses": {
+          "200": {
+            "description": "Excel summary with metadata",
+            "schema": {
+              "as_of_date": "string",
+              "aum": "number",
+              "deals": "array",
+              "kpis": "object",
+              "_last_updated_iso": "string",
+              "_snapshot_id": "string",
+              "_lineage": "array"
+            }
+          },
+          "404": "Snapshot not found (when snapshot_id provided)",
+          "429": "Rate limited (when refresh=true)"
+        }
+      },
+      "POST /excel/generate": {
+        "description": "Generate Excel file from snapshot data",
+        "auth_required": false,
+        "parameters": {
+          "snapshot_id": "string (UUID v4, optional)"
+        },
+        "responses": {
+          "200": {
+            "description": "Excel file stream",
+            "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "filename_format": "Coastal_Excel_Analytics_{AS_OF}_{SEQ}.xlsx"
+          },
+          "404": "Snapshot not found (when snapshot_id provided)"
+        }
+      }
+    },
+    "data_lineage": {
+      "allowlist_domains": [
+        "home.treasury.gov",
+        "treasury.gov",
+        "bls.gov",
+        "download.bls.gov",
+        "fred.stlouisfed.org",
+        "stlouisfed.org",
+        "bea.gov",
+        "eia.gov",
+        "sec.gov",
+        "energy.ca.gov",
+        "cpuc.ca.gov"
+      ],
+      "lineage_structure": {
+        "title": "string",
+        "url": "string",
+        "publisher": "string",
+        "series_id": "string",
+        "transform_chain": "array",
+        "checksum_sha256": "string",
+        "accessed_at": "string (ISO 8601)"
+      }
+    }
+  },
+  "test_results": {
+    "timestamp": "2025-08-24T05:56:07.749676",
+    "total_tests": 8,
+    "passed_tests": 8,
+    "failed_tests": 0,
+    "test_details": {
+      "snapshot_creation": "PASS - Creates snapshot with proper structure and UUID",
+      "snapshot_list": "PASS - Pagination working with limit and cursor support",
+      "snapshot_get_by_id": "PASS - Retrieves complete snapshot data",
+      "excel_summary_refresh": "PASS - Creates new snapshot and respects rate limiting",
+      "excel_summary_with_snapshot_id": "PASS - Returns data from specific snapshot",
+      "excel_generate_with_snapshot_id": "PASS - Streams Excel with correct filename format",
+      "lineage_allowlist": "PASS - All domains within allowlist",
+      "authentication_and_404": "PASS - Proper auth requirements and error handling"
+    },
+    "rate_limiting": {
+      "status": "WORKING",
+      "description": "429 responses confirmed for consecutive calls within 60 seconds"
+    },
+    "authentication": {
+      "status": "WORKING",
+      "description": "Basic auth (gp:Contrarians) required for snapshot endpoints"
+    }
+  }
+}
