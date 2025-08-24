@@ -161,15 +161,18 @@ backend:
 
   - task: "Data lineage and auditability - backend snapshot APIs"
     implemented: true
-    working: "NA"
+    working: true
     file: "server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented POST/GET /api/snapshots, modified /api/excel/summary and /api/excel/generate to use snapshots, added lineage allowlist, rate-limit, versioned filenames (v001). Requires testing per acceptance criteria."
+        - working: true
+          agent: "testing"
+          comment: "✅ ALL 8 DATA LINEAGE & AUDITABILITY TESTS PASSED: 1) POST /api/snapshots with Basic auth (gp:Contrarians) creates snapshots with proper UUID, as_of_date, creator='gp', seq=v001/v002 format. 2) GET /api/snapshots lists with pagination (limit/cursor), sorted desc by created_at. 3) GET /api/snapshots/{id} returns complete snapshot with summary, lineage, deals, kpis. 4) GET /api/excel/summary?refresh=true creates new snapshot and returns metadata with _snapshot_id, _lineage, _last_updated_iso. Rate limiting works - consecutive refresh within 60s returns 429. 5) GET /api/excel/summary?snapshot_id={id} returns exact snapshot-backed data. 6) POST /api/excel/generate?snapshot_id={id} streams Excel with correct filename format 'Coastal_Excel_Analytics_{AS_OF}_{SEQ}.xlsx' and proper content-type. 7) Lineage allowlist verified - all URLs use approved domains (treasury.gov, fred.stlouisfed.org, bls.gov, etc.). 8) Non-existent snapshot IDs return 404 for all endpoints. Authentication working - Basic auth required for snapshot endpoints, 401 without credentials. API contract exported to /app/api.contract.json."
 
 frontend:
   - task: "LoginPage component with dual passwords"
