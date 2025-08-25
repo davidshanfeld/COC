@@ -258,36 +258,51 @@ const LiveDocument = () => {
                 Value Creation Process
               </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 <div className="bg-white p-4 rounded-lg shadow-sm text-center">
                   <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="font-bold text-purple-600">1</span>
                   </div>
-                  <h4 className="font-medium mb-2">Acquire Distressed</h4>
-                  <p className="text-sm text-gray-600">Purchase at 50-70% of replacement cost</p>
+                  <h4 className="font-medium mb-2">Acquire CLO</h4>
+                  <p className="text-sm text-gray-600">Purchase secured note from bank</p>
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm text-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="font-bold text-blue-600">2</span>
                   </div>
-                  <h4 className="font-medium mb-2">Convert Infrastructure</h4>
-                  <p className="text-sm text-gray-600">Data center or EV charging conversion</p>
+                  <h4 className="font-medium mb-2">Foreclose Borrower</h4>
+                  <p className="text-sm text-gray-600">Execute on defaulted collateral</p>
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm text-center">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="font-bold text-green-600">3</span>
                   </div>
-                  <h4 className="font-medium mb-2">Lease Premium</h4>
-                  <p className="text-sm text-gray-600">$175/kW/month vs $43.85/SF office</p>
+                  <h4 className="font-medium mb-2">Take Property</h4>
+                  <p className="text-sm text-gray-600">Acquire asset from lender</p>
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm text-center">
                   <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="font-bold text-yellow-600">4</span>
                   </div>
-                  <h4 className="font-medium mb-2">Exit Strategy</h4>
-                  <p className="text-sm text-gray-600">Refinance or sale at 2-3x basis</p>
+                  <h4 className="font-medium mb-2">Convert Asset</h4>
+                  <p className="text-sm text-gray-600">Data center or EV charging use</p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="font-bold text-red-600">5</span>
+                  </div>
+                  <h4 className="font-medium mb-2">Refinance</h4>
+                  <p className="text-sm text-gray-600">Secure long-term financing</p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                  <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="font-bold text-indigo-600">6</span>
+                  </div>
+                  <h4 className="font-medium mb-2">Perpetual Payouts</h4>
+                  <p className="text-sm text-gray-600">Distribute cashflow to LPs</p>
                 </div>
               </div>
+              <p className="text-xs text-gray-500 mt-2">*Acquisition may occur via foreclosure, deed-in-lieu, or debt renegotiation in exchange for services.</p>
             </div>
 
             <div className="prose max-w-none">
