@@ -207,7 +207,7 @@ frontend:
     file: "/app/frontend/src/components/LiveDocument.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: true
         agent: "main"
@@ -215,6 +215,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "PASS: COMPREHENSIVE ENHANCED UI TESTING COMPLETE - All major functionality verified: ✅ Logo placeholder 'COC' with gradient styling, ✅ Enhanced header with AI data center integration messaging, ✅ Investment focus areas cards (AI Data Centers, EV Super-Charging, Commercial Fleet) with proper color coding and badges, ✅ Create Master Deck button fully functional with loading states, ✅ Real-Time Market Intelligence Dashboard with 8 color-coded data visualization cards, ✅ Live Intelligence Integration section present, ✅ Section navigation working (8 sections), ✅ Data refresh and export functionality operational, ✅ No cryptocurrency references (content properly updated), ✅ Professional institutional branding maintained, ✅ Responsive design working in mobile view, ✅ No error messages displayed. Minor: AI/data center messaging selector needs refinement but core functionality perfect. System demonstrates excellent 'living and breathing' document functionality with enhanced UI suitable for institutional investors."
+      - working: "unknown"
+        agent: "main"
+        comment: "UPDATED: Investment Strategy process flow updated to 6-step CLO-to-payout pipeline in LiveDocument.js (md:grid-cols-3 lg:grid-cols-6, added refinance and perpetual payouts steps, added explanatory footnote). Visuals compendium Figure 1.2 synchronized to match this process. Requires frontend regression check for section rendering and layout across breakpoints."
 
   - task: "UI components and styling"
     implemented: true
