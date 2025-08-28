@@ -74,13 +74,13 @@ const LiveDocument = () => {
         // Create a blob and download the markdown file
         const blob = new Blob([response.data.content], { type: 'text/markdown' });
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = window.document.createElement('a');
         a.href = url;
         a.download = `${document.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
-        document.body.appendChild(a);
+        window.document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
+        window.document.body.removeChild(a);
       }
     } catch (err) {
       setError(`Failed to export document: ${err.response?.data?.detail || err.message}`);
