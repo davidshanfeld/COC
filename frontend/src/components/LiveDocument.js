@@ -6,7 +6,7 @@ import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
 import { RefreshCw, Download, FileText, TrendingUp, Eye, Zap, Server, Truck, Car, BarChart3, PieChart, Activity, Building2 } from 'lucide-react';
 
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const LiveDocument = () => {
   const [document, setDocument] = useState(null);
