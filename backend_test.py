@@ -28,10 +28,11 @@ class CoastalOakAPITester:
                         url = line.split('=', 1)[1].strip()
                         return f"{url}/api"
         except Exception as e:
-            print(f"Warning: Could not read frontend .env file: {e}")
+            print(f"Error: Could not read frontend .env file: {e}")
+            raise Exception(f"Failed to get backend URL from frontend .env: {e}")
         
-        # Fallback to default
-        return "http://localhost:8001/api"
+        # No fallback - must use configured URL
+        raise Exception("REACT_APP_BACKEND_URL not found in frontend .env file")
     
     def log_test(self, test_name: str, success: bool, details: str, response_data: Optional[Dict] = None):
         """Log test results"""
