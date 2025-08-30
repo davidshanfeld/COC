@@ -158,6 +158,18 @@ backend:
         agent: "testing"
         comment: "PASS: POST-PROSPECTUS COMPREHENSIVE VALIDATION - All 8 API endpoints maintain 100% success rate after institutional prospectus package creation. Enhanced backend_test.py now includes daily refresh endpoint testing. Complete test coverage: (1) System Status ✅, (2) Live Data Integration ✅, (3) Document Creation ✅, (4) Document Retrieval ✅, (5) Document Update ✅, (6) Markdown Export ✅, (7) Documents List ✅, (8) Daily Refresh System ✅. The live dashboard functionality is fully preserved alongside the static prospectus files."
 
+  - task: "v1.3.0 endpoints - healthz, rates history, execsum pdf, audit, token download"
+    implemented: true
+    working: "unknown"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "unknown"
+        agent: "main"
+        comment: "Added /api/healthz/deps, /api/rates/history, /api/execsum.pdf, /api/audit, /api/deck/download with single-use enforcement and watermark. Updated /api/footnotes to include F1, T1, M1, B1, H1, R1, S1, C1."
+
   - task: "Database setup and models"
     implemented: true
     working: true
