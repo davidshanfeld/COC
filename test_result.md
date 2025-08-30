@@ -69,6 +69,10 @@
 #    - Update the `test_plan` section to guide testing priorities
 #    - Add a message to `agent_communication` explaining what you've done
 #
+      - working: true
+        agent: "testing"
+        comment: "PASS: v1.3.0 endpoints validated including healthz/deps, rates/history, execsum.pdf (HTML fallback), deck token flow, audit. Regression on existing endpoints all PASS."
+
 # 2. Incorporate User Feedback:
 #    - When a user provides feedback that something is or isn't working, add this information to the relevant task's status_history
 #    - Update the working status based on user feedback
