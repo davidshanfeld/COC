@@ -791,7 +791,7 @@ const LivingPitchDeck = () => {
                         <div className="text-sm text-blue-600 font-medium">Avg CRE Exposure</div>
                         <div className="text-2xl font-bold text-blue-800">
                           {fdicData.exposure.avgExposure ? 
-                            (fdicData.exposure.avgExposure * 100).toFixed(1) + '%' : 
+                            fdicData.exposure.avgExposure.toFixed(1) + '%' : 
                             'N/A'
                           }
                         </div>
