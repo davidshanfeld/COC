@@ -400,9 +400,11 @@ const LivingPitchDeck = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto">
         <Tabs defaultValue="analyses" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-6 mb-8">
             <TabsTrigger value="analyses">Investment Analyses</TabsTrigger>
             <TabsTrigger value="results">Agent Results</TabsTrigger>
+            <TabsTrigger value="regulatory">Laws & Incentives Monitor</TabsTrigger>
+            <TabsTrigger value="banks">Bank Exposure</TabsTrigger>
             <TabsTrigger value="footnotes">Data Sources</TabsTrigger>
             <TabsTrigger value="security">Secure Access</TabsTrigger>
           </TabsList>
