@@ -1,341 +1,28 @@
 {
   "total_tests": 8,
-  "passed": 7,
-  "failed": 1,
-  "success_rate": 87.5,
+  "passed": 8,
+  "failed": 0,
+  "success_rate": 100.0,
   "test_results": [
     {
       "test": "Agent Registry Endpoint",
-      "success": false,
-      "details": "Missing agents: ['UI, Aesthetics, and Information Architecture']",
-      "timestamp": "2025-08-30T03:06:01.017832",
+      "success": true,
+      "details": "All 14 agents properly registered with complete capabilities",
+      "timestamp": "2025-08-30T03:06:28.422166",
       "response_data": {
-        "success": true,
-        "agents": [
-          {
-            "name": "Charts and Visualization Engineer",
-            "handles": [
-              "charts",
-              "visuals",
-              "visualization"
-            ]
-          },
-          {
-            "name": "UI, Aesthetics, and IA",
-            "handles": [
-              "ui",
-              "layout",
-              "style",
-              "design",
-              "aesthetics"
-            ]
-          },
-          {
-            "name": "Real-Time Data and Citations Steward",
-            "handles": [
-              "data",
-              "citations",
-              "sources",
-              "feeds",
-              "steward"
-            ]
-          },
-          {
-            "name": "Quantitative Analysis and Models",
-            "handles": [
-              "quant",
-              "models",
-              "waterfall",
-              "dcf",
-              "irr",
-              "financial"
-            ]
-          },
-          {
-            "name": "Debt Underwriting \u2014 Data Centers",
-            "handles": [
-              "debt-dc",
-              "data-centers",
-              "term-sheets",
-              "covenants"
-            ]
-          },
-          {
-            "name": "Debt Underwriting \u2014 EV Supercharging",
-            "handles": [
-              "debt-ev",
-              "ev-charging",
-              "charging",
-              "supercharging"
-            ]
-          },
-          {
-            "name": "Development Feasibility \u2014 Data Centers",
-            "handles": [
-              "dev-dc",
-              "development",
-              "data-center-dev",
-              "feasibility"
-            ]
-          },
-          {
-            "name": "Development Feasibility \u2014 EV Supercharging",
-            "handles": [
-              "dev-ev",
-              "ev-development",
-              "charging-development"
-            ]
-          },
-          {
-            "name": "Tax Attorney Consultant",
-            "handles": [
-              "tax",
-              "dst",
-              "investor-faq",
-              "tax-planning"
-            ]
-          },
-          {
-            "name": "Land Use Attorney \u2014 Los Angeles",
-            "handles": [
-              "land-use",
-              "la",
-              "zoning",
-              "entitlements",
-              "permits"
-            ]
-          },
-          {
-            "name": "Risk Management and Controls",
-            "handles": [
-              "risk",
-              "kri",
-              "risk-management",
-              "controls"
-            ]
-          },
-          {
-            "name": "ESG, Incentives, and Grants",
-            "handles": [
-              "esg",
-              "credits",
-              "grants",
-              "sustainability",
-              "incentives"
-            ]
-          },
-          {
-            "name": "LP-GP Red Team Reviewer",
-            "handles": [
-              "red-team",
-              "review",
-              "quality-assurance",
-              "validation"
-            ]
-          },
-          {
-            "name": "Security and Distribution",
-            "handles": [
-              "security",
-              "passwords",
-              "watermark",
-              "access-control",
-              "audit"
-            ]
-          }
-        ],
-        "capabilities": {
-          "charts": {
-            "description": "Charts and Visualization Engineer",
-            "specialties": [
-              "yield curves",
-              "market data visualization",
-              "investment performance charts"
-            ],
-            "outputs": [
-              "SVG charts",
-              "data visualizations",
-              "presentation graphics"
-            ]
-          },
-          "ui": {
-            "description": "UI, Aesthetics, and Information Architecture",
-            "specialties": [
-              "design systems",
-              "user interface",
-              "institutional branding"
-            ],
-            "outputs": [
-              "design tokens",
-              "layout specifications",
-              "UI components"
-            ]
-          },
-          "data": {
-            "description": "Real-Time Data and Citations Steward",
-            "specialties": [
-              "market data feeds",
-              "source citations",
-              "data quality assurance"
-            ],
-            "outputs": [
-              "live market data",
-              "footnote management",
-              "data provenance tracking"
-            ]
-          },
-          "quant": {
-            "description": "Quantitative Analysis and Models",
-            "specialties": [
-              "DCF modeling",
-              "waterfall analysis",
-              "scenario planning"
-            ],
-            "outputs": [
-              "financial models",
-              "sensitivity analysis",
-              "return projections"
-            ]
-          },
-          "debt-dc": {
-            "description": "Debt Underwriting \u2014 Data Centers",
-            "specialties": [
-              "data center financing",
-              "power infrastructure risk",
-              "lease underwriting"
-            ],
-            "outputs": [
-              "term sheets",
-              "covenant structures",
-              "risk assessment"
-            ]
-          },
-          "debt-ev": {
-            "description": "Debt Underwriting \u2014 EV Supercharging",
-            "specialties": [
-              "EV charging financing",
-              "utilization modeling",
-              "grant integration"
-            ],
-            "outputs": [
-              "project finance structures",
-              "throughput analysis",
-              "incentive optimization"
-            ]
-          },
-          "dev-dc": {
-            "description": "Development Feasibility \u2014 Data Centers",
-            "specialties": [
-              "construction planning",
-              "MEP systems",
-              "power delivery"
-            ],
-            "outputs": [
-              "development timelines",
-              "cost estimates",
-              "technical specifications"
-            ]
-          },
-          "dev-ev": {
-            "description": "Development Feasibility \u2014 EV Supercharging",
-            "specialties": [
-              "site selection",
-              "utility coordination",
-              "grant applications"
-            ],
-            "outputs": [
-              "feasibility analysis",
-              "permitting roadmaps",
-              "incentive stacking"
-            ]
-          },
-          "tax": {
-            "description": "Tax Attorney Consultant",
-            "specialties": [
-              "real estate taxation",
-              "DST structures",
-              "investor implications"
-            ],
-            "outputs": [
-              "tax analysis",
-              "structure recommendations",
-              "compliance guidance"
-            ]
-          },
-          "land-use": {
-            "description": "Land Use Attorney \u2014 Los Angeles",
-            "specialties": [
-              "zoning compliance",
-              "CEQA requirements",
-              "permit processes"
-            ],
-            "outputs": [
-              "entitlement roadmaps",
-              "regulatory analysis",
-              "approval timelines"
-            ]
-          },
-          "risk": {
-            "description": "Risk Management and Controls",
-            "specialties": [
-              "risk identification",
-              "KRI frameworks",
-              "mitigation strategies"
-            ],
-            "outputs": [
-              "risk registers",
-              "monitoring dashboards",
-              "scenario planning"
-            ]
-          },
-          "esg": {
-            "description": "ESG, Incentives, and Grants",
-            "specialties": [
-              "sustainability frameworks",
-              "incentive stacking",
-              "impact measurement"
-            ],
-            "outputs": [
-              "ESG strategies",
-              "grant applications",
-              "impact reporting"
-            ]
-          },
-          "red-team": {
-            "description": "LP-GP Red Team Reviewer",
-            "specialties": [
-              "investment thesis validation",
-              "quality assurance",
-              "stakeholder perspectives"
-            ],
-            "outputs": [
-              "review scores",
-              "improvement recommendations",
-              "validation reports"
-            ]
-          },
-          "security": {
-            "description": "Security and Distribution",
-            "specialties": [
-              "access control",
-              "document security",
-              "audit logging"
-            ],
-            "outputs": [
-              "security tokens",
-              "watermarked documents",
-              "audit reports"
-            ]
-          }
-        },
-        "total_agents": 14
+        "total_agents": 14,
+        "sample_agents": [
+          "Charts and Visualization Engineer",
+          "UI, Aesthetics, and IA",
+          "Real-Time Data and Citations Steward"
+        ]
       }
     },
     {
       "test": "Rates Data Feed",
       "success": true,
       "details": "Successfully fetched Treasury and Fed rates data",
-      "timestamp": "2025-08-30T03:06:01.533735",
+      "timestamp": "2025-08-30T03:06:28.936636",
       "response_data": {
         "treasury_tenors": [
           "5Y",
@@ -349,7 +36,7 @@
       "test": "CRE Maturities Data Feed",
       "success": true,
       "details": "Successfully fetched CRE maturity data with 3 property types",
-      "timestamp": "2025-08-30T03:06:02.042284",
+      "timestamp": "2025-08-30T03:06:29.449810",
       "response_data": {
         "rows_count": 3,
         "property_types": [
@@ -363,7 +50,7 @@
       "test": "FDIC Banks Data Feed",
       "success": true,
       "details": "Successfully fetched FDIC data with 2 banks",
-      "timestamp": "2025-08-30T03:06:02.555575",
+      "timestamp": "2025-08-30T03:06:29.959305",
       "response_data": {
         "banks_count": 2,
         "sample_banks": [
@@ -376,7 +63,7 @@
       "test": "Agent Execution",
       "success": true,
       "details": "Successfully executed 5 agents with 6 footnotes",
-      "timestamp": "2025-08-30T03:06:03.067540",
+      "timestamp": "2025-08-30T03:06:30.469697",
       "response_data": {
         "agents_executed": 5,
         "footnotes_count": 6
@@ -386,7 +73,7 @@
       "test": "EV Charging Scenario",
       "success": true,
       "details": "EV charging scenario executed successfully with 5 agents",
-      "timestamp": "2025-08-30T03:06:03.577833",
+      "timestamp": "2025-08-30T03:06:30.979250",
       "response_data": {
         "agents_executed": 5,
         "ev_analysis": true
@@ -396,9 +83,9 @@
       "test": "Security Token Endpoint",
       "success": true,
       "details": "Single-use token generated successfully for institutional_investor_001",
-      "timestamp": "2025-08-30T03:06:04.101600",
+      "timestamp": "2025-08-30T03:06:31.489382",
       "response_data": {
-        "token_prefix": "sut_5947...",
+        "token_prefix": "sut_d51c...",
         "audience": "LP"
       }
     },
@@ -406,7 +93,7 @@
       "test": "Footnotes Endpoint",
       "success": true,
       "details": "Successfully fetched 2 footnotes with proper citations",
-      "timestamp": "2025-08-30T03:06:04.610145",
+      "timestamp": "2025-08-30T03:06:31.998009",
       "response_data": {
         "footnotes_count": 2,
         "sample_sources": [
