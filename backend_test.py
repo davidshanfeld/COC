@@ -1057,7 +1057,7 @@ class CoastalOakAPITester:
             return False
     
     def test_footnotes_endpoint(self) -> bool:
-        """Test GET /api/footnotes - Footnotes and citations"""
+        """Test GET /api/footnotes - Footnotes and citations (updated for v1.3.x)"""
         try:
             response = self.session.get(f"{self.base_url}/footnotes", timeout=10)
             
@@ -1082,14 +1082,23 @@ class CoastalOakAPITester:
                 footnotes_data = data.get('data', {})
                 footnotes = footnotes_data.get('footnotes', [])
                 
-                # Check for required footnote IDs
-                required_ids = ['F1', 'T1', 'M1', 'B1', 'H1', 'R1', 'S1', 'C1']
+                # Check for required footnote IDs (updated for v1.3.x with new regulatory/FDIC footnotes)
+                required_ids = ['F1', 'T1', 'M1', 'B1', 'H1', 'R1', 'S1', 'C1', 
+                               'NEVI', 'ITC30C', 'AB1236', 'AB970', 'CEQA32', 
+                               'LAZ1', 'LACode', 'LAGP', 'LADBS']
                 found_ids = [footnote.get('id') for footnote in footnotes]
                 missing_ids = [id for id in required_ids if id not in found_ids]
                 
                 if missing_ids:
                     self.log_test("Footnotes Endpoint", False, 
                                 f"Missing required footnote IDs: {missing_ids}", data)
+                    return False
+                
+                # Check total count should be 16 now
+                total_count = footnotes_data.get('total_count', len(footnotes))
+                if total_count < 16:
+                    self.log_test("Footnotes Endpoint", False, 
+                                f"Expected at least 16 footnotes, got: {total_count}", data)
                     return False
                 
                 # Validate footnote structure
@@ -1103,8 +1112,8 @@ class CoastalOakAPITester:
                         return False
                 
                 self.log_test("Footnotes Endpoint", True, 
-                            f"Footnotes retrieved successfully - {len(footnotes)} entries including all required IDs: {required_ids}", 
-                            {'total_footnotes': len(footnotes), 'required_ids_found': len(required_ids)})
+                            f"Footnotes retrieved successfully - {len(footnotes)} entries including all required IDs (16 total expected)", 
+                            {'total_footnotes': len(footnotes), 'required_ids_found': len(required_ids), 'new_regulatory_ids': ['NEVI', 'ITC30C', 'AB1236', 'AB970', 'CEQA32', 'LAZ1', 'LACode', 'LAGP', 'LADBS']})
                 return True
                 
             else:
