@@ -208,6 +208,17 @@ backend:
     status_history:
       - working: true
         agent: "testing"
+  - task: "Regulatory + FDIC adapters implementation"
+    implemented: true
+    working: "unknown"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "unknown"
+        agent: "main"
+        comment: "IMPLEMENTED: Added new regulatory and FDIC endpoints per user specification. Created GET /api/regulatory/federal (NEVI, ITC30C), GET /api/regulatory/state (AB1236, AB970, CEQA32), GET /api/regulatory/municipal (LAZ1, LACode, LAGP, LADBS), GET /api/fdic/exposure, GET /api/fdic/banks/:id with complete mock data matching required schemas. Updated footnotes registry to include all new footnote IDs (NEVI, ITC30C, AB1236, AB970, CEQA32, LAZ1, LACode, LAGP, LADBS). Ready for testing."
         comment: "PASS: New daily refresh endpoint /api/system/refresh-all working perfectly. Successfully refreshes all documents with latest real-time market data. Tested with 14 documents - all updated successfully. This enables the 'living document' functionality as requested, keeping content current with daily data updates."
       - working: true
         agent: "testing"
