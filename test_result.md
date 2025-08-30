@@ -251,15 +251,18 @@ backend:
 frontend:
   - task: "Regulatory + FDIC adapters frontend UI implementation"
     implemented: true
-    working: "unknown"
+    working: false
     file: "/app/frontend/src/components/LivingPitchDeck.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "unknown"
         agent: "main"
         comment: "IMPLEMENTED: Added frontend UI for Laws & Incentives Monitor and Bank Exposure tabs. Created 3-pane regulatory view (federal/state/municipal) with drilldown functionality for each regulatory item. Added FDIC bank exposure table with detailed bank analysis modal. Integrated new footnote IDs (NEVI, ITC30C, AB1236, AB970, CEQA32, LAZ1, LACode, LAGP, LADBS, B1) into UI components. Added loading states, error handling, and interactive elements. Ready for backend and frontend testing to validate new UI functionality."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL ISSUE: Frontend UI implementation is complete and renders correctly, but API data fetching is failing. Laws & Incentives Monitor shows 'No federal/state/municipal items available' and Bank Exposure shows 'No FDIC exposure data available'. Console errors show 'TypeError: Failed to fetch' for /api/regulatory/* and /api/fdic/exposure endpoints. The regulatory API endpoints return invalid response structure (missing data.items), while FDIC endpoints return 200 but frontend cannot process the data. UI components, footnote integration (all 17 footnote IDs present), responsive design, audience toggles, and token download flow all work correctly. The issue is specifically with API data integration - backend endpoints may be returning different schema than frontend expects."
 
   - task: "Live document interface"
     implemented: true
