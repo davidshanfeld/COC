@@ -37,6 +37,7 @@ except ImportError:
 
 import httpx
 import xml.etree.ElementTree as ET
+import math
 from math import isfinite
 
 APP_VERSION = "coastal-oak-mvp-1.2.0"
