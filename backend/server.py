@@ -712,9 +712,19 @@ async def get_footnotes():
                 {"id": "H1", "label": "Rates History", "source": "FRED GS5/GS10/GS30/DFF", "retrieved_at": now, "refresh": "Daily", "transform": "Observation series"},
                 {"id": "R1", "label": "Regulatory Tracker", "source": "Federal Register + CA/LA", "retrieved_at": now, "refresh": "Weekly", "transform": "Normalized statuses"},
                 {"id": "S1", "label": "Sentiment Composite", "source": "VNQ/IYR P/C, VIX, IG/HY Spreads (FRED)", "retrieved_at": now, "refresh": "Daily", "transform": "Composite signal"},
-                {"id": "C1", "label": "CA Transactions Feed", "source": "County trustee filings + press", "retrieved_at": now, "refresh": "Weekly", "transform": "Tagged type/counterparty"}
+                {"id": "C1", "label": "CA Transactions Feed", "source": "County trustee filings + press", "retrieved_at": now, "refresh": "Weekly", "transform": "Tagged type/counterparty"},
+                # New regulatory and FDIC footnotes
+                {"id": "NEVI", "label": "NEVI Formula Program", "source": "FHWA NEVI Program", "retrieved_at": now, "refresh": "Periodic", "transform": "Federal funding constraints"},
+                {"id": "ITC30C", "label": "Alternative Fuel Refueling Credit", "source": "IRS §30C Guidelines", "retrieved_at": now, "refresh": "Static", "transform": "Tax credit calculations"},
+                {"id": "AB1236", "label": "AB 1236 Streamlined EVCS Permitting", "source": "CA Legislature", "retrieved_at": now, "refresh": "Static", "transform": "Permitting requirements"},
+                {"id": "AB970", "label": "AB 970 EVCS Permit Deadlines", "source": "CA Legislature", "retrieved_at": now, "refresh": "Static", "transform": "Timeline requirements"},
+                {"id": "CEQA32", "label": "CEQA Class 32 Infill Exemption", "source": "CA Code of Regulations", "retrieved_at": now, "refresh": "Static", "transform": "Exemption criteria"},
+                {"id": "LAZ1", "label": "LA New Zoning Code", "source": "LA City Planning", "retrieved_at": now, "refresh": "Weekly", "transform": "CPA rollout status"},
+                {"id": "LACode", "label": "LA Municipal Planning Code", "source": "AmLegal LA PZ", "retrieved_at": now, "refresh": "Weekly", "transform": "Current ordinances"},
+                {"id": "LAGP", "label": "LA General Plan Updates", "source": "LA City Planning", "retrieved_at": now, "refresh": "Weekly", "transform": "Policy changes"},
+                {"id": "LADBS", "label": "LADBS EV Charging Permits", "source": "LA Department of Building and Safety", "retrieved_at": now, "refresh": "Weekly", "transform": "Permit requirements"}
             ],
-            "total_count": 8,
+            "total_count": 16,
             "last_updated": now
         }
         
