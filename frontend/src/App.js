@@ -307,12 +307,24 @@ function App(){
                 <HeroTile loading={rates.loading} title="10y UST" value={`${(rates.data?.t10??4.49).toFixed(2)}%`} sub={`As of ${rates.data?.asOf||"—"}`} footnoteId="T1" onOpen={setOpenFn} />
                 <HeroTile loading={maturities.loading} title="CRE maturities (this year)" value={`Mix view`} sub={`Breakdown below`} footnoteId="M1" onOpen={setOpenFn} />
               </div>
-              <RatesChart loading={rates.loading} series={series} />
+              <RatesChart 
+                loading={ratesHistory.loading} 
+                data={overviewData} 
+                range={ratesRange} 
+                onRangeChange={setRatesRange} 
+              />
               <MaturityBar loading={maturities.loading} rows={maturities.data?.rows || []} />
             </>
           )}
 
-          {active === "Rates" && <RatesChart loading={rates.loading} series={series} />}
+          {active === "Rates" && (
+            <RatesChart 
+              loading={ratesHistory.loading} 
+              data={chartData} 
+              range={ratesRange} 
+              onRangeChange={setRatesRange} 
+            />
+          )}
           {active === "CRE Maturities" && <MaturityBar loading={maturities.loading} rows={maturities.data?.rows || []} />}
           {active === "Banks" && <BanksTab onOpen={setOpenFn} />}
           {active === "Waterfall" && <WaterfallTab />}
