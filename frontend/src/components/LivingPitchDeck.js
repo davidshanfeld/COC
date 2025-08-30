@@ -83,6 +83,8 @@ const LivingPitchDeck = () => {
     fetchCurrentRates();
     fetchFootnotes();
     fetchRatesHistory(180);
+    fetchRegulatoryData();
+    fetchFdicData();
   }, []);
 
   const apiFetch = (path, opts) => fetch(path.startsWith('http') ? path : `${API_BASE}${path}`, opts);
