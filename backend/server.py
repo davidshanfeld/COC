@@ -30,6 +30,9 @@ db = client.coastal_oak_db
 # Initialize document service
 document_service = EnhancedDocumentService()
 
+# Initialize Agent SDK orchestrator
+orchestrator = build_orchestrator(client)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
