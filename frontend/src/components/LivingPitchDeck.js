@@ -113,6 +113,58 @@ const LivingPitchDeck = () => {
     }
   };
 
+  // New functions for regulatory and FDIC data
+  const fetchRegulatoryData = async () => {
+    setRegulatoryLoading(true);
+    try {
+      const [federal, state, municipal] = await Promise.all([
+        apiFetch(`/api/regulatory/federal`).then(r => r.json()),
+        apiFetch(`/api/regulatory/state`).then(r => r.json()),
+        apiFetch(`/api/regulatory/municipal`).then(r => r.json())
+      ]);
+      
+      setRegulatoryData({
+        federal: federal.success ? federal.data.items : [],
+        state: state.success ? state.data.items : [],
+        municipal: municipal.success ? municipal.data.items : []
+      });
+    } catch (error) {
+      console.error('Error fetching regulatory data:', error);
+    } finally {
+      setRegulatoryLoading(false);
+    }
+  };
+
+  const fetchFdicData = async () => {
+    setFdicLoading(true);
+    try {
+      const response = await apiFetch(`/api/fdic/exposure`);
+      const data = await response.json();
+      if (data.success) {
+        setFdicData(prev => ({
+          ...prev,
+          exposure: data.data
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching FDIC exposure data:', error);
+    } finally {
+      setFdicLoading(false);
+    }
+  };
+
+  const fetchBankDetail = async (fdicCert) => {
+    try {
+      const response = await apiFetch(`/api/fdic/banks/${fdicCert}`);
+      const data = await response.json();
+      if (data.success) {
+        setSelectedBankDetail(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching bank detail:', error);
+    }
+  };
+
   const executeAgents = async (objective, tags, inputs = {}) => {
     setLoading(true);
     try {
