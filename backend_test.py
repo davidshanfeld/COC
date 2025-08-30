@@ -1681,6 +1681,13 @@ class CoastalOakAPITester:
             ("V1.3.0 - Audit Logs", self.test_audit_endpoint),
             ("V1.3.0 - Footnotes", self.test_footnotes_endpoint),
             
+            # V1.3.x New Regulatory and FDIC Adapters
+            ("V1.3.x - Federal Regulatory", self.test_regulatory_federal_endpoint),
+            ("V1.3.x - State Regulatory", self.test_regulatory_state_endpoint),
+            ("V1.3.x - Municipal Regulatory", self.test_regulatory_municipal_endpoint),
+            ("V1.3.x - FDIC Exposure", self.test_fdic_exposure_endpoint),
+            ("V1.3.x - FDIC Bank Detail", self.test_fdic_bank_detail_endpoint),
+            
             # Regression Tests
             ("Regression - Current Rates", self.test_rates_endpoint),
             ("Regression - CRE Maturities", self.test_maturities_endpoint),
