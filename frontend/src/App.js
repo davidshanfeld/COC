@@ -236,21 +236,35 @@ function App(){
   const [active, setActive] = useState("Overview");
   const [openFn, setOpenFn] = useState(null);
   const [token, setToken] = useState(null);
+  const [ratesRange, setRatesRange] = useState("6M");
 
   const rates = useData(`/api/rates?audience=${encodeURIComponent(view)}`);
   const maturities = useData(`/api/maturities?audience=${encodeURIComponent(view)}`);
   const footnotes = useData("/api/footnotes");
+  
+  // Historical rates data based on selected range
+  const rangeDays = ratesRange === "6M" ? 180 : ratesRange === "1Y" ? 365 : 1095; // Max = 3 years
+  const ratesHistory = useData(`/api/rates/history?days=${rangeDays}&audience=${encodeURIComponent(view)}`);
 
   const errors = [];
   if(rates.error) errors.push("Rates failed");
   if(maturities.error) errors.push("Maturities failed");
   if(footnotes.error) errors.push("Footnotes failed");
 
-  const series = useMemo(()=>{
-    const t5 = rates.data?.t5 ?? 4.5; const t10 = rates.data?.t10 ?? 4.49; const t30 = rates.data?.t30 ?? 4.66;
-    const labels = ["Jan","Feb","Mar","Apr","May","Jun"];
-    return labels.map((name)=>({ name, t5, t10, t30 }));
-  },[rates.data]);
+  // Use historical data for charts, fallback to current rates for overview tiles
+  const chartData = ratesHistory.data?.data || [];
+  const overviewData = useMemo(() => {
+    if (chartData.length > 0) {
+      // Use last few points from historical data for overview sparkline
+      return chartData.slice(-6);
+    }
+    // Fallback to mock data
+    const t5 = rates.data?.t5 ?? 4.5; 
+    const t10 = rates.data?.t10 ?? 4.49; 
+    const t30 = rates.data?.t30 ?? 4.66;
+    const ffr = rates.data?.ffr ?? 5.33;
+    return ["Jan","Feb","Mar","Apr","May","Jun"].map((name)=>({ name, t5, t10, t30, ffr }));
+  }, [chartData, rates.data]);
 
   const tabs = ["Overview","Rates","CRE Maturities","Banks","Waterfall"];
 
