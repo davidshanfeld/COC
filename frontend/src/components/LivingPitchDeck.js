@@ -840,20 +840,20 @@ const LivingPitchDeck = () => {
                               </td>
                               <td className="border border-slate-200 px-4 py-3 text-center text-sm">
                                 <Badge className="bg-orange-100 text-orange-800">
-                                  {(bank.exposurePct * 100).toFixed(1)}%
+                                  {bank.exposurePct.toFixed(1)}%
                                 </Badge>
                               </td>
                               <td className="border border-slate-200 px-4 py-3 text-center text-sm">
-                                {bank.stack?.mf ? (bank.stack.mf * 100).toFixed(1) + '%' : 'N/A'}
+                                {bank.stack?.mf ? bank.stack.mf.toFixed(0) + '%' : 'N/A'}
                               </td>
                               <td className="border border-slate-200 px-4 py-3 text-center text-sm">
-                                {bank.stack?.off ? (bank.stack.off * 100).toFixed(1) + '%' : 'N/A'}
+                                {bank.stack?.off ? bank.stack.off.toFixed(0) + '%' : 'N/A'}
                               </td>
                               <td className="border border-slate-200 px-4 py-3 text-center text-sm">
-                                {bank.stack?.ind ? (bank.stack.ind * 100).toFixed(1) + '%' : 'N/A'}
+                                {bank.stack?.ind ? bank.stack.ind.toFixed(0) + '%' : 'N/A'}
                               </td>
                               <td className="border border-slate-200 px-4 py-3 text-center text-sm">
-                                {bank.stack?.other ? (bank.stack.other * 100).toFixed(1) + '%' : 'N/A'}
+                                {bank.stack?.other ? bank.stack.other.toFixed(0) + '%' : 'N/A'}
                               </td>
                               <td className="border border-slate-200 px-4 py-3 text-center">
                                 <Button
