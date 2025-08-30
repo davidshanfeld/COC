@@ -635,7 +635,7 @@ async def executive_summary_pdf():
             pdf_bytes = HTML(string=html).write_pdf()
             return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": "inline; filename=executive_summary.pdf"})
         except Exception as e:
-            return HTMLResponse(content=html, headers={"X-PDF-Mode": "fallback-html"})
+            return HTMLResponse(content=html, headers={"X-PDF-Mode": "fallback-html", "Cache-Control":"no-store, no-cache, must-revalidate, max-age=0", "Pragma":"no-cache", "Expires":"0"})
     except Exception as e:
         logger.error(f"Error generating /execsum.pdf: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to generate executive summary: {str(e)}")
