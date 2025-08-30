@@ -916,19 +916,19 @@ const LivingPitchDeck = () => {
                       <div className="bg-blue-50 p-3 rounded-lg">
                         <div className="text-xs text-blue-600 font-medium">CRE Exposure</div>
                         <div className="text-lg font-bold text-blue-800">
-                          {(fdicData.selectedBank.exposurePct * 100).toFixed(1)}%
+                          {(selectedBankDetail.bank?.exposurePct || 0).toFixed(1)}%
                         </div>
                       </div>
                       <div className="bg-green-50 p-3 rounded-lg">
                         <div className="text-xs text-green-600 font-medium">Total Assets</div>
                         <div className="text-lg font-bold text-green-800">
-                          ${(selectedBankDetail.totalAssets / 1e9).toFixed(1)}B
+                          ${(selectedBankDetail.bank?.details?.assets_total / 1e9 || 0).toFixed(1)}B
                         </div>
                       </div>
                       <div className="bg-purple-50 p-3 rounded-lg">
-                        <div className="text-xs text-purple-600 font-medium">Risk Rating</div>
+                        <div className="text-xs text-purple-600 font-medium">Tier 1 Capital</div>
                         <div className="text-lg font-bold text-purple-800">
-                          {selectedBankDetail.riskRating || 'N/A'}
+                          {selectedBankDetail.bank?.details?.risk_metrics?.tier1_capital_ratio?.toFixed(1) || 'N/A'}%
                         </div>
                       </div>
                       <div className="bg-orange-50 p-3 rounded-lg">
@@ -943,7 +943,7 @@ const LivingPitchDeck = () => {
                     </div>
 
                     {/* Quarterly Trends */}
-                    {selectedBankDetail.quarterlyTrends && (
+                    {selectedBankDetail.bank?.details?.quarterly_trend && (
                       <div>
                         <h4 className="font-semibold text-slate-700 mb-3">Quarterly CRE Exposure Trends</h4>
                         <div className="overflow-x-auto">
@@ -952,26 +952,14 @@ const LivingPitchDeck = () => {
                               <tr className="bg-slate-100">
                                 <th className="px-3 py-2 text-left">Quarter</th>
                                 <th className="px-3 py-2 text-center">CRE Exposure %</th>
-                                <th className="px-3 py-2 text-center">Change</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {selectedBankDetail.quarterlyTrends.map((trend, index) => (
+                              {selectedBankDetail.bank.details.quarterly_trend.map((trend, index) => (
                                 <tr key={index} className="border-t">
                                   <td className="px-3 py-2">{trend.quarter}</td>
                                   <td className="px-3 py-2 text-center">
-                                    {(trend.creExposurePct * 100).toFixed(2)}%
-                                  </td>
-                                  <td className="px-3 py-2 text-center">
-                                    <Badge 
-                                      className={
-                                        trend.qoqChange >= 0 ? 
-                                        'bg-red-100 text-red-800' : 
-                                        'bg-green-100 text-green-800'
-                                      }
-                                    >
-                                      {trend.qoqChange >= 0 ? '+' : ''}{(trend.qoqChange * 100).toFixed(2)}%
-                                    </Badge>
+                                    {(trend.exposure_pct).toFixed(1)}%
                                   </td>
                                 </tr>
                               ))}
