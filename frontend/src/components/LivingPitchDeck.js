@@ -102,7 +102,7 @@ const LivingPitchDeck = () => {
 
   const requestDeckAccess = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/deck/request`, {
+      const response = await apiFetch(`/api/deck/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
