@@ -45,21 +45,67 @@ function HeroTile({ title, value, sub, footnoteId, onOpen, loading }){
   );
 }
 
-function RatesChart({ series, loading }){
-  const rows = (series||[]).map((r)=>({ name: r.name, t5: r.t5, t10: r.t10, t30: r.t30 }));
+function RatesChart({ data, loading, range, onRangeChange }){
+  // Process data based on whether it's historical or current
+  const chartData = data ? (
+    Array.isArray(data) ? data.map(d => ({
+      date: d.date,
+      name: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      t5: d.t5,
+      t10: d.t10, 
+      t30: d.t30,
+      ffr: d.ffr
+    })) : 
+    // Fallback to old format for current rates
+    ["Jan","Feb","Mar","Apr","May","Jun"].map((name)=>({ 
+      name, 
+      t5: data.t5 ?? 4.5, 
+      t10: data.t10 ?? 4.49, 
+      t30: data.t30 ?? 4.66,
+      ffr: data.ffr ?? 5.33
+    }))
+  ) : [];
+
   return (
-    <div className="card h-72">
-      <div className="mb-2 text-sm text-gray-600">Treasury yields, %</div>
-      {loading ? <Skeleton className="h-48 w-full"/> : (
+    <div className="card h-80">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-sm text-gray-600">Treasury yields & Fed Funds, %</div>
+        <div className="flex items-center gap-1">
+          {["6M", "1Y", "Max"].map(r => (
+            <button 
+              key={r}
+              className={`px-2 py-1 text-xs rounded ${range === r ? "bg-gray-900 text-white" : "bg-gray-100 hover:bg-gray-200"}`}
+              onClick={() => onRangeChange(r)}
+            >
+              {r}
+            </button>
+          ))}
+        </div>
+      </div>
+      {loading ? <Skeleton className="h-56 w-full"/> : (
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rows} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
-            <XAxis dataKey="name" fontSize={12} />
-            <YAxis domain={[0, 'auto']} fontSize={12} />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="t5" name="5y" dot={false} strokeWidth={2} />
-            <Line type="monotone" dataKey="t10" name="10y" dot={false} strokeWidth={2} />
-            <Line type="monotone" dataKey="t30" name="30y" dot={false} strokeWidth={2} />
+          <LineChart data={chartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
+            <XAxis 
+              dataKey="name" 
+              fontSize={10}
+              tick={{ fontSize: 10 }}
+              interval={Math.max(1, Math.floor(chartData.length / 8))} // Show ~8 labels max
+            />
+            <YAxis 
+              domain={['dataMin - 0.1', 'dataMax + 0.1']} 
+              fontSize={10}
+              tick={{ fontSize: 10 }}
+              tickFormatter={(value) => `${value.toFixed(1)}%`}
+            />
+            <Tooltip 
+              formatter={(value, name) => [`${value?.toFixed(2)}%`, name]}
+              labelFormatter={(label) => `Date: ${label}`}
+            />
+            <Legend fontSize={10} />
+            <Line type="monotone" dataKey="ffr" name="Fed Funds" stroke="#dc2626" dot={false} strokeWidth={2} />
+            <Line type="monotone" dataKey="t5" name="5y Treasury" stroke="#2563eb" dot={false} strokeWidth={2} />
+            <Line type="monotone" dataKey="t10" name="10y Treasury" stroke="#059669" dot={false} strokeWidth={2} />
+            <Line type="monotone" dataKey="t30" name="30y Treasury" stroke="#7c3aed" dot={false} strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       )}
