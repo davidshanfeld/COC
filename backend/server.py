@@ -37,6 +37,10 @@ try:
 except Exception as e:
     logger.warning(f"Index creation warning: {e}")
 
+def _utc(dt):  # tolerant datetime parser
+    """Convert datetime string to UTC datetime object"""
+    return datetime.fromisoformat(dt.replace("Z","+00:00")).astimezone(timezone.utc)
+
 def log_audit(action: str, details: Dict[str, Any]):
     try:
         db.audit_logs.insert_one({
