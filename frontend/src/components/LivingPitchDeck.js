@@ -38,6 +38,32 @@ const LivingPitchDeck = () => {
   const [slopeText, setSlopeText] = useState("");
 
   // Fetch initial data on component mount
+  async function fetchRatesHistory(days = 180) {
+    try {
+      const response = await apiFetch(`/api/rates/history?days=${days}`);
+      const data = await response.json();
+      if (data.success) {
+        setHistoryData(data.data);
+        // Compute slope context for 10Y series vs 6M and 1Y
+        const series = data.data?.['10Y'] || [];
+        if (series.length > 0) {
+          const latest = series[series.length - 1];
+          const sixIdx = Math.max(0, series.length - 130);
+          const oneIdx = Math.max(0, series.length - 260);
+          const sixM = series[sixIdx];
+          const oneY = series[oneIdx];
+          const slope6 = latest && sixM ? (latest.value - sixM.value) : 0;
+          const slope12 = latest && oneY ? (latest.value - oneY.value) : 0;
+          setSlopeText(`10Y vs 6M: ${(slope6>=0?'+':'')}${slope6.toFixed(2)} • 10Y vs 1Y: ${(slope12>=0?'+':'')}${slope12.toFixed(2)}`);
+        } else {
+          setSlopeText('');
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching rate history:', e);
+    }
+  }
+
   useEffect(() => {
     fetchCurrentRates();
     fetchFootnotes();
