@@ -162,8 +162,8 @@ const LivingPitchDeck = () => {
     try {
       const response = await apiFetch(`/api/fdic/banks/${fdicCert}`);
       const data = await response.json();
-      if (data.success) {
-        setSelectedBankDetail(data.data);
+      if (response.ok) {
+        setSelectedBankDetail(data);
       }
     } catch (error) {
       console.error('Error fetching bank detail:', error);
