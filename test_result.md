@@ -258,6 +258,19 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+
+- task: "Agent SDK - Living Pitch Deck frontend wiring and smoke test"
+  implemented: true
+  working: "unknown"
+  file: "/app/frontend/src/components/LivingPitchDeck.js"
+  stuck_count: 0
+  priority: "high"
+  needs_retesting: true
+  status_history:
+    - working: "unknown"
+      agent: "main"
+      comment: "Updated SPA to use env-based backend URL helper (apiFetch) and added new backend endpoints: /api/rates/history, /api/healthz/deps, /api/execsum.pdf, /api/audit, plus secure token download flow with /api/deck/download. Ready for UI smoke test and automated frontend tests per v1.3.0 runbook."
+
   - task: "Agent SDK - Living Pitch Deck backend integration"
     implemented: true
     working: true
