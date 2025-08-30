@@ -8,7 +8,7 @@
       "test": "Agent Registry Endpoint",
       "success": true,
       "details": "All 14 agents properly registered with complete capabilities",
-      "timestamp": "2025-08-30T03:06:28.422166",
+      "timestamp": "2025-08-30T03:09:08.451369",
       "response_data": {
         "total_agents": 14,
         "sample_agents": [
@@ -22,7 +22,7 @@
       "test": "Rates Data Feed",
       "success": true,
       "details": "Successfully fetched Treasury and Fed rates data",
-      "timestamp": "2025-08-30T03:06:28.936636",
+      "timestamp": "2025-08-30T03:09:08.966941",
       "response_data": {
         "treasury_tenors": [
           "5Y",
@@ -36,7 +36,7 @@
       "test": "CRE Maturities Data Feed",
       "success": true,
       "details": "Successfully fetched CRE maturity data with 3 property types",
-      "timestamp": "2025-08-30T03:06:29.449810",
+      "timestamp": "2025-08-30T03:09:09.480212",
       "response_data": {
         "rows_count": 3,
         "property_types": [
@@ -50,7 +50,7 @@
       "test": "FDIC Banks Data Feed",
       "success": true,
       "details": "Successfully fetched FDIC data with 2 banks",
-      "timestamp": "2025-08-30T03:06:29.959305",
+      "timestamp": "2025-08-30T03:09:09.989899",
       "response_data": {
         "banks_count": 2,
         "sample_banks": [
@@ -63,7 +63,7 @@
       "test": "Agent Execution",
       "success": true,
       "details": "Successfully executed 5 agents with 6 footnotes",
-      "timestamp": "2025-08-30T03:06:30.469697",
+      "timestamp": "2025-08-30T03:09:10.501654",
       "response_data": {
         "agents_executed": 5,
         "footnotes_count": 6
@@ -73,7 +73,7 @@
       "test": "EV Charging Scenario",
       "success": true,
       "details": "EV charging scenario executed successfully with 5 agents",
-      "timestamp": "2025-08-30T03:06:30.979250",
+      "timestamp": "2025-08-30T03:09:11.017257",
       "response_data": {
         "agents_executed": 5,
         "ev_analysis": true
@@ -83,9 +83,9 @@
       "test": "Security Token Endpoint",
       "success": true,
       "details": "Single-use token generated successfully for institutional_investor_001",
-      "timestamp": "2025-08-30T03:06:31.489382",
+      "timestamp": "2025-08-30T03:09:11.527218",
       "response_data": {
-        "token_prefix": "sut_d51c...",
+        "token_prefix": "sut_8575...",
         "audience": "LP"
       }
     },
@@ -93,7 +93,7 @@
       "test": "Footnotes Endpoint",
       "success": true,
       "details": "Successfully fetched 2 footnotes with proper citations",
-      "timestamp": "2025-08-30T03:06:31.998009",
+      "timestamp": "2025-08-30T03:09:12.036586",
       "response_data": {
         "footnotes_count": 2,
         "sample_sources": [
