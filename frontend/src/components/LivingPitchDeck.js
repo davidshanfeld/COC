@@ -41,6 +41,7 @@ const LivingPitchDeck = () => {
   useEffect(() => {
     fetchCurrentRates();
     fetchFootnotes();
+    fetchRatesHistory(180);
   }, []);
 
   const apiFetch = (path, opts) => fetch(path.startsWith('http') ? path : `${API_BASE}${path}`, opts);
