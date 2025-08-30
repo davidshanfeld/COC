@@ -18,6 +18,7 @@ class CoastalOakAPITester:
         self.session = requests.Session()
         self.test_results = []
         self.created_document_id = None
+        self.access_token = None
         
     def _get_backend_url(self) -> str:
         """Get backend URL from frontend .env file"""
