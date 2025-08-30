@@ -537,72 +537,96 @@ async def request_deck_access(payload: dict):
         raise HTTPException(status_code=500, detail=f"Failed to issue access token: {str(e)}")
 
 @router.get("/deck/download")
-async def download_deck(token: str):
+async def deck_download(request: Request, token: str, format: str = "pdf"):
     """Download watermarked executive summary with single-use token enforcement"""
     try:
-        rec = db.tokens.find_one({"token": token})
-        if not rec:
-            log_audit("token_invalid", {"token": token})
-            raise HTTPException(status_code=403, detail="Invalid token")
-        if rec.get("used"):
-            log_audit("token_reuse_blocked", {"token": token})
-            raise HTTPException(status_code=403, detail="Token already used")
-        # Skip expiry check for now - focus on single-use enforcement
-        # if rec.get("expires_at"):
-        #     try:
-        #         expires_str = rec["expires_at"]
-        #         # Handle different ISO formats
-        #         if expires_str.endswith('Z'):
-        #             expires_str = expires_str[:-1] + '+00:00'
-        #         
-        #         expires_dt = datetime.fromisoformat(expires_str)
-        #         now_dt = datetime.now()
-        #         
-        #         # Convert both to UTC for comparison if needed
-        #         if expires_dt.tzinfo is not None:
-        #             # Convert to UTC then make naive
-        #             expires_dt = expires_dt.utctimetuple()
-        #             expires_dt = datetime(*expires_dt[:6])
-        #         
-        #         # Add some buffer time (1 minute) to account for processing delays
-        #         if expires_dt < (now_dt - timedelta(minutes=1)):
-        #             log_audit("token_expired", {"token": token})
-        #             raise HTTPException(status_code=403, detail="Token expired")
-        #     except Exception as dt_error:
-        #         logger.warning(f"Date parsing error for token expiry: {dt_error}")
-        #         # Continue without expiry check if parsing fails
-            log_audit("token_expired", {"token": token})
-            raise HTTPException(status_code=403, detail="Token expired")
+        cred = db.credentials.find_one({"token": token})
+        now = datetime.now(timezone.utc)
         
-        # Mark as used
-        db.tokens.update_one({"token": token}, {"$set": {"used": True, "used_at": datetime.now().isoformat()}})
+        if not cred:
+            raise HTTPException(404, "invalid token")
+            
+        if cred.get("used"):
+            # Already used once → hard stop
+            db.access_log.insert_one({
+                "user": cred["email"], 
+                "action": "deck_download_reuse", 
+                "ts": now.isoformat(), 
+                "ip": request.client.host
+            })
+            raise HTTPException(403, "token already used")
         
-        # Generate a simple executive summary HTML with watermark
-        watermark = f"Viewer: {rec.get('user_id','unknown')} • Audience: {rec.get('audience','LP')} • {datetime.now().isoformat()}"
-        html = f"""
-        <html><head><meta charset='utf-8'><style>
-        body {{ font-family: Arial, sans-serif; margin: 40px; }}
-        .wm {{ position: fixed; top: 10px; right: 10px; color: #888; font-size: 10px; }}
-        h1 {{ color: #064e3b; }}
-        .meta {{ color:#475569; font-size:12px; margin-bottom:20px; }}
-        </style></head><body>
-        <div class='wm'>{watermark}</div>
-        <h1>Executive Summary — Coastal Oak Capital</h1>
-        <div class='meta'>Generated {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>
-        <p>Distressed CRE debt with AI/Data Infrastructure and EV Super-charging conversions. Institutional discipline, clear underwriting, and real-time market intelligence.</p>
-        </body></html>
-        """
+        # expiry check (if present)
+        exp = cred.get("expiresAt")
+        if exp and now > _utc(exp):
+            db.access_log.insert_one({
+                "user": cred["email"], 
+                "action": "deck_download_expired", 
+                "ts": now.isoformat(), 
+                "ip": request.client.host
+            })
+            raise HTTPException(403, "token expired")
+
+        # Mark used *atomically* before returning the file
+        res = db.credentials.update_one(
+            {"token": token, "used": False},
+            {"$set": {"used": True, "usedAt": now.isoformat()}}
+        )
+        if res.modified_count != 1:
+            # Race condition safety: someone else flipped it
+            raise HTTPException(403, "token already used")
+
+        # Serve PDF or fallback HTML; always watermark
+        wm = f"{cred['email']} • {now.isoformat()} • Coastal Oak"
+        headers = {"Cache-Control": "no-store", "X-Watermark": wm}
         
-        # Try to render PDF if WeasyPrint is available
         try:
+            # Try to render PDF if WeasyPrint is available
             from weasyprint import HTML
-            pdf_bytes = HTML(string=html).write_pdf()
-            log_audit("deck_download_pdf", {"token": token})
-            return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": "attachment; filename=executive_summary.pdf", "Cache-Control":"no-store, no-cache, must-revalidate, max-age=0", "Pragma":"no-cache", "Expires":"0"})
-        except Exception as e:
+            html_content = f"""
+            <html><head><meta charset='utf-8'><style>
+            body {{ font-family: Arial, sans-serif; margin: 40px; }}
+            .wm {{ position: fixed; top: 10px; right: 10px; color: #888; font-size: 10px; }}
+            h1 {{ color: #064e3b; }}
+            .meta {{ color:#475569; font-size:12px; margin-bottom:20px; }}
+            </style></head><body>
+            <div class='wm'>{wm}</div>
+            <h1>Executive Summary — Coastal Oak Capital</h1>
+            <div class='meta'>Generated {now.strftime('%Y-%m-%d %H:%M:%S')}</div>
+            <p>Distressed CRE debt with AI/Data Infrastructure and EV Super-charging conversions. Institutional discipline, clear underwriting, and real-time market intelligence.</p>
+            </body></html>
+            """
+            pdf_bytes = HTML(string=html_content).write_pdf()
+            db.access_log.insert_one({
+                "user": cred["email"], 
+                "action": "deck_download_pdf", 
+                "ts": now.isoformat(), 
+                "ip": request.client.host
+            })
+            return Response(content=pdf_bytes, media_type="application/pdf", headers=headers)
+        except Exception:
             # Fallback to HTML
-            log_audit("deck_download_html_fallback", {"token": token, "error": str(e)})
-            return HTMLResponse(content=html, headers={"X-PDF-Mode": "fallback-html", "Cache-Control":"no-store, no-cache, must-revalidate, max-age=0", "Pragma":"no-cache", "Expires":"0"})
+            html = f"""
+            <html><head><meta charset='utf-8'><style>
+            body {{ font-family: Arial, sans-serif; margin: 40px; }}
+            .wm {{ position: fixed; top: 10px; right: 10px; color: #888; font-size: 10px; }}
+            h1 {{ color: #064e3b; }}
+            .meta {{ color:#475569; font-size:12px; margin-bottom:20px; }}
+            </style></head><body>
+            <div class='wm'>{wm}</div>
+            <h1>Executive Summary — Coastal Oak Capital</h1>
+            <div class='meta'>Generated {now.strftime('%Y-%m-%d %H:%M:%S')}</div>
+            <p>Opportunistic Commercial Real Estate Distressed Debt Fund with conversion strategies into AI/Data Centers and EV infrastructure.</p>
+            </body></html>
+            """
+            headers["X-PDF-Mode"] = "fallback-html"
+            db.access_log.insert_one({
+                "user": cred["email"], 
+                "action": "deck_download_html", 
+                "ts": now.isoformat(), 
+                "ip": request.client.host
+            })
+            return Response(content=html, media_type="text/html; charset=utf-8", headers=headers)
         
     except HTTPException:
         raise
