@@ -529,6 +529,597 @@ class CoastalOakAPITester:
         except Exception as e:
             self.log_test("Daily Refresh Endpoint", False, f"Request failed: {str(e)}")
             return False
+
+    # ======= V1.3.0 ENDPOINTS TESTING =======
+    
+    def test_healthz_deps_endpoint(self) -> bool:
+        """Test GET /api/healthz/deps - Dependency health check"""
+        try:
+            response = self.session.get(f"{self.base_url}/healthz/deps", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['success', 'status', 'timestamp']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Healthz Deps Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                if not data.get('success'):
+                    self.log_test("Healthz Deps Endpoint", False, 
+                                f"API returned success=false", data)
+                    return False
+                
+                # Check status structure
+                status = data.get('status', {})
+                required_status_fields = ['mongo', 'fred_api_key', 'weasyprint', 'agents_registered']
+                missing_status_fields = [field for field in required_status_fields if field not in status]
+                
+                if missing_status_fields:
+                    self.log_test("Healthz Deps Endpoint", False, 
+                                f"Missing status fields: {missing_status_fields}", data)
+                    return False
+                
+                # Validate specific requirements
+                mongo_status = status.get('mongo')
+                fred_api_key = status.get('fred_api_key')
+                weasyprint = status.get('weasyprint')
+                agents_registered = status.get('agents_registered', 0)
+                
+                if mongo_status != "connected":
+                    self.log_test("Healthz Deps Endpoint", False, 
+                                f"MongoDB not connected: {mongo_status}", data)
+                    return False
+                
+                if not isinstance(fred_api_key, bool):
+                    self.log_test("Healthz Deps Endpoint", False, 
+                                f"FRED API key should be boolean: {fred_api_key}", data)
+                    return False
+                
+                if not isinstance(weasyprint, bool):
+                    self.log_test("Healthz Deps Endpoint", False, 
+                                f"WeasyPrint should be boolean: {weasyprint}", data)
+                    return False
+                
+                if agents_registered < 1:
+                    self.log_test("Healthz Deps Endpoint", False, 
+                                f"Expected >= 1 agents registered, got: {agents_registered}", data)
+                    return False
+                
+                self.log_test("Healthz Deps Endpoint", True, 
+                            f"All dependencies healthy - Mongo: {mongo_status}, FRED: {fred_api_key}, WeasyPrint: {weasyprint}, Agents: {agents_registered}", 
+                            status)
+                return True
+                
+            else:
+                self.log_test("Healthz Deps Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Healthz Deps Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_rates_history_endpoint(self) -> bool:
+        """Test GET /api/rates/history?days=180 - Historical rates data"""
+        try:
+            response = self.session.get(f"{self.base_url}/rates/history?days=180", timeout=15)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['success', 'data', 'timestamp']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Rates History Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                if not data.get('success'):
+                    self.log_test("Rates History Endpoint", False, 
+                                f"API returned success=false", data)
+                    return False
+                
+                # Check data structure
+                rates_data = data.get('data', {})
+                required_keys = ['5Y', '10Y', '30Y', 'DFF']
+                missing_keys = [key for key in required_keys if key not in rates_data]
+                
+                if missing_keys:
+                    self.log_test("Rates History Endpoint", False, 
+                                f"Missing data keys: {missing_keys}", data)
+                    return False
+                
+                # Validate each rate series has data
+                for key in required_keys:
+                    series_data = rates_data.get(key, [])
+                    if not isinstance(series_data, list):
+                        self.log_test("Rates History Endpoint", False, 
+                                    f"Key {key} should be array, got: {type(series_data)}", data)
+                        return False
+                    
+                    if len(series_data) == 0:
+                        self.log_test("Rates History Endpoint", False, 
+                                    f"Key {key} has no data", data)
+                        return False
+                    
+                    # Check first item structure (should have date/value)
+                    if series_data:
+                        first_item = series_data[0]
+                        if not isinstance(first_item, dict) or 'date' not in first_item or 'value' not in first_item:
+                            self.log_test("Rates History Endpoint", False, 
+                                        f"Key {key} items should have date/value structure", data)
+                            return False
+                
+                self.log_test("Rates History Endpoint", True, 
+                            f"Historical rates data retrieved successfully - 5Y: {len(rates_data['5Y'])} points, 10Y: {len(rates_data['10Y'])} points, 30Y: {len(rates_data['30Y'])} points, DFF: {len(rates_data['DFF'])} points", 
+                            {key: len(rates_data[key]) for key in required_keys})
+                return True
+                
+            else:
+                self.log_test("Rates History Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Rates History Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_execsum_pdf_endpoint(self) -> bool:
+        """Test GET /api/execsum.pdf - Executive summary PDF or HTML fallback"""
+        try:
+            response = self.session.get(f"{self.base_url}/execsum.pdf", timeout=15)
+            
+            if response.status_code == 200:
+                content_type = response.headers.get('content-type', '').lower()
+                
+                # Should return either PDF or HTML with fallback header
+                if content_type == 'application/pdf':
+                    # PDF response
+                    if len(response.content) < 100:  # PDF should be substantial
+                        self.log_test("Execsum PDF Endpoint", False, 
+                                    f"PDF content too small: {len(response.content)} bytes")
+                        return False
+                    
+                    self.log_test("Execsum PDF Endpoint", True, 
+                                f"PDF generated successfully - {len(response.content)} bytes", 
+                                {'content_type': content_type, 'size_bytes': len(response.content)})
+                    return True
+                    
+                elif 'text/html' in content_type:
+                    # HTML fallback
+                    fallback_header = response.headers.get('X-PDF-Mode')
+                    if fallback_header != 'fallback-html':
+                        self.log_test("Execsum PDF Endpoint", False, 
+                                    f"HTML fallback missing proper header: {fallback_header}")
+                        return False
+                    
+                    html_content = response.text
+                    if len(html_content) < 100:
+                        self.log_test("Execsum PDF Endpoint", False, 
+                                    f"HTML content too small: {len(html_content)} characters")
+                        return False
+                    
+                    # Check for basic HTML structure
+                    if '<html>' not in html_content or '<body>' not in html_content:
+                        self.log_test("Execsum PDF Endpoint", False, 
+                                    f"Invalid HTML structure")
+                        return False
+                    
+                    self.log_test("Execsum PDF Endpoint", True, 
+                                f"HTML fallback working correctly - {len(html_content)} characters", 
+                                {'content_type': content_type, 'fallback_header': fallback_header, 'size_chars': len(html_content)})
+                    return True
+                    
+                else:
+                    self.log_test("Execsum PDF Endpoint", False, 
+                                f"Unexpected content type: {content_type}")
+                    return False
+                
+            else:
+                self.log_test("Execsum PDF Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Execsum PDF Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_deck_request_endpoint(self) -> bool:
+        """Test POST /api/deck/request - Request secure access token"""
+        try:
+            payload = {"user_id": "demo_user", "audience": "LP"}
+            response = self.session.post(f"{self.base_url}/deck/request", json=payload, timeout=15)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['success', 'access_token', 'expires_at', 'audience', 'timestamp']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Deck Request Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                if not data.get('success'):
+                    self.log_test("Deck Request Endpoint", False, 
+                                f"API returned success=false", data)
+                    return False
+                
+                # Validate token
+                access_token = data.get('access_token')
+                if not access_token or len(access_token) < 10:
+                    self.log_test("Deck Request Endpoint", False, 
+                                f"Invalid access token: {access_token}", data)
+                    return False
+                
+                # Validate audience
+                audience = data.get('audience')
+                if audience != 'LP':
+                    self.log_test("Deck Request Endpoint", False, 
+                                f"Incorrect audience: {audience}", data)
+                    return False
+                
+                # Validate expires_at format
+                expires_at = data.get('expires_at')
+                if not expires_at:
+                    self.log_test("Deck Request Endpoint", False, 
+                                f"Missing expires_at", data)
+                    return False
+                
+                # Store token for download test
+                self.access_token = access_token
+                
+                self.log_test("Deck Request Endpoint", True, 
+                            f"Access token issued successfully - Token: {access_token[:8]}..., Audience: {audience}, Expires: {expires_at}", 
+                            {'token_length': len(access_token), 'audience': audience})
+                return True
+                
+            else:
+                self.log_test("Deck Request Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Deck Request Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_deck_download_endpoint(self) -> bool:
+        """Test GET /api/deck/download?token=... - Single-use token download"""
+        if not hasattr(self, 'access_token'):
+            self.log_test("Deck Download Endpoint", False, "No access token available (deck request test must run first)")
+            return False
+        
+        try:
+            # First download - should succeed
+            response1 = self.session.get(f"{self.base_url}/deck/download?token={self.access_token}", timeout=15)
+            
+            if response1.status_code == 200:
+                content_type = response1.headers.get('content-type', '').lower()
+                
+                # Should return either PDF or HTML
+                if content_type == 'application/pdf':
+                    if len(response1.content) < 100:
+                        self.log_test("Deck Download Endpoint", False, 
+                                    f"PDF content too small: {len(response1.content)} bytes")
+                        return False
+                elif 'text/html' in content_type:
+                    if len(response1.text) < 100:
+                        self.log_test("Deck Download Endpoint", False, 
+                                    f"HTML content too small: {len(response1.text)} characters")
+                        return False
+                else:
+                    self.log_test("Deck Download Endpoint", False, 
+                                f"Unexpected content type: {content_type}")
+                    return False
+                
+                # Second download - should fail with 403 (token already used)
+                response2 = self.session.get(f"{self.base_url}/deck/download?token={self.access_token}", timeout=10)
+                
+                if response2.status_code != 403:
+                    self.log_test("Deck Download Endpoint", False, 
+                                f"Second download should return 403, got: {response2.status_code}")
+                    return False
+                
+                self.log_test("Deck Download Endpoint", True, 
+                            f"Single-use token enforcement working - First download: {response1.status_code} ({content_type}), Second download: {response2.status_code} (blocked)", 
+                            {'first_response': response1.status_code, 'second_response': response2.status_code, 'content_type': content_type})
+                return True
+                
+            elif response1.status_code == 403:
+                self.log_test("Deck Download Endpoint", False, 
+                            f"First download failed with 403 - token may be invalid or expired")
+                return False
+            else:
+                self.log_test("Deck Download Endpoint", False, 
+                            f"HTTP {response1.status_code}: {response1.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Deck Download Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_audit_endpoint(self) -> bool:
+        """Test GET /api/audit - Audit log entries"""
+        try:
+            response = self.session.get(f"{self.base_url}/audit", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['success', 'data', 'count']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Audit Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                if not data.get('success'):
+                    self.log_test("Audit Endpoint", False, 
+                                f"API returned success=false", data)
+                    return False
+                
+                # Check audit entries
+                audit_entries = data.get('data', [])
+                count = data.get('count', 0)
+                
+                if count != len(audit_entries):
+                    self.log_test("Audit Endpoint", False, 
+                                f"Count mismatch: count={count}, actual={len(audit_entries)}", data)
+                    return False
+                
+                # Check for expected events (token_issued, deck_download_pdf or deck_download_html_fallback)
+                expected_events = ['token_issued']
+                found_events = []
+                
+                for entry in audit_entries:
+                    action = entry.get('action', '')
+                    if action in expected_events or action.startswith('deck_download'):
+                        found_events.append(action)
+                
+                if not found_events:
+                    self.log_test("Audit Endpoint", False, 
+                                f"No expected audit events found. Expected: {expected_events} or deck_download_*", data)
+                    return False
+                
+                # Validate audit entry structure
+                if audit_entries:
+                    sample_entry = audit_entries[0]
+                    required_entry_fields = ['action', 'details', 'timestamp']
+                    missing_entry_fields = [field for field in required_entry_fields if field not in sample_entry]
+                    
+                    if missing_entry_fields:
+                        self.log_test("Audit Endpoint", False, 
+                                    f"Audit entry missing fields: {missing_entry_fields}", data)
+                        return False
+                
+                self.log_test("Audit Endpoint", True, 
+                            f"Audit log retrieved successfully - {count} entries, found events: {found_events}", 
+                            {'count': count, 'found_events': found_events})
+                return True
+                
+            else:
+                self.log_test("Audit Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Audit Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_footnotes_endpoint(self) -> bool:
+        """Test GET /api/footnotes - Footnotes and citations"""
+        try:
+            response = self.session.get(f"{self.base_url}/footnotes", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['success', 'data']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Footnotes Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                if not data.get('success'):
+                    self.log_test("Footnotes Endpoint", False, 
+                                f"API returned success=false", data)
+                    return False
+                
+                # Check footnotes data
+                footnotes_data = data.get('data', {})
+                footnotes = footnotes_data.get('footnotes', [])
+                
+                # Check for required footnote IDs
+                required_ids = ['F1', 'T1', 'M1', 'B1', 'H1', 'R1', 'S1', 'C1']
+                found_ids = [footnote.get('id') for footnote in footnotes]
+                missing_ids = [id for id in required_ids if id not in found_ids]
+                
+                if missing_ids:
+                    self.log_test("Footnotes Endpoint", False, 
+                                f"Missing required footnote IDs: {missing_ids}", data)
+                    return False
+                
+                # Validate footnote structure
+                for footnote in footnotes[:3]:  # Check first 3
+                    required_footnote_fields = ['id', 'label', 'source', 'retrieved_at']
+                    missing_footnote_fields = [field for field in required_footnote_fields if field not in footnote]
+                    
+                    if missing_footnote_fields:
+                        self.log_test("Footnotes Endpoint", False, 
+                                    f"Footnote {footnote.get('id')} missing fields: {missing_footnote_fields}", data)
+                        return False
+                
+                self.log_test("Footnotes Endpoint", True, 
+                            f"Footnotes retrieved successfully - {len(footnotes)} entries including all required IDs: {required_ids}", 
+                            {'total_footnotes': len(footnotes), 'required_ids_found': len(required_ids)})
+                return True
+                
+            else:
+                self.log_test("Footnotes Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Footnotes Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    # ======= REGRESSION TESTING =======
+    
+    def test_rates_endpoint(self) -> bool:
+        """Test GET /api/rates - Current rates (regression test)"""
+        try:
+            response = self.session.get(f"{self.base_url}/rates", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if not data.get('success'):
+                    self.log_test("Rates Endpoint (Regression)", False, 
+                                f"API returned success=false", data)
+                    return False
+                
+                # Check basic structure
+                rates_data = data.get('data', {})
+                if 'treasury_rates' not in rates_data or 'fed_funds_rate' not in rates_data:
+                    self.log_test("Rates Endpoint (Regression)", False, 
+                                f"Missing treasury_rates or fed_funds_rate", data)
+                    return False
+                
+                self.log_test("Rates Endpoint (Regression)", True, 
+                            f"Current rates endpoint working", 
+                            {'has_treasury': 'treasury_rates' in rates_data, 'has_fed_funds': 'fed_funds_rate' in rates_data})
+                return True
+                
+            else:
+                self.log_test("Rates Endpoint (Regression)", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Rates Endpoint (Regression)", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_maturities_endpoint(self) -> bool:
+        """Test GET /api/maturities - CRE maturities (regression test)"""
+        try:
+            response = self.session.get(f"{self.base_url}/maturities", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if not data.get('success'):
+                    self.log_test("Maturities Endpoint (Regression)", False, 
+                                f"API returned success=false", data)
+                    return False
+                
+                # Check basic structure
+                if 'data' not in data:
+                    self.log_test("Maturities Endpoint (Regression)", False, 
+                                f"Missing data field", data)
+                    return False
+                
+                self.log_test("Maturities Endpoint (Regression)", True, 
+                            f"CRE maturities endpoint working")
+                return True
+                
+            else:
+                self.log_test("Maturities Endpoint (Regression)", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Maturities Endpoint (Regression)", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_banks_endpoint(self) -> bool:
+        """Test GET /api/banks - FDIC data (regression test)"""
+        try:
+            response = self.session.get(f"{self.base_url}/banks", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if not data.get('success'):
+                    self.log_test("Banks Endpoint (Regression)", False, 
+                                f"API returned success=false", data)
+                    return False
+                
+                # Check basic structure
+                if 'data' not in data:
+                    self.log_test("Banks Endpoint (Regression)", False, 
+                                f"Missing data field", data)
+                    return False
+                
+                self.log_test("Banks Endpoint (Regression)", True, 
+                            f"FDIC banks endpoint working")
+                return True
+                
+            else:
+                self.log_test("Banks Endpoint (Regression)", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Banks Endpoint (Regression)", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_agents_execute_endpoint(self) -> bool:
+        """Test POST /api/agents/execute - Agent execution (regression test)"""
+        try:
+            payload = {
+                "objective": "Test agent execution for regression testing",
+                "audience": "LP",
+                "inputs": {"test": "regression"},
+                "security_tier": "public"
+            }
+            response = self.session.post(f"{self.base_url}/agents/execute", json=payload, timeout=20)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if not data.get('success'):
+                    self.log_test("Agents Execute Endpoint (Regression)", False, 
+                                f"API returned success=false", data)
+                    return False
+                
+                # Check basic structure
+                if 'result' not in data or 'agents_executed' not in data:
+                    self.log_test("Agents Execute Endpoint (Regression)", False, 
+                                f"Missing result or agents_executed field", data)
+                    return False
+                
+                agents_executed = data.get('agents_executed', 0)
+                if agents_executed < 1:
+                    self.log_test("Agents Execute Endpoint (Regression)", False, 
+                                f"No agents executed: {agents_executed}", data)
+                    return False
+                
+                self.log_test("Agents Execute Endpoint (Regression)", True, 
+                            f"Agent execution working - {agents_executed} agents executed")
+                return True
+                
+            else:
+                self.log_test("Agents Execute Endpoint (Regression)", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Agents Execute Endpoint (Regression)", False, f"Request failed: {str(e)}")
+            return False
     
     def run_all_tests(self) -> Dict[str, Any]:
         """Run all backend API tests in sequence"""
