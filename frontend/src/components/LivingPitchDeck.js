@@ -124,9 +124,9 @@ const LivingPitchDeck = () => {
       ]);
       
       setRegulatoryData({
-        federal: federal.success ? federal.data.items : [],
-        state: state.success ? state.data.items : [],
-        municipal: municipal.success ? municipal.data.items : []
+        federal: federal.items || [],
+        state: state.items || [],
+        municipal: municipal.items || []
       });
     } catch (error) {
       console.error('Error fetching regulatory data:', error);
@@ -140,10 +140,15 @@ const LivingPitchDeck = () => {
     try {
       const response = await apiFetch(`/api/fdic/exposure`);
       const data = await response.json();
-      if (data.success) {
+      if (response.ok && data.rows) {
         setFdicData(prev => ({
           ...prev,
-          exposure: data.data
+          exposure: {
+            asOf: data.asOf,
+            banks: data.rows,
+            avgExposure: data.rows.reduce((sum, bank) => sum + bank.exposurePct, 0) / data.rows.length / 100,
+            footnoteId: data.rows[0]?.footnoteId || 'B1'
+          }
         }));
       }
     } catch (error) {
