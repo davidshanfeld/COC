@@ -145,7 +145,7 @@ const LivingPitchDeck = () => {
       });
 
       const data = await response.json();
-      if (data.success) {
+      if (response.ok && data.token) {
         setAccessToken(data.token);
       }
     } catch (error) {
