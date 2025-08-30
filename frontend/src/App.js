@@ -60,6 +60,7 @@ function App() {
         
         {/* Route-based navigation (for direct URLs) */}
         <Routes>
+          {/* Ensure SPA calls use env-based backend; helper available as apiFetch */}
           <Route path="/legacy" element={<LiveDocument />} />
           <Route path="/live-document" element={<LiveDocument />} />
           <Route path="/pitch-deck" element={<LivingPitchDeck />} />
