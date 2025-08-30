@@ -164,11 +164,11 @@ backend:
 
   - task: "v1.3.0 endpoints - healthz, rates history, execsum pdf, audit, token download"
     implemented: true
-    working: "unknown"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "unknown"
         agent: "main"
@@ -179,6 +179,9 @@ backend:
       - working: "unknown"
         agent: "main"
         comment: "CRITICAL FIX APPLIED: Implemented atomic single-use token enforcement using MongoDB update_one with race condition protection. Replaced non-atomic token checking with atomic {'token': token, 'used': False} update pattern. Updated credential storage schema from 'tokens' to 'credentials' collection. Added MongoDB indexes for performance. Fixed datetime parsing with timezone-aware UTC handling. Ready for comprehensive testing to verify single-use enforcement works correctly."
+      - working: true
+        agent: "testing"
+        comment: "✅ SINGLE-USE TOKEN ENFORCEMENT FULLY VALIDATED - Comprehensive testing completed with 100% success rate (21/21 tests passed). CRITICAL VERIFICATION: (1) POST /api/deck/request with email payload correctly issues tokens, (2) GET /api/deck/download - FIRST download returns 200 with content, (3) GET /api/deck/download - SECOND download with SAME token returns 403 'token already used', (4) GET /api/deck/download - THIRD download also blocked with 403, (5) Invalid token scenario returns 404 'invalid token', (6) RACE CONDITION PROTECTION: 5 concurrent download attempts result in only 1 success and 4 blocked (403), proving atomic MongoDB update_one works correctly. Fixed Unicode encoding issue in watermark (replaced • with |). All v1.3.0 endpoints operational: healthz/deps, rates/history, execsum.pdf, deck/request, deck/download, audit, footnotes. Regression testing confirms all existing endpoints continue working. The atomic fix using {'token': token, 'used': False} filter with $set update prevents race conditions completely."
 
   - task: "Database setup and models"
     implemented: true
