@@ -253,7 +253,8 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Agent SDK - Living Pitch Deck UI dashboard"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
