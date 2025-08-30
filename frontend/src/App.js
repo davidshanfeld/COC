@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+
+// === Backend base URL from env (no trailing slash) ===
+const API_BASE = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/$/, '');
+const apiFetch = (path, opts) => fetch(path.startsWith('http') ? path : `${API_BASE}${path}`, opts);
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LiveDocument from './components/LiveDocument';
 import LivingPitchDeck from './components/LivingPitchDeck';
