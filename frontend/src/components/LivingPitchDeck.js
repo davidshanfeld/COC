@@ -546,6 +546,447 @@ const LivingPitchDeck = () => {
             )}
           </TabsContent>
 
+          {/* Laws & Incentives Monitor Tab */}
+          <TabsContent value="regulatory" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Federal Regulatory Pane */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Shield className="h-5 w-5 mr-2 text-blue-600" />
+                    Federal Regulations
+                  </CardTitle>
+                  <CardDescription>
+                    Federal incentives and compliance requirements
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {regulatoryLoading ? (
+                    <div className="text-center py-8">
+                      <Clock className="h-8 w-8 mx-auto text-slate-400 animate-spin mb-2" />
+                      <p className="text-slate-500">Loading regulatory data...</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {regulatoryData.federal.map((item, index) => (
+                        <div
+                          key={index}
+                          className="p-3 border border-slate-200 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"
+                          onClick={() => setSelectedRegItem({ ...item, scope: 'federal' })}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-700 text-xs">
+                              {item.code}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              FN: {item.footnoteId}
+                            </Badge>
+                          </div>
+                          <h4 className="font-medium text-slate-800 text-sm mb-1">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-slate-600 line-clamp-2">
+                            {item.summary}
+                          </p>
+                        </div>
+                      ))}
+                      {regulatoryData.federal.length === 0 && (
+                        <p className="text-center text-slate-500 py-4">No federal items available</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* State Regulatory Pane */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Building2 className="h-5 w-5 mr-2 text-green-600" />
+                    State Regulations
+                  </CardTitle>
+                  <CardDescription>
+                    California state-level regulatory framework
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {regulatoryLoading ? (
+                    <div className="text-center py-8">
+                      <Clock className="h-8 w-8 mx-auto text-slate-400 animate-spin mb-2" />
+                      <p className="text-slate-500">Loading regulatory data...</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {regulatoryData.state.map((item, index) => (
+                        <div
+                          key={index}
+                          className="p-3 border border-slate-200 rounded-lg hover:bg-green-50 cursor-pointer transition-colors"
+                          onClick={() => setSelectedRegItem({ ...item, scope: 'state' })}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs">
+                              {item.code}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              FN: {item.footnoteId}
+                            </Badge>
+                          </div>
+                          <h4 className="font-medium text-slate-800 text-sm mb-1">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-slate-600 line-clamp-2">
+                            {item.summary}
+                          </p>
+                        </div>
+                      ))}
+                      {regulatoryData.state.length === 0 && (
+                        <p className="text-center text-slate-500 py-4">No state items available</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Municipal Regulatory Pane */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Building2 className="h-5 w-5 mr-2 text-purple-600" />
+                    Municipal Regulations
+                  </CardTitle>
+                  <CardDescription>
+                    Los Angeles municipal requirements
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {regulatoryLoading ? (
+                    <div className="text-center py-8">
+                      <Clock className="h-8 w-8 mx-auto text-slate-400 animate-spin mb-2" />
+                      <p className="text-slate-500">Loading regulatory data...</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {regulatoryData.municipal.map((item, index) => (
+                        <div
+                          key={index}
+                          className="p-3 border border-slate-200 rounded-lg hover:bg-purple-50 cursor-pointer transition-colors"
+                          onClick={() => setSelectedRegItem({ ...item, scope: 'municipal' })}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <Badge variant="secondary" className="bg-purple-100 text-purple-700 text-xs">
+                              {item.code}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              FN: {item.footnoteId}
+                            </Badge>
+                          </div>
+                          <h4 className="font-medium text-slate-800 text-sm mb-1">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-slate-600 line-clamp-2">
+                            {item.summary}
+                          </p>
+                        </div>
+                      ))}
+                      {regulatoryData.municipal.length === 0 && (
+                        <p className="text-center text-slate-500 py-4">No municipal items available</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Regulatory Item Detail Drawer */}
+            {selectedRegItem && (
+              <Card className="mt-6 border-2 border-emerald-200">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="flex items-center">
+                      <FileText className="h-5 w-5 mr-2 text-emerald-600" />
+                      {selectedRegItem.title}
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedRegItem(null)}
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                  <CardDescription>
+                    <Badge className="mr-2 bg-slate-100 text-slate-700">
+                      {selectedRegItem.scope.toUpperCase()}
+                    </Badge>
+                    <Badge variant="outline">
+                      {selectedRegItem.code}
+                    </Badge>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold text-slate-700 mb-2">Summary</h4>
+                      <p className="text-sm text-slate-600">{selectedRegItem.summary}</p>
+                    </div>
+                    
+                    {selectedRegItem.citations && selectedRegItem.citations.length > 0 && (
+                      <div>
+                        <h4 className="font-semibold text-slate-700 mb-2">Legal Citations</h4>
+                        <div className="space-y-1">
+                          {selectedRegItem.citations.map((citation, index) => (
+                            <div key={index} className="text-sm text-slate-600 bg-slate-50 p-2 rounded">
+                              {citation}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center pt-2 border-t">
+                      <Badge variant="outline" className="text-xs">
+                        Footnote: {selectedRegItem.footnoteId}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Bank Exposure Tab */}
+          <TabsContent value="banks" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <BarChart3 className="h-5 w-5 mr-2 text-orange-600" />
+                  FDIC Bank CRE Exposure Analysis
+                </CardTitle>
+                <CardDescription>
+                  Commercial real estate exposure across major banking institutions
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {fdicLoading ? (
+                  <div className="text-center py-12">
+                    <Clock className="h-12 w-12 mx-auto text-slate-400 animate-spin mb-4" />
+                    <p className="text-slate-500">Loading FDIC exposure data...</p>
+                  </div>
+                ) : fdicData.exposure ? (
+                  <div className="space-y-6">
+                    {/* Summary Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-4 rounded-lg">
+                        <div className="text-sm text-orange-600 font-medium">Total Banks</div>
+                        <div className="text-2xl font-bold text-orange-800">
+                          {fdicData.exposure.banks?.length || 0}
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                        <div className="text-sm text-blue-600 font-medium">Avg CRE Exposure</div>
+                        <div className="text-2xl font-bold text-blue-800">
+                          {fdicData.exposure.avgExposure ? 
+                            (fdicData.exposure.avgExposure * 100).toFixed(1) + '%' : 
+                            'N/A'
+                          }
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
+                        <div className="text-sm text-green-600 font-medium">Footnote</div>
+                        <div className="text-lg font-bold text-green-800">
+                          {fdicData.exposure.footnoteId || 'B1'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bank Exposure Table */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse border border-slate-200">
+                        <thead>
+                          <tr className="bg-slate-50">
+                            <th className="border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-700">
+                              Bank Name
+                            </th>
+                            <th className="border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700">
+                              Total Exposure
+                            </th>
+                            <th className="border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700">
+                              Multifamily
+                            </th>
+                            <th className="border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700">
+                              Office
+                            </th>
+                            <th className="border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700">
+                              Industrial
+                            </th>
+                            <th className="border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700">
+                              Other
+                            </th>
+                            <th className="border border-slate-200 px-4 py-3 text-center text-sm font-medium text-slate-700">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(fdicData.exposure.banks || []).map((bank, index) => (
+                            <tr key={index} className="hover:bg-slate-50">
+                              <td className="border border-slate-200 px-4 py-3 text-sm font-medium text-slate-800">
+                                {bank.bankName}
+                              </td>
+                              <td className="border border-slate-200 px-4 py-3 text-center text-sm">
+                                <Badge className="bg-orange-100 text-orange-800">
+                                  {(bank.exposurePct * 100).toFixed(1)}%
+                                </Badge>
+                              </td>
+                              <td className="border border-slate-200 px-4 py-3 text-center text-sm">
+                                {bank.stack?.mf ? (bank.stack.mf * 100).toFixed(1) + '%' : 'N/A'}
+                              </td>
+                              <td className="border border-slate-200 px-4 py-3 text-center text-sm">
+                                {bank.stack?.off ? (bank.stack.off * 100).toFixed(1) + '%' : 'N/A'}
+                              </td>
+                              <td className="border border-slate-200 px-4 py-3 text-center text-sm">
+                                {bank.stack?.ind ? (bank.stack.ind * 100).toFixed(1) + '%' : 'N/A'}
+                              </td>
+                              <td className="border border-slate-200 px-4 py-3 text-center text-sm">
+                                {bank.stack?.other ? (bank.stack.other * 100).toFixed(1) + '%' : 'N/A'}
+                              </td>
+                              <td className="border border-slate-200 px-4 py-3 text-center">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    fetchBankDetail(bank.bankId);
+                                    setFdicData(prev => ({ ...prev, selectedBank: bank }));
+                                  }}
+                                  className="text-xs"
+                                >
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  Details
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <BarChart3 className="h-12 w-12 mx-auto text-slate-400 mb-4" />
+                    <p className="text-slate-500">No FDIC exposure data available</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Bank Detail Modal/Card */}
+            {selectedBankDetail && fdicData.selectedBank && (
+              <Card className="mt-6 border-2 border-blue-200">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="flex items-center">
+                      <Building2 className="h-5 w-5 mr-2 text-blue-600" />
+                      {selectedBankDetail.name} - Detailed Analysis
+                    </CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedBankDetail(null);
+                        setFdicData(prev => ({ ...prev, selectedBank: null }));
+                      }}
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                  <CardDescription>
+                    FDIC Cert: {selectedBankDetail.fdicCert} | 
+                    Total Assets: ${(selectedBankDetail.totalAssets / 1e9).toFixed(1)}B
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {/* Key Metrics */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <div className="text-xs text-blue-600 font-medium">CRE Exposure</div>
+                        <div className="text-lg font-bold text-blue-800">
+                          {(fdicData.selectedBank.exposurePct * 100).toFixed(1)}%
+                        </div>
+                      </div>
+                      <div className="bg-green-50 p-3 rounded-lg">
+                        <div className="text-xs text-green-600 font-medium">Total Assets</div>
+                        <div className="text-lg font-bold text-green-800">
+                          ${(selectedBankDetail.totalAssets / 1e9).toFixed(1)}B
+                        </div>
+                      </div>
+                      <div className="bg-purple-50 p-3 rounded-lg">
+                        <div className="text-xs text-purple-600 font-medium">Risk Rating</div>
+                        <div className="text-lg font-bold text-purple-800">
+                          {selectedBankDetail.riskRating || 'N/A'}
+                        </div>
+                      </div>
+                      <div className="bg-orange-50 p-3 rounded-lg">
+                        <div className="text-xs text-orange-600 font-medium">Last Update</div>
+                        <div className="text-lg font-bold text-orange-800">
+                          {selectedBankDetail.asOf ? 
+                            new Date(selectedBankDetail.asOf).toLocaleDateString() : 
+                            'N/A'
+                          }
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quarterly Trends */}
+                    {selectedBankDetail.quarterlyTrends && (
+                      <div>
+                        <h4 className="font-semibold text-slate-700 mb-3">Quarterly CRE Exposure Trends</h4>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="bg-slate-100">
+                                <th className="px-3 py-2 text-left">Quarter</th>
+                                <th className="px-3 py-2 text-center">CRE Exposure %</th>
+                                <th className="px-3 py-2 text-center">Change</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {selectedBankDetail.quarterlyTrends.map((trend, index) => (
+                                <tr key={index} className="border-t">
+                                  <td className="px-3 py-2">{trend.quarter}</td>
+                                  <td className="px-3 py-2 text-center">
+                                    {(trend.creExposurePct * 100).toFixed(2)}%
+                                  </td>
+                                  <td className="px-3 py-2 text-center">
+                                    <Badge 
+                                      className={
+                                        trend.qoqChange >= 0 ? 
+                                        'bg-red-100 text-red-800' : 
+                                        'bg-green-100 text-green-800'
+                                      }
+                                    >
+                                      {trend.qoqChange >= 0 ? '+' : ''}{(trend.qoqChange * 100).toFixed(2)}%
+                                    </Badge>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center pt-4 border-t">
+                      <Badge variant="outline" className="text-xs">
+                        Footnote: {fdicData.selectedBank.footnoteId || 'B1'}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
           {/* Data Sources Tab */}
           <TabsContent value="footnotes" className="space-y-6">
             <Card>
