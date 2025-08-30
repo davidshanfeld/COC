@@ -638,7 +638,7 @@ async def deck_download(request: Request, token: str, format: str = "pdf"):
 async def executive_summary_pdf():
     """Direct executive summary PDF (falls back to HTML if PDF engine unavailable)"""
     try:
-        watermark = f"Direct View • {datetime.now().isoformat()}"
+        watermark = f"Direct View | {datetime.now().isoformat()}"
         html = f"""
         <html><head><meta charset='utf-8'><style>
         body {{ font-family: Arial, sans-serif; margin: 40px; }}
