@@ -164,11 +164,11 @@ backend:
 
   - task: "v1.3.0 endpoints - healthz, rates history, execsum pdf, audit, token download"
     implemented: true
-    working: true
+    working: "unknown"
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "unknown"
         agent: "main"
@@ -176,6 +176,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "PASS: V1.3.0 ENDPOINTS COMPREHENSIVE TESTING COMPLETE - All 7 new endpoints working perfectly with 100% success rate. VERIFIED: (1) GET /api/healthz/deps - All dependencies healthy (Mongo: connected, FRED: False, WeasyPrint: False, Agents: 14), (2) GET /api/rates/history?days=180 - Historical rates data retrieved successfully for 5Y, 10Y, 30Y, DFF with proper date/value structure, (3) GET /api/execsum.pdf - HTML fallback working correctly with X-PDF-Mode header (WeasyPrint not installed), (4) POST /api/deck/request - Access token issued successfully with proper audience and expiry, (5) GET /api/deck/download - Single-use token enforcement working perfectly (first download succeeds, second returns 403), (6) GET /api/audit - Audit log retrieved with token_issued and deck_download events, (7) GET /api/footnotes - All required footnote IDs present (F1, T1, M1, B1, H1, R1, S1, C1). REGRESSION TESTING: All existing endpoints (/api/rates, /api/maturities, /api/banks, /api/agents/execute) continue working. Fixed minor async/await issues in agent_system.py and datetime comparison logic. Total test coverage: 19 endpoints tested, 100% success rate."
+      - working: "unknown"
+        agent: "main"
+        comment: "CRITICAL FIX APPLIED: Implemented atomic single-use token enforcement using MongoDB update_one with race condition protection. Replaced non-atomic token checking with atomic {'token': token, 'used': False} update pattern. Updated credential storage schema from 'tokens' to 'credentials' collection. Added MongoDB indexes for performance. Fixed datetime parsing with timezone-aware UTC handling. Ready for comprehensive testing to verify single-use enforcement works correctly."
 
   - task: "Database setup and models"
     implemented: true
