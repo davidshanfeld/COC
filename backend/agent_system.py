@@ -70,7 +70,7 @@ class SecurityAPI:
     async def _store_audit_log(self, log_entry: AccessLog):
         try:
             collection = self.db_client.get_database("coastal_oak").get_collection("audit_logs")
-            await collection.insert_one(log_entry.dict())
+            collection.insert_one(log_entry.dict())
         except Exception as e:
             self.logger.error(f"Audit storage error: {e}")
 
