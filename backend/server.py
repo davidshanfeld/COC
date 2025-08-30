@@ -549,7 +549,19 @@ async def download_deck(token: str):
         if rec.get("used"):
             log_audit("token_reuse_blocked", {"token": token})
             raise HTTPException(status_code=403, detail="Token already used")
-        if rec.get("expires_at") and datetime.fromisoformat(rec["expires_at"]) < datetime.now():
+        if rec.get("expires_at"):
+            try:
+                expires_dt = datetime.fromisoformat(rec["expires_at"].replace('Z', '+00:00'))
+                now_dt = datetime.now()
+                # Make both timezone-naive for comparison
+                if expires_dt.tzinfo is not None:
+                    expires_dt = expires_dt.replace(tzinfo=None)
+                if expires_dt < now_dt:
+                    log_audit("token_expired", {"token": token})
+                    raise HTTPException(status_code=403, detail="Token expired")
+            except Exception as dt_error:
+                logger.warning(f"Date parsing error for token expiry: {dt_error}")
+                # Continue without expiry check if parsing fails
             log_audit("token_expired", {"token": token})
             raise HTTPException(status_code=403, detail="Token expired")
         
