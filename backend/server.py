@@ -497,56 +497,41 @@ async def get_la_zoning():
 # ======= SECURITY AND ACCESS ENDPOINTS =======
 
 @router.post("/deck/request")
-async def request_deck_access(request: dict):
+async def request_deck_access(payload: dict):
     """Request secure access to pitch deck with single-use token"""
     try:
-        user_id = request.get("user_id", "guest")
-        audience = request.get("audience", "LP")
+        email = (payload or {}).get("email")
+        if not email:
+            raise HTTPException(400, "email required")
         
-        # Create agent request for security token
-        from agent_models import AgentRequest
+        token = f"tok_{uuid.uuid4().hex}"
+        now = datetime.now(timezone.utc)
+        ttl_min = int(os.getenv("TOKEN_TTL_MINUTES", "15"))
         
-        security_request = AgentRequest(
-            objective="Issue single-use access token",
-            audience=audience,
-            inputs={"user": user_id, "action": "issue_token"},
-            security_tier="restricted"
-        )
-        
-        # Find security agent and execute
-        security_agents = orchestrator.registry.pick(["security"])
-        if not security_agents:
-            raise HTTPException(status_code=500, detail="Security agent not available")
-        
-        context = orchestrator.ctx
-        result = await security_agents[0].run(security_request, context)
-        
-        token = result.findings.get("access_control", {}).get("token") or str(uuid.uuid4())
-        expires_at = result.findings.get("access_control", {}).get("expires_at") or (datetime.now() + timedelta(hours=24)).isoformat()
-        
-        # Persist token for single-use enforcement
-        try:
-            db.tokens.insert_one({
-                "token": token,
-                "audience": audience,
-                "user_id": user_id,
-                "issued_at": datetime.now().isoformat(),
-                "expires_at": expires_at,
-                "used": False
-            })
-        except Exception as e:
-            logger.error(f"Token persistence error: {e}")
-        
-        log_audit("token_issued", {"user_id": user_id, "audience": audience, "token": token})
-        
-        return {
-            "success": True,
-            "access_token": token,
-            "expires_at": expires_at,
-            "audience": audience,
-            "timestamp": datetime.now().isoformat()
+        doc = {
+            "token": token,
+            "email": email.lower(),
+            "issuedAt": now.isoformat(),
+            "expiresAt": (now + timedelta(minutes=ttl_min)).isoformat(),
+            "used": False,
+            "usedAt": None,
+            "ip": payload.get("ip"),
+            "ua": payload.get("ua"),
         }
         
+        db.credentials.insert_one(doc)
+        db.access_log.insert_one({
+            "user": email, 
+            "action": "deck_request", 
+            "ts": now.isoformat(), 
+            "ip": doc["ip"], 
+            "ua": doc["ua"]
+        })
+        
+        return {"token": token, "expiresAt": doc["expiresAt"]}
+        
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error issuing deck access: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to issue access token: {str(e)}")
