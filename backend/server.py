@@ -300,4 +300,224 @@ async def refresh_all_documents():
         logger.error(f"Error during daily refresh: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to refresh documents: {str(e)}")
 
+# ======= AGENT SDK ENDPOINTS =======
+
+@router.post("/agents/execute")
+async def execute_agents(request: ExecutionRequest):
+    """Execute specialized agents for investment analysis"""
+    try:
+        logger.info(f"Executing agents for: {request.objective}")
+        
+        # Execute the orchestrated agent analysis
+        result = await orchestrator.execute(request)
+        
+        return {
+            "success": True,
+            "result": result.model_dump(),
+            "agents_executed": len(result.packets),
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error executing agents: {e}")
+        raise HTTPException(status_code=500, detail=f"Agent execution failed: {str(e)}")
+
+@router.get("/agents/registry")
+async def get_agent_registry():
+    """Get available agents and their capabilities"""
+    try:
+        from agent_registry_setup import AGENT_CAPABILITIES, get_recommended_agents_for_task
+        
+        registry_info = orchestrator.registry.list()
+        
+        return {
+            "success": True,
+            "agents": registry_info,
+            "capabilities": AGENT_CAPABILITIES,
+            "total_agents": len(registry_info)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting agent registry: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get agent registry: {str(e)}")
+
+@router.post("/agents/recommend")
+async def recommend_agents(request: dict):
+    """Recommend agents based on task description"""
+    try:
+        from agent_registry_setup import get_recommended_agents_for_task
+        
+        task_description = request.get("task", "")
+        recommended_tags = get_recommended_agents_for_task(task_description)
+        
+        return {
+            "success": True,
+            "task": task_description,
+            "recommended_agents": recommended_tags,
+            "count": len(recommended_tags)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error recommending agents: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to recommend agents: {str(e)}")
+
+# ======= DATA FEEDS ENDPOINTS =======
+
+@router.get("/rates")
+async def get_current_rates():
+    """Get current Treasury and Fed rates"""
+    try:
+        # Fetch current rate data
+        ten_year = await data_feed_service.treasury_yield("10Y")
+        five_year = await data_feed_service.treasury_yield("5Y")
+        thirty_year = await data_feed_service.treasury_yield("30Y")
+        fed_funds = await data_feed_service.fred("DFF")
+        
+        rates_data = {
+            "treasury_rates": {
+                "5Y": ten_year.model_dump(),
+                "10Y": five_year.model_dump(),
+                "30Y": thirty_year.model_dump()
+            },
+            "fed_funds_rate": {
+                "current": fed_funds.rows[0]["value"] if fed_funds.rows else 0.0,
+                "last_updated": fed_funds.rows[0]["date"] if fed_funds.rows else None
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        return {
+            "success": True,
+            "data": rates_data
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching rates: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch rates: {str(e)}")
+
+@router.get("/maturities")
+async def get_cre_maturities():
+    """Get CRE maturity ladder data"""
+    try:
+        maturities_data = await data_feed_service.cre_maturities()
+        
+        return {
+            "success": True,
+            "data": maturities_data.model_dump(),
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching CRE maturities: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch CRE maturities: {str(e)}")
+
+@router.get("/banks")
+async def get_fdic_data():
+    """Get FDIC call reports data"""
+    try:
+        fdic_data = await data_feed_service.fdic_call_reports()
+        
+        return {
+            "success": True,
+            "data": fdic_data.model_dump(),
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching FDIC data: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch FDIC data: {str(e)}")
+
+@router.get("/zoning/la")
+async def get_la_zoning():
+    """Get Los Angeles zoning data"""
+    try:
+        zoning_data = await data_feed_service.zoning_la()
+        
+        return {
+            "success": True,
+            "data": zoning_data.model_dump(),
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching LA zoning data: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch LA zoning data: {str(e)}")
+
+# ======= SECURITY AND ACCESS ENDPOINTS =======
+
+@router.post("/deck/request")
+async def request_deck_access(request: dict):
+    """Request secure access to pitch deck with single-use token"""
+    try:
+        user_id = request.get("user_id", "guest")
+        audience = request.get("audience", "LP")
+        
+        # Create agent request for security token
+        from agent_models import AgentRequest
+        
+        security_request = AgentRequest(
+            objective="Issue single-use access token",
+            audience=audience,
+            inputs={"user": user_id, "action": "issue_token"},
+            security_tier="restricted"
+        )
+        
+        # Find security agent and execute
+        security_agents = orchestrator.registry.pick(["security"])
+        if not security_agents:
+            raise HTTPException(status_code=500, detail="Security agent not available")
+        
+        context = orchestrator.ctx
+        result = await security_agents[0].run(security_request, context)
+        
+        return {
+            "success": True,
+            "access_token": result.findings.get("access_control", {}).get("token"),
+            "expires_at": result.findings.get("access_control", {}).get("expires_at"),
+            "audience": audience,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error issuing deck access: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to issue access token: {str(e)}")
+
+@router.get("/footnotes")
+async def get_footnotes():
+    """Get all footnotes and source citations"""
+    try:
+        # This would typically query the footnotes collection
+        # For now, return a sample structure
+        footnotes_data = {
+            "footnotes": [
+                {
+                    "id": "T1", 
+                    "label": "10Y Treasury Rate",
+                    "source": "FRED GS10 Series",
+                    "retrieved_at": datetime.now().isoformat(),
+                    "refresh": "Daily",
+                    "transform": "Latest close"
+                },
+                {
+                    "id": "F1",
+                    "label": "Fed Funds Rate", 
+                    "source": "FRED DFF Series",
+                    "retrieved_at": datetime.now().isoformat(),
+                    "refresh": "Daily",
+                    "transform": "Effective rate"
+                }
+            ],
+            "total_count": 2,
+            "last_updated": datetime.now().isoformat()
+        }
+        
+        return {
+            "success": True,
+            "data": footnotes_data
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching footnotes: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch footnotes: {str(e)}")
+
 app.include_router(router)
