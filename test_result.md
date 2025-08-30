@@ -332,6 +332,8 @@ frontend:
   - task: "Agent SDK - Agent execution interface"
     implemented: false
     working: "NA"
+  - agent: "main"
+    message: "Prepared v1.3.0 endpoints and frontend wiring per user selections A1/B3/C1. Requesting automated frontend testing to validate LP/GP toggles, footnotes drawer, rates history parity, token issuance and single-use enforcement, executive summary PDF fallback header, banks/regulatory/sentiment/transactions tabs render, and absence of console/CORS/network errors."
     file: "/app/frontend/src/components/AgentInterface.js"
     stuck_count: 0
     priority: "high"
