@@ -258,22 +258,67 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "Agent SDK - Living Pitch Deck backend integration"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/agent_system.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "STARTED: Implementing Agent SDK integration with orchestration endpoints, data adapters for Treasury/FRED/FDIC, security features, and MongoDB models for footnotes, feed cache, credentials, and access logs."
+
+  - task: "Agent SDK - Multi-agent orchestration system"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/agents/"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "STARTED: Creating 14 specialized agents (Charts, UI, DataSteward, Quant, DebtDataCenters, DebtEV, DevDataCenters, DevEV, Tax, LandUseLA, Risk, ESG, RedTeam, Security) with TypeScript SDK architecture."
+
+  - task: "Agent SDK - Real-time data feeds integration"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/data_feeds.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "STARTED: Implementing real-time data adapters for Treasury yields, FRED DFF, FDIC call reports with live feeds and mocked CRE maturities with Trepp-compatible schema."
+
+frontend:
+  - task: "Agent SDK - Living Pitch Deck UI dashboard"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/components/LivingPitchDeck.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "STARTED: Creating new Living Pitch Deck module with LP/GP dashboard, agent orchestration interface, footnote drawer, and security token management."
+
+  - task: "Agent SDK - Agent execution interface"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/components/AgentInterface.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "STARTED: Building agent execution interface with tag selection, audience targeting (LP/GP), and real-time agent response display."
+
 agent_communication:
   - agent: "main"
-    message: "✅ ENHANCED SYSTEM: Successfully integrated PICO Boulevard case study demonstrating investment discipline and comprehensive AI data center modular grid infrastructure strategy. Added two major sections: (1) PICO property case study showing why deals must align with business model despite low pricing, and (2) Detailed AI data center conversion strategy with heat-to-energy integration. Backend needs testing to validate enhanced content generation."
-  - agent: "testing"
-    message: "✅ COMPREHENSIVE TESTING COMPLETE: Enhanced Coastal Oak Capital document service fully validated. All backend APIs working at 100% success rate with enhanced content. Document now generates 7 comprehensive sections including PICO Boulevard investment discipline case study and AI data center modular grid infrastructure strategy. Real-time data integration confirmed with all 8 sources. Markdown export produces 33,875+ character comprehensive master deck. System ready for production use."
-  - agent: "testing"
-    message: "✅ FINAL COMPREHENSIVE SYSTEM VALIDATION COMPLETE: Successfully tested the finalized comprehensive Coastal Oak Capital master deck system with all enhanced features. CONFIRMED: (1) Document creation generates 8 comprehensive sections as requested, (2) 'Living Master Deck System' with version '2.0 - Final Comprehensive Edition', (3) Daily refresh endpoint /api/system/refresh-all working perfectly, (4) All enhanced content integrated including PICO case study, AI data center strategy, Trump administration policy analysis, and ESG framework, (5) Real-time data integration across all sections with 8 data sources, (6) Comprehensive markdown export producing 70,217+ characters, (7) 100% API endpoint success rate maintained. The system now represents the complete 'living and breathing' interface as requested with all uploaded documents integrated."
-  - agent: "main"
-    message: "✅ INSTITUTIONAL PROSPECTUS PACKAGE COMPLETED: Created comprehensive 55-page institutional-grade investment memorandum following exact 12-section structure requested. Completed: (1) Coastal_Oak_Capital_Institutional_Prospectus.md - full prospectus with verified market data, case studies, financial projections, (2) Coastal_Oak_Capital_Fund_Model.md - comprehensive Excel model documentation with 15 worksheets, (3) Coastal_Oak_Capital_Visuals_Compendium.md - all charts, graphs, tables extracted for standalone use. All documents incorporate 'Super Shanfeld voice', verified quantitative data, and institutional-grade formatting. Ready for backend testing to ensure live dashboard functionality maintained."
-  - agent: "testing"
-    message: "✅ POST-PROSPECTUS SYSTEM VALIDATION COMPLETE: Comprehensive backend testing completed after institutional prospectus package creation. CONFIRMED: All backend functionality remains 100% operational. Enhanced backend_test.py with daily refresh endpoint testing. Test Results: (1) System Status: ✅ PASS - Database connected, system healthy, (2) Live Data Integration: ✅ PASS - 8 data sources fetched with complete structure, (3) Document Creation: ✅ PASS - 8 sections generated with 8 data sources, (4) Document Retrieval: ✅ PASS - Full document structure validated, (5) Document Update: ✅ PASS - 8 sources refreshed successfully, (6) Markdown Export: ✅ PASS - 70,217 characters generated, (7) Documents List: ✅ PASS - 19 documents listed correctly, (8) Daily Refresh System: ✅ PASS - 19/19 documents updated successfully. SUCCESS RATE: 100% (8/8 tests passed). The 'living and breathing' document system maintains full functionality alongside the static institutional prospectus files."
-  - agent: "main"
-    message: "✅ INSTITUTIONAL-GRADE EXCEL MODEL COMPLETED: Successfully created comprehensive Coastal_Oak_Capital_Fund_Model.xlsx with 6 professional worksheets: (1) Executive Summary - Fund overview, market data, key metrics, (2) Distressed Debt Analysis - Acquisition parameters, resolution scenarios, cash flow projections, (3) Development Pro Forma - Data center/EV conversion costs, revenue projections, operating expenses, (4) DCF Analysis - 10-year cash flow model with terminal value calculations, (5) Sensitivity Analysis - IRR sensitivity tables, construction cost scenarios, probability-weighted returns, (6) Fund Waterfall - LP/GP distribution analysis, carried interest calculations. Incorporates all specified LA market data (31% vacancy, $43.85/SF rents, 18.5-22¢/kWh power rates), distressed debt underwriting criteria (50-75% purchase discounts, scenario analysis), and development metrics ($600-1,100/SF data center costs, $175/kW/month lease rates). Ready for backend validation to ensure system integrity maintained."
-  - agent: "testing"
-    message: "✅ POST-EXCEL MODEL SYSTEM VALIDATION COMPLETE: Comprehensive backend testing completed after institutional-grade Excel model creation. CONFIRMED: All backend functionality remains 100% operational. Excel file verified at /app/Coastal_Oak_Capital_Fund_Model.xlsx (19KB). Complete test results: (1) System Status: ✅ PASS - Database connected, system healthy, (2) Live Data Integration: ✅ PASS - 8 data sources fetched with complete structure, (3) Document Creation: ✅ PASS - 8 sections generated with 8 data sources, (4) Document Retrieval: ✅ PASS - Full document structure validated, (5) Document Update: ✅ PASS - 8 sources refreshed successfully, (6) Markdown Export: ✅ PASS - 70,217 characters generated, (7) Documents List: ✅ PASS - 22 documents listed correctly, (8) Daily Refresh System: ✅ PASS - 22/22 documents updated successfully. SUCCESS RATE: 100% (8/8 tests passed). The 'living and breathing' document system maintains full functionality alongside the static institutional Excel model. System integrity fully preserved."
-  - agent: "testing"
-    message: "✅ COMPREHENSIVE ENHANCED UI TESTING COMPLETE: Successfully completed comprehensive frontend testing of all enhanced UI elements focusing on AI data center integration and EV super-charging infrastructure. VALIDATED: (1) Enhanced UI Elements: Logo placeholder 'COC' with gradient styling, improved header design, investment focus areas cards with proper color coding, gradient styling and visual hierarchy ✅, (2) Functionality: Create Master Deck button working perfectly, real-time data dashboard loading and displaying 8 color-coded cards, section navigation (8 sections) and content viewing operational, data refresh and export capabilities functional ✅, (3) Content Verification: Updated terminology confirmed (no cryptocurrency references), AI/data center integration messaging present, EV super-charging focus with consumer + commercial fleet properly displayed, Live Intelligence Integration features working ✅, (4) Data Integration: Live data feeds displaying properly with icons and color coding, real-time dashboard auto-refresh functionality confirmed ✅, (5) User Experience: Professional institutional appearance maintained, responsive design working across desktop and mobile, loading states and error handling proper ✅. System demonstrates excellent 'living and breathing' document functionality with enhanced UI suitable for institutional investors. All major testing objectives achieved successfully."
-  - agent: "testing"
-    message: "✅ FINAL COMPREHENSIVE CODE REVIEW AND SYSTEM VALIDATION COMPLETE: Performed comprehensive final quality assurance check as requested. CONFIRMED ZERO ERRORS: (1) Backend Code Quality: All API endpoints functioning perfectly with 100% success rate, no syntax errors or runtime issues detected, database connections stable and healthy, data sources integration working flawlessly with 8 sources, Excel model file integrity confirmed at /app/Coastal_Oak_Capital_Fund_Model.xlsx (19KB) ✅, (2) System Integration: Frontend-backend communication flawless via REACT_APP_BACKEND_URL, all environment variables properly configured, no broken imports or missing dependencies, live data feeds operational with real-time updates ✅, (3) Deliverables Verification: All files exist and accessible, Excel model downloadable and functional, markdown exports working properly generating 70,217+ characters, document generation successful with 8 comprehensive sections ✅, (4) Error Detection: No console errors detected, no broken functionality found, all visual enhancements working perfectly, no performance issues identified ✅. COMPREHENSIVE TEST RESULTS: System Status ✅, Live Data Integration ✅, Document Creation ✅, Document Retrieval ✅, Document Update ✅, Markdown Export ✅, Documents List ✅, Daily Refresh System ✅. SUCCESS RATE: 100% (8/8 tests passed). The Coastal Oak Capital platform is operating at peak performance with zero errors, bugs, or issues. System ready for production deployment with complete confidence."
+    message: "✅ AGENT SDK IMPLEMENTATION STARTED: Beginning integration of comprehensive TypeScript Agent SDK for Living Pitch Deck dashboard. Implementing 14 specialized agents (Charts, UI, DataSteward, Quant, DebtDataCenters, DebtEV, DevDataCenters, DevEV, Tax, LandUseLA, Risk, ESG, RedTeam, Security) with real-time data feeds (Treasury, FRED, FDIC), security features, and LP/GP audience targeting. API key received and ready for FRED integration. Backend extensions planned: POST /api/agents/execute, GET /api/rates, GET /api/maturities, GET /api/banks, GET /api/footnotes, POST /api/deck/request. Frontend module: Living Pitch Deck with tabs, LP/GP toggle, footnote drawer, agent orchestration interface."
