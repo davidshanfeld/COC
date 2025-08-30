@@ -37,6 +37,21 @@ const LivingPitchDeck = () => {
   const [historyData, setHistoryData] = useState(null);
   const [slopeText, setSlopeText] = useState("");
 
+  // State for new regulatory and FDIC features
+  const [regulatoryData, setRegulatoryData] = useState({
+    federal: [],
+    state: [],
+    municipal: []
+  });
+  const [fdicData, setFdicData] = useState({
+    exposure: null,
+    selectedBank: null
+  });
+  const [regulatoryLoading, setRegulatoryLoading] = useState(false);
+  const [fdicLoading, setFdicLoading] = useState(false);
+  const [selectedRegItem, setSelectedRegItem] = useState(null);
+  const [selectedBankDetail, setSelectedBankDetail] = useState(null);
+
   // Fetch initial data on component mount
   async function fetchRatesHistory(days = 180) {
     try {
