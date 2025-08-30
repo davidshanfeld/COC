@@ -971,7 +971,7 @@ const LivingPitchDeck = () => {
 
                     <div className="flex items-center pt-4 border-t">
                       <Badge variant="outline" className="text-xs">
-                        Footnote: {fdicData.selectedBank.footnoteId || 'B1'}
+                        Footnote: {selectedBankDetail.bank?.footnoteId || 'B1'}
                       </Badge>
                     </div>
                   </div>
