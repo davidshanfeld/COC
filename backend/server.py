@@ -375,8 +375,8 @@ async def get_current_rates():
         
         rates_data = {
             "treasury_rates": {
-                "5Y": ten_year.model_dump(),
-                "10Y": five_year.model_dump(),
+                "5Y": five_year.model_dump(),
+                "10Y": ten_year.model_dump(),
                 "30Y": thirty_year.model_dump()
             },
             "fed_funds_rate": {
