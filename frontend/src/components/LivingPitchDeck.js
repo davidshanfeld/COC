@@ -68,7 +68,7 @@ const LivingPitchDeck = () => {
   const executeAgents = async (objective, tags, inputs = {}) => {
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/agents/execute`, {
+      const response = await apiFetch(`/api/agents/execute`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
