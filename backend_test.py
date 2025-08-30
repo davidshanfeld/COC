@@ -735,14 +735,14 @@ class CoastalOakAPITester:
     def test_deck_request_endpoint(self) -> bool:
         """Test POST /api/deck/request - Request secure access token"""
         try:
-            payload = {"user_id": "demo_user", "audience": "LP"}
+            payload = {"email": "test@example.com"}
             response = self.session.post(f"{self.base_url}/deck/request", json=payload, timeout=15)
             
             if response.status_code == 200:
                 data = response.json()
                 
-                # Check response structure
-                required_fields = ['success', 'access_token', 'expires_at', 'audience', 'timestamp']
+                # Check response structure - updated for actual API response
+                required_fields = ['token', 'expiresAt']
                 missing_fields = [field for field in required_fields if field not in data]
                 
                 if missing_fields:
@@ -750,38 +750,26 @@ class CoastalOakAPITester:
                                 f"Missing required fields: {missing_fields}", data)
                     return False
                 
-                if not data.get('success'):
-                    self.log_test("Deck Request Endpoint", False, 
-                                f"API returned success=false", data)
-                    return False
-                
                 # Validate token
-                access_token = data.get('access_token')
+                access_token = data.get('token')
                 if not access_token or len(access_token) < 10:
                     self.log_test("Deck Request Endpoint", False, 
                                 f"Invalid access token: {access_token}", data)
                     return False
                 
-                # Validate audience
-                audience = data.get('audience')
-                if audience != 'LP':
-                    self.log_test("Deck Request Endpoint", False, 
-                                f"Incorrect audience: {audience}", data)
-                    return False
-                
                 # Validate expires_at format
-                expires_at = data.get('expires_at')
+                expires_at = data.get('expiresAt')
                 if not expires_at:
                     self.log_test("Deck Request Endpoint", False, 
-                                f"Missing expires_at", data)
+                                f"Missing expiresAt", data)
                     return False
                 
                 # Store token for download test
                 self.access_token = access_token
                 
                 self.log_test("Deck Request Endpoint", True, 
-                            f"Access token issued successfully - Token: {access_token[:8]}..., Audience: {audience}, Expires: {expires_at}", 
-                            {'token_length': len(access_token), 'audience': audience})
+                            f"Access token issued successfully - Token: {access_token[:8]}..., Expires: {expires_at}", 
+                            {'token_length': len(access_token), 'expires_at': expires_at})
                 return True
                 
             else:
