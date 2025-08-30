@@ -782,8 +782,8 @@ class CoastalOakAPITester:
             return False
     
     def test_deck_download_endpoint(self) -> bool:
-        """Test GET /api/deck/download?token=... - Single-use token download"""
-        if not hasattr(self, 'access_token'):
+        """Test GET /api/deck/download?token=... - Single-use token download with comprehensive enforcement testing"""
+        if not hasattr(self, 'access_token') or not self.access_token:
             self.log_test("Deck Download Endpoint", False, "No access token available (deck request test must run first)")
             return False
         
@@ -815,17 +815,44 @@ class CoastalOakAPITester:
                 
                 if response2.status_code != 403:
                     self.log_test("Deck Download Endpoint", False, 
-                                f"Second download should return 403, got: {response2.status_code}")
+                                f"Second download should return 403, got: {response2.status_code}. Single-use enforcement FAILED!")
+                    return False
+                
+                # Check error message for "token already used"
+                try:
+                    error_data = response2.json()
+                    error_detail = error_data.get('detail', '').lower()
+                    if 'token already used' not in error_detail:
+                        self.log_test("Deck Download Endpoint", False, 
+                                    f"Expected 'token already used' error message, got: {error_detail}")
+                        return False
+                except:
+                    # If not JSON, check text response
+                    if 'token already used' not in response2.text.lower():
+                        self.log_test("Deck Download Endpoint", False, 
+                                    f"Expected 'token already used' error message in response")
+                        return False
+                
+                # Third download attempt - should also fail with 403
+                response3 = self.session.get(f"{self.base_url}/deck/download?token={self.access_token}", timeout=10)
+                
+                if response3.status_code != 403:
+                    self.log_test("Deck Download Endpoint", False, 
+                                f"Third download should also return 403, got: {response3.status_code}")
                     return False
                 
                 self.log_test("Deck Download Endpoint", True, 
-                            f"Single-use token enforcement working - First download: {response1.status_code} ({content_type}), Second download: {response2.status_code} (blocked)", 
-                            {'first_response': response1.status_code, 'second_response': response2.status_code, 'content_type': content_type})
+                            f"✅ SINGLE-USE TOKEN ENFORCEMENT WORKING CORRECTLY - First download: {response1.status_code} ({content_type}), Second download: {response2.status_code} (blocked), Third download: {response3.status_code} (blocked)", 
+                            {'first_response': response1.status_code, 'second_response': response2.status_code, 'third_response': response3.status_code, 'content_type': content_type})
                 return True
                 
             elif response1.status_code == 403:
                 self.log_test("Deck Download Endpoint", False, 
                             f"First download failed with 403 - token may be invalid or expired")
+                return False
+            elif response1.status_code == 404:
+                self.log_test("Deck Download Endpoint", False, 
+                            f"First download failed with 404 - invalid token")
                 return False
             else:
                 self.log_test("Deck Download Endpoint", False, 
@@ -834,6 +861,118 @@ class CoastalOakAPITester:
                 
         except Exception as e:
             self.log_test("Deck Download Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_invalid_token_scenario(self) -> bool:
+        """Test GET /api/deck/download with invalid token - should return 404"""
+        try:
+            invalid_token = "tok_invalid123456789"
+            response = self.session.get(f"{self.base_url}/deck/download?token={invalid_token}", timeout=10)
+            
+            if response.status_code == 404:
+                # Check error message
+                try:
+                    error_data = response.json()
+                    error_detail = error_data.get('detail', '').lower()
+                    if 'invalid token' in error_detail:
+                        self.log_test("Invalid Token Scenario", True, 
+                                    f"Invalid token correctly rejected with 404 and proper error message: {error_detail}")
+                        return True
+                    else:
+                        self.log_test("Invalid Token Scenario", False, 
+                                    f"Expected 'invalid token' error message, got: {error_detail}")
+                        return False
+                except:
+                    # If not JSON, still pass if 404
+                    self.log_test("Invalid Token Scenario", True, 
+                                f"Invalid token correctly rejected with 404")
+                    return True
+            else:
+                self.log_test("Invalid Token Scenario", False, 
+                            f"Expected 404 for invalid token, got: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Invalid Token Scenario", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_concurrent_token_usage(self) -> bool:
+        """Test concurrent access with same token to verify race condition protection"""
+        try:
+            # Get a fresh token for this test
+            payload = {"email": "concurrent@example.com"}
+            token_response = self.session.post(f"{self.base_url}/deck/request", json=payload, timeout=15)
+            
+            if token_response.status_code != 200:
+                self.log_test("Concurrent Token Usage", False, 
+                            f"Failed to get token for concurrent test: {token_response.status_code}")
+                return False
+            
+            token_data = token_response.json()
+            concurrent_token = token_data.get('token')
+            
+            if not concurrent_token:
+                self.log_test("Concurrent Token Usage", False, 
+                            f"No token received for concurrent test")
+                return False
+            
+            import threading
+            import time
+            
+            results = []
+            
+            def download_attempt(token, attempt_id):
+                try:
+                    response = self.session.get(f"{self.base_url}/deck/download?token={token}", timeout=10)
+                    results.append({
+                        'attempt_id': attempt_id,
+                        'status_code': response.status_code,
+                        'success': response.status_code == 200
+                    })
+                except Exception as e:
+                    results.append({
+                        'attempt_id': attempt_id,
+                        'status_code': 'error',
+                        'success': False,
+                        'error': str(e)
+                    })
+            
+            # Launch 3 concurrent download attempts
+            threads = []
+            for i in range(3):
+                thread = threading.Thread(target=download_attempt, args=(concurrent_token, i+1))
+                threads.append(thread)
+            
+            # Start all threads nearly simultaneously
+            for thread in threads:
+                thread.start()
+            
+            # Wait for all threads to complete
+            for thread in threads:
+                thread.join()
+            
+            # Analyze results
+            successful_downloads = [r for r in results if r['success']]
+            failed_downloads = [r for r in results if not r['success']]
+            
+            if len(successful_downloads) == 1 and len(failed_downloads) == 2:
+                self.log_test("Concurrent Token Usage", True, 
+                            f"✅ RACE CONDITION PROTECTION WORKING - Only 1 of 3 concurrent attempts succeeded, 2 were blocked", 
+                            {'successful': len(successful_downloads), 'failed': len(failed_downloads), 'results': results})
+                return True
+            elif len(successful_downloads) > 1:
+                self.log_test("Concurrent Token Usage", False, 
+                            f"❌ RACE CONDITION DETECTED - {len(successful_downloads)} concurrent downloads succeeded (should be only 1)", 
+                            {'successful': len(successful_downloads), 'failed': len(failed_downloads), 'results': results})
+                return False
+            else:
+                self.log_test("Concurrent Token Usage", False, 
+                            f"Unexpected result - {len(successful_downloads)} successful, {len(failed_downloads)} failed", 
+                            {'results': results})
+                return False
+                
+        except Exception as e:
+            self.log_test("Concurrent Token Usage", False, f"Request failed: {str(e)}")
             return False
     
     def test_audit_endpoint(self) -> bool:
