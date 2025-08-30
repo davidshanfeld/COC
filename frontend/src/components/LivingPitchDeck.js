@@ -146,7 +146,7 @@ const LivingPitchDeck = () => {
 
       const data = await response.json();
       if (data.success) {
-        setAccessToken(data.access_token);
+        setAccessToken(data.token);
       }
     } catch (error) {
       console.error('Error requesting access:', error);
