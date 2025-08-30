@@ -1128,7 +1128,7 @@ class CoastalOakAPITester:
         print(f"Test started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("=" * 80)
         
-        # Test sequence - order matters for document tests
+        # Test sequence - order matters for document tests and token-based tests
         tests = [
             ("System Status", self.test_status_endpoint),
             ("Live Data Integration", self.test_live_data_endpoint),
@@ -1137,7 +1137,22 @@ class CoastalOakAPITester:
             ("Document Update", self.test_document_update_endpoint),
             ("Markdown Export", self.test_document_export_markdown_endpoint),
             ("Documents List", self.test_documents_list_endpoint),
-            ("Daily Refresh System", self.test_daily_refresh_endpoint)
+            ("Daily Refresh System", self.test_daily_refresh_endpoint),
+            
+            # V1.3.0 New Endpoints
+            ("V1.3.0 - Healthz Dependencies", self.test_healthz_deps_endpoint),
+            ("V1.3.0 - Rates History", self.test_rates_history_endpoint),
+            ("V1.3.0 - Executive Summary PDF", self.test_execsum_pdf_endpoint),
+            ("V1.3.0 - Deck Request Token", self.test_deck_request_endpoint),
+            ("V1.3.0 - Deck Download Single-Use", self.test_deck_download_endpoint),
+            ("V1.3.0 - Audit Logs", self.test_audit_endpoint),
+            ("V1.3.0 - Footnotes", self.test_footnotes_endpoint),
+            
+            # Regression Tests
+            ("Regression - Current Rates", self.test_rates_endpoint),
+            ("Regression - CRE Maturities", self.test_maturities_endpoint),
+            ("Regression - FDIC Banks", self.test_banks_endpoint),
+            ("Regression - Agent Execution", self.test_agents_execute_endpoint)
         ]
         
         passed = 0
