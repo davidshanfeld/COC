@@ -55,7 +55,7 @@ const LivingPitchDeck = () => {
 
   const fetchFootnotes = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/footnotes`);
+      const response = await apiFetch(`/api/footnotes`);
       const data = await response.json();
       if (data.success) {
         setFootnotes(data.data);
