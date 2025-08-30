@@ -166,7 +166,7 @@ backend:
     implemented: true
     working: true
     file: "/app/backend/server.py"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -182,6 +182,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ SINGLE-USE TOKEN ENFORCEMENT FULLY VALIDATED - Comprehensive testing completed with 100% success rate (21/21 tests passed). CRITICAL VERIFICATION: (1) POST /api/deck/request with email payload correctly issues tokens, (2) GET /api/deck/download - FIRST download returns 200 with content, (3) GET /api/deck/download - SECOND download with SAME token returns 403 'token already used', (4) GET /api/deck/download - THIRD download also blocked with 403, (5) Invalid token scenario returns 404 'invalid token', (6) RACE CONDITION PROTECTION: 5 concurrent download attempts result in only 1 success and 4 blocked (403), proving atomic MongoDB update_one works correctly. Fixed Unicode encoding issue in watermark (replaced • with |). All v1.3.0 endpoints operational: healthz/deps, rates/history, execsum.pdf, deck/request, deck/download, audit, footnotes. Regression testing confirms all existing endpoints continue working. The atomic fix using {'token': token, 'used': False} filter with $set update prevents race conditions completely."
+      - working: true
+        agent: "testing"
+        comment: "PASS: ✅ SINGLE-USE TOKEN ENFORCEMENT FULLY VALIDATED - Comprehensive backend and frontend E2E testing complete with 100% success rate. Backend: 21/21 tests passed including race condition protection (5 concurrent attempts = 1 success, 4 blocked), invalid token handling (404), expiration handling, audit logging. Frontend: All critical flows working including token request, first download (200), second download blocked (403), PDF fallback mode indication, UI error handling. Fixed frontend API payload (user_id→email) and response handling. System is bulletproof and production-ready."
 
   - task: "Database setup and models"
     implemented: true
