@@ -73,6 +73,8 @@ TOKENS: Dict[str, Dict[str, Any]] = {}
 CACHE: Dict[str, Dict[str, Any]] = {
     "fred_dff": {"data": None, "exp": 0, "ttl": 15 * 60},
     "treasury_curve": {"data": None, "exp": 0, "ttl": 15 * 60},
+    "rates_history_180": {"data": None, "exp": 0, "ttl": 6 * 60 * 60},  # 6 hours
+    "rates_history_365": {"data": None, "exp": 0, "ttl": 6 * 60 * 60},  # 6 hours
 }
 
 # ------------------------------
