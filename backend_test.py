@@ -1285,6 +1285,8 @@ class CoastalOakAPITester:
             ("V1.3.0 - Executive Summary PDF", self.test_execsum_pdf_endpoint),
             ("V1.3.0 - Deck Request Token", self.test_deck_request_endpoint),
             ("V1.3.0 - Deck Download Single-Use", self.test_deck_download_endpoint),
+            ("V1.3.0 - Invalid Token Scenario", self.test_invalid_token_scenario),
+            ("V1.3.0 - Concurrent Token Usage (Race Condition Test)", self.test_concurrent_token_usage),
             ("V1.3.0 - Audit Logs", self.test_audit_endpoint),
             ("V1.3.0 - Footnotes", self.test_footnotes_endpoint),
             
