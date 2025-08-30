@@ -246,6 +246,18 @@ backend:
         comment: "PASS: POST-EXCEL MODEL COMPREHENSIVE VALIDATION - All backend functionality remains 100% operational after Excel model creation. Excel file confirmed at /app/Coastal_Oak_Capital_Fund_Model.xlsx (19KB). Complete backend test results: (1) System Status: ✅ PASS - Database connected, system healthy, (2) Live Data Integration: ✅ PASS - 8 data sources fetched with complete structure, (3) Document Creation: ✅ PASS - 8 sections generated with 8 data sources, (4) Document Retrieval: ✅ PASS - Full document structure validated, (5) Document Update: ✅ PASS - 8 sources refreshed successfully, (6) Markdown Export: ✅ PASS - 70,217 characters generated, (7) Documents List: ✅ PASS - 22 documents listed correctly, (8) Daily Refresh System: ✅ PASS - 22/22 documents updated successfully. SUCCESS RATE: 100% (8/8 tests passed). The 'living and breathing' document system maintains full functionality alongside the static institutional Excel model."
 
 frontend:
+  - task: "Regulatory + FDIC adapters frontend UI implementation"
+    implemented: true
+    working: "unknown"
+    file: "/app/frontend/src/components/LivingPitchDeck.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "unknown"
+        agent: "main"
+        comment: "IMPLEMENTED: Added frontend UI for Laws & Incentives Monitor and Bank Exposure tabs. Created 3-pane regulatory view (federal/state/municipal) with drilldown functionality for each regulatory item. Added FDIC bank exposure table with detailed bank analysis modal. Integrated new footnote IDs (NEVI, ITC30C, AB1236, AB970, CEQA32, LAZ1, LACode, LAGP, LADBS, B1) into UI components. Added loading states, error handling, and interactive elements. Ready for backend and frontend testing to validate new UI functionality."
+
   - task: "Live document interface"
     implemented: true
     working: true
