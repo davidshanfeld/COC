@@ -38,7 +38,7 @@ class SecurityAPI:
         
         # Store in database
         try:
-            collection = self.db_client.get_database("coastal_oak").get_collection("tokens")
+            collection = self.db_client.get_database("coastal_oak_db").get_collection("tokens")
             collection.insert_one(token_record.dict())
         except Exception as e:
             self.logger.error(f"Token storage error: {e}")
