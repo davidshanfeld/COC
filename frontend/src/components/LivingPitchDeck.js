@@ -139,7 +139,7 @@ const LivingPitchDeck = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: 'demo_user',
+          email: 'demo@coastaloakcapital.com',
           audience: activeAudience
         })
       });
