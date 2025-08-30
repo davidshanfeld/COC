@@ -604,7 +604,7 @@ async def download_deck(token: str):
         except Exception as e:
             # Fallback to HTML
             log_audit("deck_download_html_fallback", {"token": token, "error": str(e)})
-            return HTMLResponse(content=html, headers={"X-PDF-Mode": "fallback-html"})
+            return HTMLResponse(content=html, headers={"X-PDF-Mode": "fallback-html", "Cache-Control":"no-store, no-cache, must-revalidate, max-age=0", "Pragma":"no-cache", "Expires":"0"})
         
     except HTTPException:
         raise
