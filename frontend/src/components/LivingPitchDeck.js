@@ -43,7 +43,7 @@ const LivingPitchDeck = () => {
 
   const fetchCurrentRates = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/rates`);
+      const response = await apiFetch(`/api/rates`);
       const data = await response.json();
       if (data.success) {
         setCurrentRates(data.data);
