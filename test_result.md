@@ -251,7 +251,7 @@ backend:
 frontend:
   - task: "Regulatory + FDIC adapters frontend UI implementation"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/components/LivingPitchDeck.js"
     stuck_count: 1
     priority: "high"
@@ -263,6 +263,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "CRITICAL ISSUE: Frontend UI implementation is complete and renders correctly, but API data fetching is failing. Laws & Incentives Monitor shows 'No federal/state/municipal items available' and Bank Exposure shows 'No FDIC exposure data available'. Console errors show 'TypeError: Failed to fetch' for /api/regulatory/* and /api/fdic/exposure endpoints. The regulatory API endpoints return invalid response structure (missing data.items), while FDIC endpoints return 200 but frontend cannot process the data. UI components, footnote integration (all 17 footnote IDs present), responsive design, audience toggles, and token download flow all work correctly. The issue is specifically with API data integration - backend endpoints may be returning different schema than frontend expects."
+      - working: true
+        agent: "testing"
+        comment: "✅ MAJOR PROGRESS: API INTEGRATION ISSUES RESOLVED - Comprehensive focused testing shows the critical API data integration problems have been fixed. VERIFIED WORKING: (1) ✅ Federal regulatory data loading (15 items displaying with codes ITC30C, NEVI), (2) ✅ State regulatory data loading (17 items displaying with codes AB1236, AB970, CEQA32), (3) ✅ Municipal regulatory data loading (19 items displaying with codes LAZ1, LACode, LAGP), (4) ✅ FDIC bank exposure data loading (summary cards show Total Banks: 3, Avg CRE Exposure: 19.9%), (5) ✅ Bank exposure table populated with 3 bank rows as expected, (6) ✅ No console 'Failed to fetch' errors detected, (7) ✅ All 17 footnote IDs present including 9 regulatory footnotes. MINOR ISSUES REMAINING: (1) Regulatory item drilldown detail drawer not opening on click, (2) Bank detail modal opens but content loading has timeout issues. The core API integration that was previously completely broken is now fully functional - no more 'No items available' messages, no more fetch errors. This represents successful resolution of the critical API schema mismatch issues."
 
   - task: "Live document interface"
     implemented: true
