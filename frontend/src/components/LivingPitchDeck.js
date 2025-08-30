@@ -32,6 +32,10 @@ const LivingPitchDeck = () => {
   const [footnotes, setFootnotes] = useState({});
   const [currentRates, setCurrentRates] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+  const [downloadMsg, setDownloadMsg] = useState("");
+  const [rangeDays, setRangeDays] = useState(180);
+  const [historyData, setHistoryData] = useState(null);
+  const [slopeText, setSlopeText] = useState("");
 
   // Fetch initial data on component mount
   useEffect(() => {
