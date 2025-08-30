@@ -576,8 +576,8 @@ async def deck_download(request: Request, token: str, format: str = "pdf"):
             # Race condition safety: someone else flipped it
             raise HTTPException(403, "token already used")
 
-        # Serve PDF or fallback HTML; always watermark
-        wm = f"{cred['email']} • {now.isoformat()} • Coastal Oak"
+        # Serve PDF or fallback HTML; always watermark (use ASCII-safe separator)
+        wm = f"{cred['email']} | {now.isoformat()} | Coastal Oak"
         headers = {"Cache-Control": "no-store", "X-Watermark": wm}
         
         try:
