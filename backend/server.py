@@ -727,4 +727,248 @@ async def get_footnotes():
         logger.error(f"Error fetching footnotes: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch footnotes: {str(e)}")
 
+# ======= REGULATORY AND FDIC ADAPTERS =======
+
+@router.get("/regulatory/federal")
+async def get_federal_regulatory():
+    """Get federal regulatory items affecting CRE/EV development"""
+    try:
+        now = datetime.now(timezone.utc)
+        # Mock data matching the specified schema
+        items = [
+            {
+                "code": "ITC30C",
+                "title": "IRC §30C Alternative Fuel Refueling Property Credit",
+                "status": "active",
+                "summary": "Credit up to 30% for qualifying EV charging property; elective pay for eligible entities; location restrictions may apply.",
+                "effectOnCOC": "Reduces basis for EVCS capex in consumer and fleet sites; increases IRR when stacked with utility rebates.",
+                "citations": [{"url": "https://www.irs.gov/credits-deductions/businesses/alternative-fuel-vehicle-refueling-property-credit", "label": "IRS guidance"}],
+                "footnoteId": "ITC30C",
+                "retrievalAt": now.isoformat(),
+                "refresh": "static"
+            },
+            {
+                "code": "NEVI",
+                "title": "NEVI Formula Program",
+                "status": "active",
+                "summary": "Federal funding for highway corridor charging with state plan constraints and uptime requirements.",
+                "effectOnCOC": "Supports corridor sites; capex offset contingent on plan compliance and reporting.",
+                "citations": [{"url": "https://www.fhwa.dot.gov/bipartisan-infrastructure-law/nevi_formula_program.cfm", "label": "FHWA NEVI"}],
+                "footnoteId": "NEVI",
+                "retrievalAt": now.isoformat(),
+                "refresh": "periodic"
+            }
+        ]
+        
+        return {
+            "asOf": now.isoformat(),
+            "items": items
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching federal regulatory data: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch federal regulatory data: {str(e)}")
+
+@router.get("/regulatory/state")
+async def get_state_regulatory():
+    """Get California state regulatory items affecting CRE/EV development"""
+    try:
+        now = datetime.now(timezone.utc)
+        # Mock data matching the specified schema
+        items = [
+            {
+                "code": "AB1236",
+                "title": "AB 1236 – Streamlined EVCS Permitting",
+                "status": "active",
+                "summary": "Requires local ministerial checklists and streamlined approvals for EVCS.",
+                "effectOnCOC": "Shorter permitting timelines; supports CEQA ministerial route.",
+                "citations": [{"url": "https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202120220AB1236", "label": "Statute / CA OPR"}],
+                "footnoteId": "AB1236",
+                "retrievalAt": now.isoformat(),
+                "refresh": "static"
+            },
+            {
+                "code": "AB970",
+                "title": "AB 970 – Permit Deadlines for EVCS",
+                "status": "active",
+                "summary": "Sets shot clocks and deemed-complete standards for EVCS permits.",
+                "effectOnCOC": "Improves schedule certainty; SLA-driven.",
+                "citations": [{"url": "https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202120220AB970", "label": "Statute"}],
+                "footnoteId": "AB970",
+                "retrievalAt": now.isoformat(),
+                "refresh": "static"
+            },
+            {
+                "code": "CEQA32",
+                "title": "CEQA Class 32 – Infill Development Exemption",
+                "status": "available",
+                "summary": "Categorical exemption for infill projects meeting criteria; exceptions apply.",
+                "effectOnCOC": "Provides a CEQA off-ramp for qualifying adaptive reuse; verify exceptions.",
+                "citations": [{"url": "https://casetext.com/regulation/california-code-of-regulations-title-14-natural-resources-division-6-resources-agency-chapter-3-guidelines-for-implementation-of-the-california-environmental-quality-act-article-19-categorical-exemptions-section-15332-in-fill-development-projects", "label": "CA Code of Regulations"}],
+                "footnoteId": "CEQA32",
+                "retrievalAt": now.isoformat(),
+                "refresh": "static"
+            }
+        ]
+        
+        return {
+            "asOf": now.isoformat(),
+            "items": items
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching state regulatory data: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch state regulatory data: {str(e)}")
+
+@router.get("/regulatory/municipal")
+async def get_municipal_regulatory():
+    """Get Los Angeles municipal regulatory items affecting CRE/EV development"""
+    try:
+        now = datetime.now(timezone.utc)
+        # Mock data matching the specified schema
+        items = [
+            {
+                "code": "LAZ1",
+                "title": "LA City New Zoning Code (Chapter 1A)",
+                "status": "rolling",
+                "summary": "New zoning framework rolling out by Community Plan Area.",
+                "effectOnCOC": "Entitlement mechanics and use standards vary by CPA; check applicability map.",
+                "citations": [{"url": "https://planning.lacity.gov/zoning/new-code", "label": "LA City Planning"}],
+                "footnoteId": "LAZ1",
+                "retrievalAt": now.isoformat(),
+                "refresh": "weekly"
+            },
+            {
+                "code": "LACode",
+                "title": "LA Municipal Code – Planning & Zoning",
+                "status": "current",
+                "summary": "Codified planning and zoning ordinances (publisher posting lag possible).",
+                "effectOnCOC": "Primary municipal authority for entitlements and conditions.",
+                "citations": [{"url": "https://codelibrary.amlegal.com/codes/los_angeles/latest/lapz/0-0-0-57924", "label": "AmLegal LA PZ"}],
+                "footnoteId": "LACode",
+                "retrievalAt": now.isoformat(),
+                "refresh": "weekly"
+            },
+            {
+                "code": "LAGP",
+                "title": "LA General Plan — Updates",
+                "status": "rolling",
+                "summary": "General Plan elements and community plan updates with policy changes.",
+                "effectOnCOC": "Signals future entitlement friction or relief.",
+                "citations": [{"url": "https://planning.lacity.gov/plans-policies/general-plan-overview#updates", "label": "General Plan"}],
+                "footnoteId": "LAGP",
+                "retrievalAt": now.isoformat(),
+                "refresh": "weekly"
+            },
+            {
+                "code": "LADBS",
+                "title": "LADBS — EV Charging Permits",
+                "status": "current",
+                "summary": "Permit checklists, accessibility, layout, and inspection rules for EVCS.",
+                "effectOnCOC": "Defines submittals and field constraints across building types.",
+                "citations": [{"url": "https://dbs.lacity.gov/?sfvrsn=7", "label": "LADBS"}],
+                "footnoteId": "LADBS",
+                "retrievalAt": now.isoformat(),
+                "refresh": "weekly"
+            }
+        ]
+        
+        return {
+            "asOf": now.isoformat(),
+            "items": items
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching municipal regulatory data: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch municipal regulatory data: {str(e)}")
+
+@router.get("/fdic/exposure")
+async def get_fdic_exposure():
+    """Get FDIC bank CRE exposure digest"""
+    try:
+        now = datetime.now(timezone.utc)
+        # Mock data matching the specified schema
+        rows = [
+            {
+                "bankId": "cert_12345",
+                "bankName": "City National West",
+                "category": "Regional",
+                "exposurePct": 29.0,
+                "stack": {"mf": 34, "off": 41, "ind": 15, "other": 10},
+                "footnoteId": "B1",
+                "retrievalAt": now.isoformat(),
+                "source": "FDIC/FFIEC Call Reports"
+            },
+            {
+                "bankId": "cert_67890",
+                "bankName": "First Republic Bank",
+                "category": "Regional",
+                "exposurePct": 18.5,
+                "stack": {"mf": 42, "off": 35, "ind": 13, "other": 10},
+                "footnoteId": "B1",
+                "retrievalAt": now.isoformat(),
+                "source": "FDIC/FFIEC Call Reports"
+            },
+            {
+                "bankId": "cert_54321",
+                "bankName": "Wells Fargo Bank",
+                "category": "Institutional",
+                "exposurePct": 12.3,
+                "stack": {"mf": 38, "off": 32, "ind": 18, "other": 12},
+                "footnoteId": "B1",
+                "retrievalAt": now.isoformat(),
+                "source": "FDIC/FFIEC Call Reports"
+            }
+        ]
+        
+        return {
+            "asOf": now.date().isoformat(),
+            "rows": rows
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching FDIC exposure data: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch FDIC exposure data: {str(e)}")
+
+@router.get("/fdic/banks/{bank_id}")
+async def get_fdic_bank_detail(bank_id: str):
+    """Get detailed FDIC data for a specific bank"""
+    try:
+        now = datetime.now(timezone.utc)
+        
+        # Mock detailed data for specific bank
+        bank_details = {
+            "bankId": bank_id,
+            "bankName": f"Bank Details for {bank_id}",
+            "category": "Regional",
+            "exposurePct": 25.7,
+            "stack": {"mf": 35, "off": 40, "ind": 15, "other": 10},
+            "footnoteId": "B1",
+            "retrievalAt": now.isoformat(),
+            "source": "FDIC/FFIEC Call Reports",
+            "details": {
+                "assets_total": 45600000000,  # $45.6B
+                "loans_cre_total": 11726400000,  # $11.7B
+                "risk_metrics": {
+                    "tier1_capital_ratio": 12.4,
+                    "leverage_ratio": 8.9,
+                    "cre_concentration_ratio": 25.7
+                },
+                "quarterly_trend": [
+                    {"quarter": "Q4-2024", "exposure_pct": 26.1},
+                    {"quarter": "Q3-2024", "exposure_pct": 25.9},
+                    {"quarter": "Q2-2024", "exposure_pct": 25.7}
+                ]
+            }
+        }
+        
+        return {
+            "asOf": now.date().isoformat(),
+            "bank": bank_details
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching bank detail for {bank_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch bank detail: {str(e)}")
+
 app.include_router(router)
