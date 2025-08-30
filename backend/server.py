@@ -156,6 +156,177 @@ async def fetch_treasury_curve() -> Dict[str, Any]:
     CACHE["treasury_curve"]["exp"] = now + CACHE["treasury_curve"]["ttl"]
     return data
 
+async def fetch_fred_history(series_id: str, days: int = 180) -> List[Dict[str, Any]]:
+    """Fetch historical FRED data for specified number of days."""
+    if not FRED_API_KEY:
+        # Generate mock historical data
+        return generate_mock_history(days, "fred")
+    
+    # Calculate start date
+    start_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+    
+    url = "https://api.stlouisfed.org/fred/series/observations"
+    params = {
+        "series_id": series_id,
+        "api_key": FRED_API_KEY,
+        "file_type": "json",
+        "sort_order": "asc",
+        "observation_start": start_date,
+        "frequency": "d"  # daily
+    }
+    
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            r = await client.get(url, params=params)
+            r.raise_for_status()
+            data = r.json()
+            obs = data.get("observations", [])
+            
+            history = []
+            for observation in obs:
+                value = observation.get("value")
+                date_str = observation.get("date")
+                if value and value != "." and date_str:
+                    try:
+                        history.append({
+                            "date": date_str,
+                            "value": float(value)
+                        })
+                    except (ValueError, TypeError):
+                        continue
+            
+            return history
+    
+    except Exception:
+        return generate_mock_history(days, "fred")
+
+async def fetch_treasury_history(days: int = 180) -> List[Dict[str, Any]]:
+    """Fetch historical Treasury data. Since Treasury XML is limited, we'll generate realistic mock data."""
+    # Treasury historical API is complex and limited, so we'll generate realistic mock data
+    # In production, this would integrate with Treasury's historical data API or a financial data provider
+    return generate_mock_history(days, "treasury")
+
+def generate_mock_history(days: int, data_type: str) -> List[Dict[str, Any]]:
+    """Generate realistic mock historical data for demonstration."""
+    history = []
+    base_date = datetime.now() - timedelta(days=days)
+    
+    if data_type == "fred":
+        # Fed Funds Rate - realistic trend
+        base_rate = 5.33
+        for i in range(days):
+            date = base_date + timedelta(days=i)
+            # Skip weekends for business day data
+            if date.weekday() >= 5:  # Saturday = 5, Sunday = 6
+                continue
+            
+            # Add some realistic volatility and trend
+            trend = -0.1 * math.sin(i / 30) + 0.05 * math.sin(i / 60)
+            noise = 0.02 * math.sin(i * 0.1) + 0.01 * math.cos(i * 0.07)
+            rate = max(0.1, base_rate + trend + noise)
+            
+            history.append({
+                "date": date.strftime("%Y-%m-%d"),
+                "value": round(rate, 2)
+            })
+    
+    elif data_type == "treasury":
+        # Treasury yields - realistic yield curve behavior
+        base_rates = {"t5": 4.50, "t10": 4.49, "t30": 4.66}
+        for i in range(days):
+            date = base_date + timedelta(days=i)
+            # Skip weekends
+            if date.weekday() >= 5:
+                continue
+            
+            rates = {}
+            for term, base_rate in base_rates.items():
+                # Different volatility for different terms
+                volatility = 0.02 if term == "t5" else 0.025 if term == "t10" else 0.03
+                trend = -0.08 * math.sin(i / 45) + 0.04 * math.sin(i / 90)
+                noise = volatility * math.sin(i * 0.08 + hash(term) % 100) + 0.01 * math.cos(i * 0.05)
+                rate = max(0.1, base_rate + trend + noise)
+                rates[term] = round(rate, 2)
+            
+            history.append({
+                "date": date.strftime("%Y-%m-%d"),
+                **rates
+            })
+    
+    return history
+
+async def fetch_rates_history(days: int = 180) -> List[Dict[str, Any]]:
+    """Fetch combined historical rates data with caching."""
+    cache_key = f"rates_history_{days}"
+    
+    # Check cache
+    now = time.time()
+    if cache_key in CACHE and CACHE[cache_key]["data"] and CACHE[cache_key]["exp"] > now:
+        return CACHE[cache_key]["data"]
+    
+    try:
+        # Fetch Fed Funds history
+        fred_history = await fetch_fred_history("DFF", days)
+        
+        # Fetch Treasury history (mock for now)
+        treasury_history = await fetch_treasury_history(days)
+        
+        # Combine data by date
+        combined_data = {}
+        
+        # Add Fed Funds data
+        for entry in fred_history:
+            date = entry["date"]
+            combined_data[date] = {"date": date, "ffr": entry["value"]}
+        
+        # Add Treasury data
+        for entry in treasury_history:
+            date = entry["date"]
+            if date in combined_data:
+                combined_data[date].update({
+                    "t5": entry.get("t5"),
+                    "t10": entry.get("t10"),
+                    "t30": entry.get("t30")
+                })
+            else:
+                combined_data[date] = {
+                    "date": date,
+                    "ffr": None,
+                    "t5": entry.get("t5"),
+                    "t10": entry.get("t10"),
+                    "t30": entry.get("t30")
+                }
+        
+        # Convert to sorted list
+        history = sorted(combined_data.values(), key=lambda x: x["date"])
+        
+        # Cache the result
+        if cache_key not in CACHE:
+            CACHE[cache_key] = {"data": None, "exp": 0, "ttl": 6 * 60 * 60}
+        
+        CACHE[cache_key]["data"] = history
+        CACHE[cache_key]["exp"] = now + CACHE[cache_key]["ttl"]
+        
+        return history
+        
+    except Exception as e:
+        # Return mock data as fallback
+        combined_history = []
+        base_date = datetime.now() - timedelta(days=days)
+        
+        for i in range(days):
+            date = base_date + timedelta(days=i)
+            if date.weekday() < 5:  # Business days only
+                combined_history.append({
+                    "date": date.strftime("%Y-%m-%d"),
+                    "ffr": round(5.33 + 0.1 * math.sin(i/30), 2),
+                    "t5": round(4.50 + 0.08 * math.sin(i/25), 2),
+                    "t10": round(4.49 + 0.07 * math.sin(i/20), 2),
+                    "t30": round(4.66 + 0.09 * math.sin(i/35), 2)
+                })
+        
+        return combined_history
+
 # ------------------------------
 # Footnote registry (Mongo-backed if available)
 # ------------------------------
