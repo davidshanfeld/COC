@@ -287,11 +287,11 @@ async def serve_executive_css():
         # Fallback minimal CSS
         return Response(content="body{font-family:Arial,sans-serif;margin:2em;}", media_type="text/css")
 
-@app.get("/health")
+@app.get("/api/health")
 async def health():
     return {"ok": True, "version": APP_VERSION, "time": now_iso()}
 
-@app.get("/healthz/deps")
+@app.get("/api/healthz/deps")
 async def health_deps():
     deps = {"mongo": False, "fred": False, "treasury": False, "pdf": PDF_ENGINE}
     # Mongo
