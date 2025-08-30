@@ -1085,7 +1085,8 @@ class CoastalOakAPITester:
                 "objective": "Test agent execution for regression testing",
                 "audience": "LP",
                 "inputs": {"test": "regression"},
-                "security_tier": "public"
+                "security_tier": "public",
+                "tags": ["charts", "ui"]  # Add required tags field
             }
             response = self.session.post(f"{self.base_url}/agents/execute", json=payload, timeout=20)
             
