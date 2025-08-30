@@ -275,7 +275,8 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "v1.3.0 endpoints - healthz, rates history, execsum pdf, audit, token download"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
