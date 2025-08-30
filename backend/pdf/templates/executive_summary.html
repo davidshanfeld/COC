@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coastal Oak Capital - Executive Summary</title>
+    <link rel="stylesheet" href="/api/execsum/styles.css">
+    <style>
+        @page {
+            margin: 1in;
+            @top-center {
+                content: "Coastal Oak Capital - Executive Summary";
+            }
+            @bottom-center {
+                content: "{{ watermark }}";
+                font-size: 8pt;
+                color: #666;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-section">
+            <h1>Coastal Oak Capital</h1>
+            <p class="subtitle">Opportunistic Commercial Real Estate Distressed Debt Fund</p>
+        </div>
+        <div class="watermark">{{ watermark }}</div>
+    </header>
+
+    <main class="content">
+        <section class="executive-overview">
+            <h2>Executive Summary</h2>
+            <p class="lead">Coastal Oak Capital targets distressed commercial real estate debt opportunities across AI/Data Infrastructure, EV Super-charging, and specialized industrial assets, converting debt positions to equity control in high-growth sectors.</p>
+            
+            <div class="key-metrics">
+                <div class="metric-grid">
+                    <div class="metric-card">
+                        <h3>Target Fund Size</h3>
+                        <p class="metric-value">$500M</p>
+                        <p class="metric-sub">Initial Close: $150M</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Target Net IRR</h3>
+                        <p class="metric-value">18-22%</p>
+                        <p class="metric-sub">LP Net Returns</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Investment Period</h3>
+                        <p class="metric-value">3-4 Years</p>
+                        <p class="metric-sub">Active Deployment</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="market-conditions">
+            <h2>Current Market Environment</h2>
+            <p>As of <strong>{{ asOf }}</strong>, market conditions present compelling opportunities:</p>
+            
+            <div class="rates-overview">
+                <div class="rate-item">
+                    <span class="rate-label">Federal Funds Rate:</span>
+                    <span class="rate-value">{{ ffr }}%</span>
+                    <sup class="footnote-ref">FN F1</sup>
+                </div>
+                <div class="rate-item">
+                    <span class="rate-label">5-Year Treasury:</span>
+                    <span class="rate-value">{{ t5 }}%</span>
+                    <sup class="footnote-ref">FN T1</sup>
+                </div>
+                <div class="rate-item">
+                    <span class="rate-label">10-Year Treasury:</span>
+                    <span class="rate-value">{{ t10 }}%</span>
+                    <sup class="footnote-ref">FN T1</sup>
+                </div>
+                <div class="rate-item">
+                    <span class="rate-label">30-Year Treasury:</span>
+                    <span class="rate-value">{{ t30 }}%</span>
+                    <sup class="footnote-ref">FN T1</sup>
+                </div>
+            </div>
+
+            <p class="market-analysis">The elevated rate environment has created significant stress in commercial real estate, particularly in office and retail sectors. Our strategy focuses on acquiring distressed debt positions at substantial discounts, positioning for equity conversion as markets stabilize.</p>
+        </section>
+
+        <section class="investment-focus">
+            <h2>Investment Focus Areas</h2>
+            
+            <div class="focus-areas">
+                <div class="focus-area">
+                    <h3>AI/Data Infrastructure</h3>
+                    <p>Targeting distressed data center developments and conversions, particularly in secondary markets with power grid advantages. Focus on modular designs supporting AI compute demands.</p>
+                </div>
+                
+                <div class="focus-area">
+                    <h3>EV Super-charging Networks</h3>
+                    <p>Acquiring debt positions in strategic corridor locations and urban charging infrastructure, positioned for the accelerating EV adoption curve.</p>
+                </div>
+                
+                <div class="focus-area">
+                    <h3>Specialized Industrial</h3>
+                    <p>Last-mile logistics, cold storage, and industrial facilities supporting e-commerce and supply chain resilience in major metropolitan areas.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="charts-section">
+            <h2>Market Data Visualization</h2>
+            
+            <div class="chart-container">
+                <div class="chart-placeholder">
+                    <h4>Treasury Yield Curve Trends</h4>
+                    <p class="chart-note">Current yield environment showing {{ ffr }}% fed funds with inverted curve dynamics.</p>
+                    <!-- Chart would be embedded here via image URL -->
+                </div>
+                
+                <div class="chart-placeholder">
+                    <h4>CRE Maturity Wall Analysis</h4>
+                    <p class="chart-note">$1.2T in CRE debt maturities through 2027, creating significant opportunity.<sup class="footnote-ref">FN M1</sup></p>
+                    <!-- Chart would be embedded here via image URL -->
+                </div>
+            </div>
+        </section>
+
+        <section class="competitive-advantages">
+            <h2>Competitive Advantages</h2>
+            
+            <ul class="advantage-list">
+                <li><strong>Sector Specialization:</strong> Deep expertise in emerging infrastructure sectors (AI, EV) before they become crowded.</li>
+                <li><strong>Operational Capability:</strong> In-house development and asset management team with 50+ years combined experience.</li>
+                <li><strong>Strategic Partnerships:</strong> Established relationships with technology tenants and infrastructure providers.</li>
+                <li><strong>Capital Efficiency:</strong> Debt-to-equity conversion strategy maximizes returns while minimizing initial capital requirements.</li>
+            </ul>
+        </section>
+
+        <section class="risk-management">
+            <h2>Risk Management Framework</h2>
+            
+            <p>Our disciplined approach includes:</p>
+            <ul class="risk-list">
+                <li>Geographic diversification across primary and secondary markets</li>
+                <li>Asset type diversification within target sectors</li>
+                <li>Stress testing for 300-500 bp rate increases</li>
+                <li>ESG compliance and climate risk assessment</li>
+                <li>Liquidity reserves for unexpected market volatility</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer class="footnotes">
+        <h3>Data Sources & Footnotes</h3>
+        <div class="footnote-list">
+            <div class="footnote-item">
+                <span class="footnote-id">F1:</span>
+                <span class="footnote-text">Effective Federal Funds Rate (DFF) | FRED API | Daily | Latest observation</span>
+            </div>
+            <div class="footnote-item">
+                <span class="footnote-id">T1:</span>
+                <span class="footnote-text">Treasury yield curve (5y/10y/30y) | Treasury XML | Daily | Latest close</span>
+            </div>
+            <div class="footnote-item">
+                <span class="footnote-id">M1:</span>
+                <span class="footnote-text">CRE maturities by asset type | Vendor feed pending (Trepp/MSCI) | Quarterly | Rolling sum</span>
+            </div>
+        </div>
+        
+        <div class="disclaimer">
+            <p><strong>Important Notice:</strong> This executive summary contains confidential and proprietary information. Distribution is restricted to qualified institutional investors only. Past performance does not guarantee future results. All investments carry risk of loss.</p>
+        </div>
+    </footer>
+</body>
+</html>
