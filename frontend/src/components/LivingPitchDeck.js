@@ -891,7 +891,7 @@ const LivingPitchDeck = () => {
                   <div className="flex justify-between items-start">
                     <CardTitle className="flex items-center">
                       <Building2 className="h-5 w-5 mr-2 text-blue-600" />
-                      {selectedBankDetail.name} - Detailed Analysis
+                      {selectedBankDetail.bank?.bankName || 'Bank Details'}
                     </CardTitle>
                     <Button
                       variant="ghost"
@@ -905,8 +905,8 @@ const LivingPitchDeck = () => {
                     </Button>
                   </div>
                   <CardDescription>
-                    FDIC Cert: {selectedBankDetail.fdicCert} | 
-                    Total Assets: ${(selectedBankDetail.totalAssets / 1e9).toFixed(1)}B
+                    FDIC Cert: {selectedBankDetail.bank?.bankId} | 
+                    Total Assets: ${(selectedBankDetail.bank?.details?.assets_total / 1e9).toFixed(1)}B
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
