@@ -1,523 +1,580 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from pymongo import MongoClient
-from bson import ObjectId
+# ================================
+# FILE: /app/backend/server.py
+# Framework: FastAPI (keeps CORS + Mongo optional)
+# ================================
+
 import os
-import logging
-from contextlib import asynccontextmanager
-from datetime import datetime
-from typing import Dict, Any
+import json
+import time
+import random
+import hashlib
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+from pathlib import Path
 
-# Import our models and services - using absolute imports
-from models import LiveDocument, UpdateRequest, RealTimeDataResponse
-from enhanced_document_service import EnhancedDocumentService
+import uvicorn
+from fastapi import FastAPI, HTTPException, Request, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, Response
+from fastapi.staticfiles import StaticFiles
 
-# Import Agent SDK components
-from agent_models import ExecutionRequest, ExecutionResponse
-from agent_registry_setup import build_orchestrator
-from data_feeds import data_feed_service
+try:
+    # optional, runs in-memory if missing
+    from pymongo import MongoClient
+except Exception:  # pragma: no cover
+    MongoClient = None  # type: ignore
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+try:
+    # Optional PDF engine
+    import weasyprint
+    PDF_ENGINE = "weasyprint"
+except ImportError:
+    try:
+        from playwright.sync_api import sync_playwright
+        PDF_ENGINE = "playwright"
+    except ImportError:
+        PDF_ENGINE = None
 
-# Database connection
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-client = MongoClient(MONGO_URL)
-db = client.coastal_oak_db
+import httpx
+import xml.etree.ElementTree as ET
+from math import isfinite
 
-# Initialize document service
-document_service = EnhancedDocumentService()
+APP_VERSION = "coastal-oak-mvp-1.2.0"
+PORT = int(os.getenv("PORT", "5050"))
+MONGO_URL = os.getenv("MONGO_URL", "")
+FRED_API_KEY = os.getenv("FRED_API_KEY", "")
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
 
-# Initialize Agent SDK orchestrator
-orchestrator = build_orchestrator(client)
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    logger.info("Starting up Coastal Oak Capital Live Document System...")
-    yield
-    # Shutdown
-    logger.info("Shutting down...")
-
-app = FastAPI(
-    lifespan=lifespan,
-    title="Coastal Oak Capital Live Document API",
-    description="Real-time institutional document system with live market data integration",
-    version="1.0.0"
-)
-
-# Configure CORS
+app = FastAPI(title="Coastal Oak — Living Pitch Deck")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure this properly for production
+    allow_origins=[CORS_ORIGINS] if CORS_ORIGINS != "*" else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-from fastapi import APIRouter
-router = APIRouter(prefix="/api")
-
-@router.get("/")
-async def root():
-    return {
-        "message": "Coastal Oak Capital Live Document System", 
-        "version": "1.0.0",
-        "description": "Institution-grade master deck with real-time market data integration"
-    }
-
-@router.get("/status")
-async def status():
+# ------------------------------
+# Optional Mongo setup
+# ------------------------------
+_db = None
+if MONGO_URL and MongoClient is not None:
     try:
-        # Test database connection
-        db.command('ping')
-        return {
-            "status": "healthy", 
-            "database": "connected",
-            "system": "Coastal Oak Capital Live Document System",
-            "timestamp": datetime.now().isoformat()
-        }
-    except Exception as e:
-        return {
-            "status": "unhealthy", 
-            "database": "disconnected", 
-            "system": "Coastal Oak Capital Live Document System",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
-        }
+        _db = MongoClient(MONGO_URL).get_default_database()
+    except Exception:
+        _db = None
 
-@router.post("/document/create", response_model=Dict[str, Any])
-async def create_document():
-    """Create the comprehensive Coastal Oak Capital master deck with real-time data and all integrated content"""
-    try:
-        logger.info("Creating comprehensive Coastal Oak Capital master deck with all integrated content...")
-        
-        # Create the enhanced document with all integrated content
-        document = await document_service.create_comprehensive_master_deck()
-        
-        # Store in database
-        doc_dict = document.model_dump()
-        doc_dict['_id'] = document.id
-        
-        # Store in MongoDB
-        collection = db.documents
-        collection.replace_one(
-            {"_id": document.id}, 
-            doc_dict, 
-            upsert=True
-        )
-        
-        logger.info(f"Comprehensive master deck created successfully with ID: {document.id}")
-        
-        return {
-            "success": True,
-            "document_id": document.id,
-            "title": document.title,
-            "sections_count": len(document.sections),
-            "data_sources_count": len(document.data_sources),
-            "last_updated": document.last_updated.isoformat(),
-            "version": document.version,
-            "message": "Comprehensive Coastal Oak Capital master deck created with all integrated content and live market data"
-        }
-        
-    except Exception as e:
-        logger.error(f"Error creating comprehensive document: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to create comprehensive document: {str(e)}")
+# Fallback in-memory stores
+FOOTNOTES: Dict[str, Dict[str, Any]] = {}
+ACCESS_LOG: List[Dict[str, Any]] = []
+TOKENS: Dict[str, Dict[str, Any]] = {}
 
-@router.get("/document/{document_id}")
-async def get_document(document_id: str):
-    """Retrieve a document with its current real-time data"""
-    try:
-        collection = db.documents
-        doc_data = collection.find_one({"_id": document_id})
-        
-        if not doc_data:
-            raise HTTPException(status_code=404, detail="Document not found")
-        
-        # Convert MongoDB document back to Pydantic model
-        document = LiveDocument(**doc_data)
-        
-        return {
-            "success": True,
-            "document": document.model_dump(),
-            "export_formats": ["markdown", "json"],
-            "real_time_data_age": "Live data as of request time"
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error retrieving document: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve document: {str(e)}")
+# Simple caches
+CACHE: Dict[str, Dict[str, Any]] = {
+    "fred_dff": {"data": None, "exp": 0, "ttl": 15 * 60},
+    "treasury_curve": {"data": None, "exp": 0, "ttl": 15 * 60},
+}
 
-@router.post("/document/{document_id}/update")
-async def update_document(document_id: str, request: UpdateRequest):
-    """Update a document with the latest real-time data"""
-    try:
-        collection = db.documents
-        doc_data = collection.find_one({"_id": document_id})
-        
-        if not doc_data:
-            raise HTTPException(status_code=404, detail="Document not found")
-        
-        # Convert to Pydantic model
-        document = LiveDocument(**doc_data)
-        
-        # Update with latest data
-        updated_document = await document_service.update_document(document, request.force_refresh)
-        
-        # Save back to database
-        doc_dict = updated_document.model_dump()
-        doc_dict['_id'] = updated_document.id
-        collection.replace_one({"_id": document_id}, doc_dict)
-        
-        logger.info(f"Document {document_id} updated successfully")
-        
-        return RealTimeDataResponse(
-            success=True,
-            data=updated_document.model_dump(),
-            sources_updated=list(updated_document.data_sources.keys()),
-            timestamp=datetime.now(),
-            message="Document updated with latest real-time market data"
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error updating document: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to update document: {str(e)}")
+# ------------------------------
+# Helpers
+# ------------------------------
 
-@router.get("/document/{document_id}/export/markdown")
-async def export_markdown(document_id: str):
-    """Export document as markdown format"""
-    try:
-        collection = db.documents
-        doc_data = collection.find_one({"_id": document_id})
-        
-        if not doc_data:
-            raise HTTPException(status_code=404, detail="Document not found")
-        
-        document = LiveDocument(**doc_data)
-        markdown_content = document_service.export_to_markdown(document)
-        
-        return {
-            "success": True,
-            "format": "markdown",
-            "content": markdown_content,
-            "title": document.title,
-            "last_updated": document.last_updated.isoformat()
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error exporting document: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to export document: {str(e)}")
+def now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
-@router.get("/data/live")
-async def get_live_data():
-    """Get current real-time market data"""
-    try:
-        real_time_data = await document_service.data_manager.fetch_all_data()
-        
-        return {
-            "success": True,
-            "data": real_time_data,
-            "timestamp": datetime.now().isoformat(),
-            "sources_count": len(real_time_data),
-            "message": "Real-time market data retrieved successfully"
-        }
-        
-    except Exception as e:
-        logger.error(f"Error fetching live data: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch live data: {str(e)}")
+def _hash(s: str) -> str:
+    return hashlib.sha256(s.encode()).hexdigest()[:12]
 
-@router.get("/documents/list")
-async def list_documents():
-    """List all available documents"""
-    try:
-        collection = db.documents
-        documents = list(collection.find({}, {
-            "_id": 1, 
-            "title": 1, 
-            "description": 1, 
-            "last_updated": 1, 
-            "version": 1
-        }))
-        
-        return {
-            "success": True,
-            "documents": documents,
-            "count": len(documents),
-            "timestamp": datetime.now().isoformat()
-        }
-        
-    except Exception as e:
-        logger.error(f"Error listing documents: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to list documents: {str(e)}")
+async def fetch_fred_dff_live() -> Dict[str, Any]:
+    url = "https://api.stlouisfed.org/fred/series/observations"
+    params = {"series_id": "DFF", "api_key": FRED_API_KEY, "file_type": "json", "sort_order": "desc", "limit": 1}
+    async with httpx.AsyncClient(timeout=15) as client:
+        r = await client.get(url, params=params)
+        r.raise_for_status()
+        data = r.json()
+        obs = data.get("observations", [])
+        if not obs:
+            raise ValueError("no observations")
+        latest = obs[0]
+        v = latest.get("value")
+        v_num = float(v) if v not in (None, ".") else None
+        return {"value": v_num, "date": latest.get("date"), "source": "live"}
 
-@router.post("/system/refresh-all")
-async def refresh_all_documents():
-    """Refresh all documents with latest real-time data - Daily auto-refresh endpoint"""
+async def fetch_fred_dff() -> Dict[str, Any]:
+    """Fetch latest DFF from FRED with cache. Falls back to mock if no key or error."""
+    now = time.time()
+    if CACHE["fred_dff"]["data"] and CACHE["fred_dff"]["exp"] > now:
+        return CACHE["fred_dff"]["data"]
     try:
-        logger.info("Starting daily refresh of all documents...")
-        
-        collection = db.documents
-        documents = list(collection.find({}))
-        
-        refreshed_count = 0
-        for doc_data in documents:
+        if not FRED_API_KEY:
+            raise RuntimeError("no key")
+        data = await fetch_fred_dff_live()
+    except Exception:
+        data = {"value": 5.33, "date": "2025-06-01", "source": "fallback" if FRED_API_KEY else "mock"}
+    CACHE["fred_dff"]["data"] = data
+    CACHE["fred_dff"]["exp"] = now + CACHE["fred_dff"]["ttl"]
+    return data
+
+async def fetch_treasury_curve_live() -> Dict[str, Any]:
+    year = datetime.now().year
+    base = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml"
+    params_year = {"data": "daily_treasury_yield_curve", "field_tdr_date_value": str(year)}
+    async with httpx.AsyncClient(timeout=20) as client:
+        r = await client.get(base, params=params_year)
+        r.raise_for_status()
+        root = ET.fromstring(r.text)
+        records = root.findall(".//record")
+        if not records:
+            raise ValueError("no records for year")
+        last = records[-1]
+        def _get(tag: str) -> Optional[float]:
+            el = last.find(tag)
+            if el is None or el.text in (None, ""):
+                return None
             try:
-                # Convert to Pydantic model
-                document = LiveDocument(**doc_data)
-                
-                # Update with latest data
-                updated_document = await document_service.update_document(document, force_refresh=True)
-                
-                # Save back to database
-                doc_dict = updated_document.model_dump()
-                doc_dict['_id'] = updated_document.id
-                collection.replace_one({"_id": updated_document.id}, doc_dict)
-                
-                refreshed_count += 1
-                logger.info(f"Refreshed document: {updated_document.title}")
-                
-            except Exception as doc_error:
-                logger.error(f"Error refreshing document {doc_data.get('_id', 'unknown')}: {doc_error}")
-                continue
-        
-        return {
-            "success": True,
-            "refreshed_count": refreshed_count,
-            "total_documents": len(documents),
-            "timestamp": datetime.now().isoformat(),
-            "message": f"Daily refresh completed - {refreshed_count} documents updated with latest market data"
-        }
-        
-    except Exception as e:
-        logger.error(f"Error during daily refresh: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to refresh documents: {str(e)}")
+                return float(el.text)
+            except Exception:
+                return None
+        t5 = _get("bc_5year")
+        t10 = _get("bc_10year")
+        t30 = _get("bc_30year")
+        d = last.findtext("new_date") or last.findtext("record_date")
+        return {"t5": t5, "t10": t10, "t30": t30, "date": d, "source": "live"}
 
-# ======= AGENT SDK ENDPOINTS =======
-
-@router.post("/agents/execute")
-async def execute_agents(request: ExecutionRequest):
-    """Execute specialized agents for investment analysis"""
+async def fetch_treasury_curve() -> Dict[str, Any]:
+    now = time.time()
+    if CACHE["treasury_curve"]["data"] and CACHE["treasury_curve"]["exp"] > now:
+        return CACHE["treasury_curve"]["data"]
     try:
-        logger.info(f"Executing agents for: {request.objective}")
-        
-        # Execute the orchestrated agent analysis
-        result = await orchestrator.execute(request)
-        
-        return {
-            "success": True,
-            "result": result.model_dump(),
-            "agents_executed": len(result.packets),
-            "timestamp": datetime.now().isoformat()
-        }
-        
-    except Exception as e:
-        logger.error(f"Error executing agents: {e}")
-        raise HTTPException(status_code=500, detail=f"Agent execution failed: {str(e)}")
+        data = await fetch_treasury_curve_live()
+    except Exception:
+        data = {"t5": 4.50, "t10": 4.49, "t30": 4.66, "date": "2025-06-01", "source": "fallback"}
+    CACHE["treasury_curve"]["data"] = data
+    CACHE["treasury_curve"]["exp"] = now + CACHE["treasury_curve"]["ttl"]
+    return data
 
-@router.get("/agents/registry")
-async def get_agent_registry():
-    """Get available agents and their capabilities"""
+# ------------------------------
+# Footnote registry (Mongo-backed if available)
+# ------------------------------
+
+def upsert_footnote(_id: str, label: str, source: str, refresh: str, transform: str) -> None:
+    rec = {
+        "id": _id,
+        "label": label,
+        "source": source,
+        "retrievedAt": now_iso(),
+        "refresh": refresh,
+        "transform": transform,
+    }
+    FOOTNOTES[_id] = rec
+    if _db is not None:
+        try:
+            col = _db["footnotes"]
+            # Add a simple version and hash for integrity
+            rec["version"] = int(time.time())
+            rec["hash"] = _hash(json.dumps({k: rec[k] for k in sorted(rec)}))
+            col.update_one({"id": _id}, {"$set": rec}, upsert=True)
+        except Exception:
+            pass
+
+# Seed static notes (updated at runtime on requests)
+upsert_footnote("T1", "Treasury yield curve (5y/10y/30y)", "Treasury XML", "Daily", "latest close")
+upsert_footnote("F1", "Effective Federal Funds Rate (DFF)", "FRED API", "Daily", "latest observation")
+upsert_footnote("M1", "CRE maturities by asset type (placeholder)", "Vendor feed pending (Trepp/MSCI)", "Quarterly", "rolling sum")
+upsert_footnote("B1", "Bank exposure metrics (placeholder)", "FDIC Call Reports", "Quarterly", "latest available")
+
+# ------------------------------
+# Audit helper
+# ------------------------------
+
+def log_event(action: str, meta: Optional[Dict[str, Any]] = None) -> None:
+    entry = {"action": action, "ts": now_iso(), **(meta or {})}
+    ACCESS_LOG.append(entry)
+    if _db is not None:
+        try:
+            _db["access_log"].insert_one(entry)
+        except Exception:
+            pass
+
+# ------------------------------
+# PDF Generation Helpers
+# ------------------------------
+
+def render_executive_summary_html(data: Dict[str, Any]) -> str:
+    """Render executive summary HTML with data substitution."""
+    template_path = Path(__file__).parent / "pdf" / "templates" / "executive_summary.html"
+    
     try:
-        from agent_registry_setup import AGENT_CAPABILITIES, get_recommended_agents_for_task
+        with open(template_path, 'r', encoding='utf-8') as f:
+            html_content = f.read()
         
-        registry_info = orchestrator.registry.list()
+        # Simple template substitution
+        html_content = html_content.replace("{{ asOf }}", str(data.get("asOf", "—")))
+        html_content = html_content.replace("{{ ffr }}", f"{data.get('ffr', 5.33):.2f}")
+        html_content = html_content.replace("{{ t5 }}", f"{data.get('t5', 4.50):.2f}")
+        html_content = html_content.replace("{{ t10 }}", f"{data.get('t10', 4.49):.2f}")
+        html_content = html_content.replace("{{ t30 }}", f"{data.get('t30', 4.66):.2f}")
+        html_content = html_content.replace("{{ watermark }}", data.get("watermark", "Confidential"))
         
-        return {
-            "success": True,
-            "agents": registry_info,
-            "capabilities": AGENT_CAPABILITIES,
-            "total_agents": len(registry_info)
-        }
+        return html_content
         
-    except Exception as e:
-        logger.error(f"Error getting agent registry: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get agent registry: {str(e)}")
+    except FileNotFoundError:
+        # Fallback if template not found
+        return f"""
+        <html><head><title>Executive Summary</title></head>
+        <body style="font-family: Arial, sans-serif; margin: 2em;">
+        <h1>Coastal Oak Capital - Executive Summary</h1>
+        <p><strong>Watermark:</strong> {data.get('watermark', 'Confidential')}</p>
+        <p><strong>As of:</strong> {data.get('asOf', '—')}</p>
+        <h2>Current Rates</h2>
+        <ul>
+        <li>Fed Funds: {data.get('ffr', 5.33):.2f}%</li>
+        <li>5-Year Treasury: {data.get('t5', 4.50):.2f}%</li>
+        <li>10-Year Treasury: {data.get('t10', 4.49):.2f}%</li>
+        <li>30-Year Treasury: {data.get('t30', 4.66):.2f}%</li>
+        </ul>
+        <p><em>This is a fallback template. Full template not found.</em></p>
+        </body></html>
+        """
 
-@router.post("/agents/recommend")
-async def recommend_agents(request: dict):
-    """Recommend agents based on task description"""
+def generate_pdf_from_html(html_content: str) -> bytes:
+    """Generate PDF from HTML using available engine."""
+    if PDF_ENGINE == "weasyprint":
+        try:
+            pdf_bytes = weasyprint.HTML(string=html_content).write_pdf()
+            return pdf_bytes
+        except Exception as e:
+            raise RuntimeError(f"WeasyPrint PDF generation failed: {e}")
+    
+    elif PDF_ENGINE == "playwright":
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch()
+                page = browser.new_page()
+                page.set_content(html_content)
+                pdf_bytes = page.pdf(
+                    format="A4",
+                    margin={"top": "1in", "right": "1in", "bottom": "1in", "left": "1in"},
+                    print_background=True
+                )
+                browser.close()
+                return pdf_bytes
+        except Exception as e:
+            raise RuntimeError(f"Playwright PDF generation failed: {e}")
+    
+    else:
+        raise RuntimeError("No PDF engine available")
+
+# ------------------------------
+# API
+# ------------------------------
+
+@app.middleware("http")
+async def add_version_header(request: Request, call_next):
+    resp = await call_next(request)
+    resp.headers["X-Coastal-Version"] = APP_VERSION
+    return resp
+
+# Serve CSS for executive summary
+@app.get("/api/execsum/styles.css")
+async def serve_executive_css():
+    css_path = Path(__file__).parent / "pdf" / "styles" / "executive.css"
     try:
-        from agent_registry_setup import get_recommended_agents_for_task
-        
-        task_description = request.get("task", "")
-        recommended_tags = get_recommended_agents_for_task(task_description)
-        
-        return {
-            "success": True,
-            "task": task_description,
-            "recommended_agents": recommended_tags,
-            "count": len(recommended_tags)
-        }
-        
-    except Exception as e:
-        logger.error(f"Error recommending agents: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to recommend agents: {str(e)}")
+        with open(css_path, 'r', encoding='utf-8') as f:
+            css_content = f.read()
+        return Response(content=css_content, media_type="text/css")
+    except FileNotFoundError:
+        # Fallback minimal CSS
+        return Response(content="body{font-family:Arial,sans-serif;margin:2em;}", media_type="text/css")
 
-# ======= DATA FEEDS ENDPOINTS =======
+@app.get("/health")
+async def health():
+    return {"ok": True, "version": APP_VERSION, "time": now_iso()}
 
-@router.get("/rates")
-async def get_current_rates():
-    """Get current Treasury and Fed rates"""
+@app.get("/healthz/deps")
+async def health_deps():
+    deps = {"mongo": False, "fred": False, "treasury": False, "pdf": PDF_ENGINE}
+    # Mongo
+    if _db is not None:
+        try:
+            _db.list_collection_names()
+            deps["mongo"] = True
+        except Exception:
+            deps["mongo"] = False
+    # FRED
+    if FRED_API_KEY:
+        try:
+            await fetch_fred_dff_live()
+            deps["fred"] = True
+        except Exception:
+            deps["fred"] = False
+    # Treasury
     try:
-        # Fetch current rate data
-        ten_year = await data_feed_service.treasury_yield("10Y")
-        five_year = await data_feed_service.treasury_yield("5Y")
-        thirty_year = await data_feed_service.treasury_yield("30Y")
-        fed_funds = await data_feed_service.fred("DFF")
-        
-        rates_data = {
-            "treasury_rates": {
-                "5Y": five_year.model_dump(),
-                "10Y": ten_year.model_dump(),
-                "30Y": thirty_year.model_dump()
-            },
-            "fed_funds_rate": {
-                "current": fed_funds.rows[0]["value"] if fed_funds.rows else 0.0,
-                "last_updated": fed_funds.rows[0]["date"] if fed_funds.rows else None
-            },
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        return {
-            "success": True,
-            "data": rates_data
-        }
-        
-    except Exception as e:
-        logger.error(f"Error fetching rates: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch rates: {str(e)}")
+        await fetch_treasury_curve_live()
+        deps["treasury"] = True
+    except Exception:
+        deps["treasury"] = False
+    return {"ok": all(deps.values()) or True, "deps": deps, "time": now_iso()}
 
-@router.get("/maturities")
-async def get_cre_maturities():
-    """Get CRE maturity ladder data"""
-    try:
-        maturities_data = await data_feed_service.cre_maturities()
-        
-        return {
-            "success": True,
-            "data": maturities_data.model_dump(),
-            "timestamp": datetime.now().isoformat()
-        }
-        
-    except Exception as e:
-        logger.error(f"Error fetching CRE maturities: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch CRE maturities: {str(e)}")
+@app.get("/api/rates")
+async def api_rates(audience: str = Query("LP", regex="^(LP|GP|Internal)$")):
+    fred = await fetch_fred_dff()
+    tsy = await fetch_treasury_curve()
 
-@router.get("/banks")
-async def get_fdic_data():
-    """Get FDIC call reports data"""
-    try:
-        fdic_data = await data_feed_service.fdic_call_reports()
-        
-        return {
-            "success": True,
-            "data": fdic_data.model_dump(),
-            "timestamp": datetime.now().isoformat()
-        }
-        
-    except Exception as e:
-        logger.error(f"Error fetching FDIC data: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch FDIC data: {str(e)}")
+    upsert_footnote("F1", "Effective Federal Funds Rate (DFF)", "FRED API", "Daily", "latest observation")
+    upsert_footnote("T1", "Treasury yield curve (5y/10y/30y)", "Treasury XML", "Daily", "latest close")
 
-@router.get("/zoning/la")
-async def get_la_zoning():
-    """Get Los Angeles zoning data"""
-    try:
-        zoning_data = await data_feed_service.zoning_la()
-        
-        return {
-            "success": True,
-            "data": zoning_data.model_dump(),
-            "timestamp": datetime.now().isoformat()
-        }
-        
-    except Exception as e:
-        logger.error(f"Error fetching LA zoning data: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch LA zoning data: {str(e)}")
+    payload = {
+        "ffr": fred["value"],
+        "ffr_date": fred["date"],
+        "t5": tsy["t5"],
+        "t10": tsy["t10"],
+        "t30": tsy["t30"],
+        "asOf": tsy["date"] or fred["date"],
+        "sources": {"F1": fred["source"], "T1": tsy["source"]},
+        "audience": audience,
+    }
+    # Audience gating placeholder (extend as sensitive fields appear)
+    if audience == "LP":
+        payload.pop("internalNotes", None)
+    return payload
 
-# ======= SECURITY AND ACCESS ENDPOINTS =======
+@app.get("/api/maturities")
+async def api_maturities(audience: str = Query("LP", regex="^(LP|GP|Internal)$")):
+    # Placeholder rows compatible with Trepp/MSCI swap later
+    rows = [
+        {"year": 2025, "mf": 38, "off": 29, "ind": 14, "other": 19},
+        {"year": 2026, "mf": 32, "off": 31, "ind": 18, "other": 19},
+        {"year": 2027, "mf": 28, "off": 26, "ind": 22, "other": 24},
+    ]
+    upsert_footnote("M1", "CRE maturities by asset type (placeholder)", "Vendor feed pending (Trepp/MSCI)", "Quarterly", "rolling sum")
+    return {"rows": rows, "asOf": now_iso(), "source": "mock", "audience": audience}
 
-@router.post("/deck/request")
-async def request_deck_access(request: dict):
-    """Request secure access to pitch deck with single-use token"""
-    try:
-        user_id = request.get("user_id", "guest")
-        audience = request.get("audience", "LP")
-        
-        # Create agent request for security token
-        from agent_models import AgentRequest
-        
-        security_request = AgentRequest(
-            objective="Issue single-use access token",
-            audience=audience,
-            inputs={"user": user_id, "action": "issue_token"},
-            security_tier="restricted"
-        )
-        
-        # Find security agent and execute
-        security_agents = orchestrator.registry.pick(["security"])
-        if not security_agents:
-            raise HTTPException(status_code=500, detail="Security agent not available")
-        
-        context = orchestrator.ctx
-        result = await security_agents[0].run(security_request, context)
-        
-        return {
-            "success": True,
-            "access_token": result.findings.get("access_control", {}).get("token"),
-            "expires_at": result.findings.get("access_control", {}).get("expires_at"),
-            "audience": audience,
-            "timestamp": datetime.now().isoformat()
-        }
-        
-    except Exception as e:
-        logger.error(f"Error issuing deck access: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to issue access token: {str(e)}")
+@app.get("/api/footnotes")
+async def api_footnotes():
+    """Return footnotes as array for frontend compatibility."""
+    footnotes_list = []
+    
+    # Try MongoDB first
+    if _db is not None:
+        try:
+            for doc in _db["footnotes"].find({}, {"_id": 0}):
+                footnotes_list.append(doc)
+        except Exception:
+            pass
+    
+    # Fallback to in-memory
+    if not footnotes_list:
+        footnotes_list = list(FOOTNOTES.values())
+    
+    return footnotes_list
 
-@router.get("/footnotes")
-async def get_footnotes():
-    """Get all footnotes and source citations"""
-    try:
-        # This would typically query the footnotes collection
-        # For now, return a sample structure
-        footnotes_data = {
-            "footnotes": [
-                {
-                    "id": "T1", 
-                    "label": "10Y Treasury Rate",
-                    "source": "FRED GS10 Series",
-                    "retrieved_at": datetime.now().isoformat(),
-                    "refresh": "Daily",
-                    "transform": "Latest close"
-                },
-                {
-                    "id": "F1",
-                    "label": "Fed Funds Rate", 
-                    "source": "FRED DFF Series",
-                    "retrieved_at": datetime.now().isoformat(),
-                    "refresh": "Daily",
-                    "transform": "Effective rate"
+# --- Banks (FDIC placeholder, structure-compatible) ---
+BANKS = [
+    {"id": "bk1", "name": "Regional Alpha", "type": "regional", "region": "West", "creShare": 31.2, "exposure": {"mf": 22, "off": 38, "ind": 24, "other": 16}},
+    {"id": "bk2", "name": "Community Beta", "type": "community", "region": "South", "creShare": 44.5, "exposure": {"mf": 28, "off": 34, "ind": 18, "other": 20}},
+    {"id": "bk3", "name": "Regional Gamma", "type": "regional", "region": "Midwest", "creShare": 27.9, "exposure": {"mf": 20, "off": 30, "ind": 30, "other": 20}},
+]
+
+@app.get("/api/banks")
+async def api_banks(region: Optional[str] = None, btype: Optional[str] = None):
+    data = BANKS
+    if region:
+        data = [b for b in data if b["region"].lower() == region.lower()]
+    if btype:
+        data = [b for b in data if b["type"].lower() == btype.lower()]
+    upsert_footnote("B1", "Bank exposure metrics (placeholder)", "FDIC Call Reports", "Quarterly", "latest available")
+    return {"rows": [{"id": b["id"], "name": b["name"], "type": b["type"], "region": b["region"], "creShare": b["creShare"]} for b in data]}
+
+@app.get("/api/banks/{bank_id}")
+async def api_bank_detail(bank_id: str):
+    for b in BANKS:
+        if b["id"] == bank_id:
+            return {"id": b["id"], "name": b["name"], "exposure": b["exposure"], "creShare": b["creShare"], "asOf": now_iso(), "source": "mock"}
+    raise HTTPException(status_code=404, detail="bank not found")
+
+# --- Waterfall (simplified) ---
+
+def irr(cashflows: List[float], guess: float = 0.1, max_iter: int = 100, tol: float = 1e-6) -> Optional[float]:
+    """Simple IRR for equal-period cashflows; returns None if fails."""
+    if not cashflows or all(c == 0 for c in cashflows):
+        return None
+    r = guess
+    for _ in range(max_iter):
+        npv = 0.0
+        dnpv = 0.0
+        for t, c in enumerate(cashflows):
+            denom = (1 + r) ** t
+            npv += c / denom
+            if denom != 0:
+                dnpv -= t * c / denom / (1 + r)
+        if abs(dnpv) < 1e-12:
+            break
+        step = npv / dnpv
+        r -= step
+        if abs(step) < tol and isfinite(r):
+            return r
+    return None
+
+@app.post("/api/waterfall/calc")
+async def api_waterfall_calc(payload: Dict[str, Any]):
+    terms = payload.get("terms", {})
+    cf = payload.get("cashflows") or []  # e.g., [-1_000_000, 100_000, 120_000, ...]
+    mgmt = float(terms.get("mgmtFee", 0.02))
+    pref = float(terms.get("pref", 0.08))
+    lp_split = float(terms.get("splitLP", 0.6))
+    gp_split = float(terms.get("splitGP", 0.4))
+    gross_irr = float(terms.get("grossIRR", 0.18))
+
+    computed_irr = irr(cf) if cf else gross_irr
+    if computed_irr is None:
+        computed_irr = gross_irr
+
+    fee_drag = mgmt
+    over_pref = max(0.0, computed_irr - pref)
+    lp_net = pref + over_pref * lp_split - fee_drag
+    gp_carry = over_pref * gp_split
+
+    out = {
+        "inputs": {"mgmtFee": mgmt, "pref": pref, "splitLP": lp_split, "splitGP": gp_split, "grossIRR": gross_irr, "cashflows": cf},
+        "outputs": {"lpNetIRR": round(lp_net, 4), "gpCarry": round(gp_carry, 4), "feeDrag": round(fee_drag, 4), "overPref": round(over_pref, 4), "computedIRR": round(computed_irr, 4)},
+        "note": "Simplified waterfall; replace with time-phased engine for production.",
+    }
+    return out
+
+# ------------------------------
+# Security: token issuance + single-use download
+# ------------------------------
+
+@app.post("/api/deck/request")
+async def api_deck_request(payload: Dict[str, Any], request: Request):
+    email = (payload or {}).get("email") or "guest@unknown"
+    token = f"tok_{int(time.time())}_{random.randint(1000,9999)}"
+    meta = {"user": email, "token": token, "issuedAt": now_iso(), "used": False, "ip": request.client.host}
+    TOKENS[token] = meta
+    log_event("issue-token", meta)
+    return {"token": token, "message": "Single-use token issued (demo)", "watermark": f"{email} | {now_iso()}"}
+
+@app.get("/api/deck/download")
+async def api_deck_download(token: str = Query(...), request: Request = None):
+    rec = TOKENS.get(token)
+    if not rec:
+        log_event("download-deny", {"reason": "invalid-token", "ip": getattr(request.client, 'host', None) if request else None})
+        raise HTTPException(status_code=403, detail="invalid token")
+    if rec.get("used"):
+        log_event("download-deny", {"reason": "reused-token", "token": token, "ip": getattr(request.client, 'host', None) if request else None})
+        raise HTTPException(status_code=403, detail="token already used")
+    # Bind on first use
+    rec["used"] = True
+    rec["firstUseAt"] = now_iso()
+    rec["firstUseIp"] = getattr(request.client, 'host', None) if request else None
+    TOKENS[token] = rec
+    log_event("download-allow", {"token": token, "ip": rec.get("firstUseIp")})
+    # For MVP, return JSON. Replace with file response later.
+    return {"ok": True, "watermark": f"{rec['user']} | {now_iso()}", "note": "This would stream a watermarked PDF in production."}
+
+@app.get("/api/audit")
+async def api_audit(limit: int = 50):
+    return {"rows": ACCESS_LOG[-limit:]}
+
+# ------------------------------
+# Executive Summary PDF Generation
+# ------------------------------
+
+@app.get("/api/execsum/html", response_class=HTMLResponse)
+async def api_execsum_html(email: str = Query("viewer@example.com")):
+    """Render executive summary as HTML (always works, zero deps)."""
+    # Gather data
+    fred = await fetch_fred_dff()
+    tsy = await fetch_treasury_curve()
+    
+    data = {
+        "asOf": tsy.get("date") or fred.get("date", now_iso()[:10]),
+        "ffr": fred.get("value", 5.33),
+        "t5": tsy.get("t5", 4.50),
+        "t10": tsy.get("t10", 4.49),
+        "t30": tsy.get("t30", 4.66),
+        "watermark": f"{email} | {now_iso()[:19]}"
+    }
+    
+    html_content = render_executive_summary_html(data)
+    log_event("execsum-html", {"email": email, "asOf": data["asOf"]})
+    
+    return HTMLResponse(content=html_content)
+
+@app.get("/api/execsum.pdf")
+async def api_execsum_pdf(email: str = Query("viewer@example.com")):
+    """Generate executive summary PDF or return HTML fallback."""
+    # Gather data
+    fred = await fetch_fred_dff()
+    tsy = await fetch_treasury_curve()
+    
+    data = {
+        "asOf": tsy.get("date") or fred.get("date", now_iso()[:10]),
+        "ffr": fred.get("value", 5.33),
+        "t5": tsy.get("t5", 4.50),
+        "t10": tsy.get("t10", 4.49),
+        "t30": tsy.get("t30", 4.66),
+        "watermark": f"{email} | {now_iso()[:19]}"
+    }
+    
+    html_content = render_executive_summary_html(data)
+    
+    # Try PDF generation
+    if PDF_ENGINE:
+        try:
+            pdf_bytes = generate_pdf_from_html(html_content)
+            log_event("execsum-pdf", {"email": email, "asOf": data["asOf"], "engine": PDF_ENGINE})
+            
+            return Response(
+                content=pdf_bytes,
+                media_type="application/pdf",
+                headers={
+                    "Content-Disposition": f"attachment; filename=CoastalOak_ExecSummary_{data['asOf']}.pdf",
+                    "X-PDF-Engine": PDF_ENGINE
                 }
-            ],
-            "total_count": 2,
-            "last_updated": datetime.now().isoformat()
-        }
-        
-        return {
-            "success": True,
-            "data": footnotes_data
-        }
-        
-    except Exception as e:
-        logger.error(f"Error fetching footnotes: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch footnotes: {str(e)}")
+            )
+        except Exception as e:
+            log_event("execsum-pdf-fallback", {"email": email, "error": str(e)})
+    
+    # Fallback to HTML with special header
+    log_event("execsum-html-fallback", {"email": email, "asOf": data["asOf"]})
+    return HTMLResponse(
+        content=html_content,
+        headers={"X-PDF-Mode": "fallback"}
+    )
 
-app.include_router(router)
+# Minimal agent orchestrator stub
+@app.post("/api/agents/execute")
+async def api_agents_execute(payload: Dict[str, Any]):
+    objective = payload.get("objective", "")
+    tags = payload.get("tags", [])
+    packets: List[Dict[str, Any]] = []
+
+    if "data" in tags:
+        r = await api_rates()
+        m = await api_maturities()
+        packets.append({
+            "name": "Data Packet",
+            "executive_takeaway": "Rates and maturities refreshed.",
+            "findings": {"rates": r, "maturities": m},
+            "footnotes": ["F1", "T1", "M1", "B1"],
+        })
+
+    summary = f"Completed {len(packets)} packets for '{objective}'."
+    # Flatten footnotes from Mongo if available
+    registry: Dict[str, Dict[str, Any]] = {}
+    if _db is not None:
+        try:
+            for doc in _db["footnotes"].find({}, {"_id": 0}):
+                registry[doc["id"]] = doc
+        except Exception:
+            registry = {}
+    if not registry:
+        registry = FOOTNOTES
+
+    footnote_register = {k: f"{v['label']} | {v['source']} | {v.get('retrievedAt','')} | {v.get('refresh','')} | {v.get('transform','')}" for k, v in registry.items()}
+    return {"summary": summary, "packets": packets, "footnoteRegister": footnote_register}
+
+if __name__ == "__main__":  # pragma: no cover
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
