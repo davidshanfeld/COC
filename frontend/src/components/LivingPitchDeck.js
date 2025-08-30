@@ -146,7 +146,7 @@ const LivingPitchDeck = () => {
           exposure: {
             asOf: data.asOf,
             banks: data.rows,
-            avgExposure: data.rows.reduce((sum, bank) => sum + bank.exposurePct, 0) / data.rows.length / 100,
+            avgExposure: data.rows.reduce((sum, bank) => sum + bank.exposurePct, 0) / data.rows.length,
             footnoteId: data.rows[0]?.footnoteId || 'B1'
           }
         }));
