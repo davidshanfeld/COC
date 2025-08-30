@@ -39,6 +39,8 @@ const LivingPitchDeck = () => {
     fetchFootnotes();
   }, []);
 
+  const apiFetch = (path, opts) => fetch(path.startsWith('http') ? path : `${API_BASE}${path}`, opts);
+
   const fetchCurrentRates = async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/rates`);
