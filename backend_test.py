@@ -1125,6 +1125,388 @@ class CoastalOakAPITester:
             self.log_test("Footnotes Endpoint", False, f"Request failed: {str(e)}")
             return False
     
+    
+    # ======= NEW REGULATORY AND FDIC ADAPTERS TESTING (v1.3.x) =======
+    
+    def test_regulatory_federal_endpoint(self) -> bool:
+        """Test GET /api/regulatory/federal - Federal regulatory items (NEVI, ITC30C)"""
+        try:
+            response = self.session.get(f"{self.base_url}/regulatory/federal", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['asOf', 'items']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Regulatory Federal Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                # Check asOf field has timestamp
+                as_of = data.get('asOf')
+                if not as_of:
+                    self.log_test("Regulatory Federal Endpoint", False, 
+                                f"Missing asOf timestamp", data)
+                    return False
+                
+                # Check items array
+                items = data.get('items', [])
+                if not isinstance(items, list):
+                    self.log_test("Regulatory Federal Endpoint", False, 
+                                f"Items should be array, got: {type(items)}", data)
+                    return False
+                
+                # Should have NEVI and ITC30C items
+                expected_codes = ['NEVI', 'ITC30C']
+                found_codes = [item.get('code') for item in items]
+                missing_codes = [code for code in expected_codes if code not in found_codes]
+                
+                if missing_codes:
+                    self.log_test("Regulatory Federal Endpoint", False, 
+                                f"Missing expected regulatory codes: {missing_codes}", data)
+                    return False
+                
+                # Validate item structure
+                for item in items:
+                    required_item_fields = ['code', 'title', 'status', 'summary', 'effectOnCOC', 'citations', 'footnoteId', 'retrievalAt', 'refresh']
+                    missing_item_fields = [field for field in required_item_fields if field not in item]
+                    
+                    if missing_item_fields:
+                        self.log_test("Regulatory Federal Endpoint", False, 
+                                    f"Item {item.get('code')} missing fields: {missing_item_fields}", data)
+                        return False
+                    
+                    # Check footnoteId matches code
+                    if item.get('footnoteId') != item.get('code'):
+                        self.log_test("Regulatory Federal Endpoint", False, 
+                                    f"Item {item.get('code')} footnoteId mismatch: {item.get('footnoteId')}", data)
+                        return False
+                
+                self.log_test("Regulatory Federal Endpoint", True, 
+                            f"Federal regulatory items retrieved successfully - {len(items)} items including {expected_codes}", 
+                            {'items_count': len(items), 'codes_found': found_codes})
+                return True
+                
+            else:
+                self.log_test("Regulatory Federal Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Regulatory Federal Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_regulatory_state_endpoint(self) -> bool:
+        """Test GET /api/regulatory/state - California state regulatory items (AB1236, AB970, CEQA32)"""
+        try:
+            response = self.session.get(f"{self.base_url}/regulatory/state", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['asOf', 'items']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Regulatory State Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                # Check asOf field has timestamp
+                as_of = data.get('asOf')
+                if not as_of:
+                    self.log_test("Regulatory State Endpoint", False, 
+                                f"Missing asOf timestamp", data)
+                    return False
+                
+                # Check items array
+                items = data.get('items', [])
+                if not isinstance(items, list):
+                    self.log_test("Regulatory State Endpoint", False, 
+                                f"Items should be array, got: {type(items)}", data)
+                    return False
+                
+                # Should have AB1236, AB970, CEQA32 items
+                expected_codes = ['AB1236', 'AB970', 'CEQA32']
+                found_codes = [item.get('code') for item in items]
+                missing_codes = [code for code in expected_codes if code not in found_codes]
+                
+                if missing_codes:
+                    self.log_test("Regulatory State Endpoint", False, 
+                                f"Missing expected regulatory codes: {missing_codes}", data)
+                    return False
+                
+                # Validate item structure
+                for item in items:
+                    required_item_fields = ['code', 'title', 'status', 'summary', 'effectOnCOC', 'citations', 'footnoteId', 'retrievalAt', 'refresh']
+                    missing_item_fields = [field for field in required_item_fields if field not in item]
+                    
+                    if missing_item_fields:
+                        self.log_test("Regulatory State Endpoint", False, 
+                                    f"Item {item.get('code')} missing fields: {missing_item_fields}", data)
+                        return False
+                    
+                    # Check footnoteId matches code
+                    if item.get('footnoteId') != item.get('code'):
+                        self.log_test("Regulatory State Endpoint", False, 
+                                    f"Item {item.get('code')} footnoteId mismatch: {item.get('footnoteId')}", data)
+                        return False
+                
+                self.log_test("Regulatory State Endpoint", True, 
+                            f"California state regulatory items retrieved successfully - {len(items)} items including {expected_codes}", 
+                            {'items_count': len(items), 'codes_found': found_codes})
+                return True
+                
+            else:
+                self.log_test("Regulatory State Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Regulatory State Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_regulatory_municipal_endpoint(self) -> bool:
+        """Test GET /api/regulatory/municipal - LA municipal regulatory items (LAZ1, LACode, LAGP, LADBS)"""
+        try:
+            response = self.session.get(f"{self.base_url}/regulatory/municipal", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['asOf', 'items']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Regulatory Municipal Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                # Check asOf field has timestamp
+                as_of = data.get('asOf')
+                if not as_of:
+                    self.log_test("Regulatory Municipal Endpoint", False, 
+                                f"Missing asOf timestamp", data)
+                    return False
+                
+                # Check items array
+                items = data.get('items', [])
+                if not isinstance(items, list):
+                    self.log_test("Regulatory Municipal Endpoint", False, 
+                                f"Items should be array, got: {type(items)}", data)
+                    return False
+                
+                # Should have LAZ1, LACode, LAGP, LADBS items
+                expected_codes = ['LAZ1', 'LACode', 'LAGP', 'LADBS']
+                found_codes = [item.get('code') for item in items]
+                missing_codes = [code for code in expected_codes if code not in found_codes]
+                
+                if missing_codes:
+                    self.log_test("Regulatory Municipal Endpoint", False, 
+                                f"Missing expected regulatory codes: {missing_codes}", data)
+                    return False
+                
+                # Validate item structure
+                for item in items:
+                    required_item_fields = ['code', 'title', 'status', 'summary', 'effectOnCOC', 'citations', 'footnoteId', 'retrievalAt', 'refresh']
+                    missing_item_fields = [field for field in required_item_fields if field not in item]
+                    
+                    if missing_item_fields:
+                        self.log_test("Regulatory Municipal Endpoint", False, 
+                                    f"Item {item.get('code')} missing fields: {missing_item_fields}", data)
+                        return False
+                    
+                    # Check footnoteId matches code
+                    if item.get('footnoteId') != item.get('code'):
+                        self.log_test("Regulatory Municipal Endpoint", False, 
+                                    f"Item {item.get('code')} footnoteId mismatch: {item.get('footnoteId')}", data)
+                        return False
+                
+                self.log_test("Regulatory Municipal Endpoint", True, 
+                            f"LA municipal regulatory items retrieved successfully - {len(items)} items including {expected_codes}", 
+                            {'items_count': len(items), 'codes_found': found_codes})
+                return True
+                
+            else:
+                self.log_test("Regulatory Municipal Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("Regulatory Municipal Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_fdic_exposure_endpoint(self) -> bool:
+        """Test GET /api/fdic/exposure - FDIC bank CRE exposure digest"""
+        try:
+            response = self.session.get(f"{self.base_url}/fdic/exposure", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['asOf', 'rows']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("FDIC Exposure Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                # Check asOf field has timestamp
+                as_of = data.get('asOf')
+                if not as_of:
+                    self.log_test("FDIC Exposure Endpoint", False, 
+                                f"Missing asOf timestamp", data)
+                    return False
+                
+                # Check rows array
+                rows = data.get('rows', [])
+                if not isinstance(rows, list):
+                    self.log_test("FDIC Exposure Endpoint", False, 
+                                f"Rows should be array, got: {type(rows)}", data)
+                    return False
+                
+                if len(rows) == 0:
+                    self.log_test("FDIC Exposure Endpoint", False, 
+                                f"No exposure data rows returned", data)
+                    return False
+                
+                # Validate row structure
+                for row in rows:
+                    required_row_fields = ['bankId', 'bankName', 'category', 'exposurePct', 'stack', 'footnoteId', 'retrievalAt', 'source']
+                    missing_row_fields = [field for field in required_row_fields if field not in row]
+                    
+                    if missing_row_fields:
+                        self.log_test("FDIC Exposure Endpoint", False, 
+                                    f"Row for bank {row.get('bankName', 'unknown')} missing fields: {missing_row_fields}", data)
+                        return False
+                    
+                    # Check stack structure (should have mf, off, ind, other percentages)
+                    stack = row.get('stack', {})
+                    required_stack_fields = ['mf', 'off', 'ind', 'other']
+                    missing_stack_fields = [field for field in required_stack_fields if field not in stack]
+                    
+                    if missing_stack_fields:
+                        self.log_test("FDIC Exposure Endpoint", False, 
+                                    f"Row for bank {row.get('bankName')} stack missing fields: {missing_stack_fields}", data)
+                        return False
+                    
+                    # Check exposurePct is numeric
+                    exposure_pct = row.get('exposurePct')
+                    if not isinstance(exposure_pct, (int, float)):
+                        self.log_test("FDIC Exposure Endpoint", False, 
+                                    f"Row for bank {row.get('bankName')} exposurePct should be numeric, got: {type(exposure_pct)}", data)
+                        return False
+                    
+                    # Check footnoteId is B1
+                    if row.get('footnoteId') != 'B1':
+                        self.log_test("FDIC Exposure Endpoint", False, 
+                                    f"Row for bank {row.get('bankName')} footnoteId should be B1, got: {row.get('footnoteId')}", data)
+                        return False
+                
+                self.log_test("FDIC Exposure Endpoint", True, 
+                            f"FDIC bank CRE exposure data retrieved successfully - {len(rows)} banks with complete stack percentages", 
+                            {'banks_count': len(rows), 'sample_bank': rows[0].get('bankName') if rows else None})
+                return True
+                
+            else:
+                self.log_test("FDIC Exposure Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("FDIC Exposure Endpoint", False, f"Request failed: {str(e)}")
+            return False
+    
+    def test_fdic_bank_detail_endpoint(self) -> bool:
+        """Test GET /api/fdic/banks/{bank_id} - Detailed bank information"""
+        try:
+            # Test with a sample bank ID
+            test_bank_id = "cert_12345"
+            response = self.session.get(f"{self.base_url}/fdic/banks/{test_bank_id}", timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                required_fields = ['asOf', 'bank']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("FDIC Bank Detail Endpoint", False, 
+                                f"Missing required fields: {missing_fields}", data)
+                    return False
+                
+                # Check asOf field has timestamp
+                as_of = data.get('asOf')
+                if not as_of:
+                    self.log_test("FDIC Bank Detail Endpoint", False, 
+                                f"Missing asOf timestamp", data)
+                    return False
+                
+                # Check bank object
+                bank = data.get('bank', {})
+                if not isinstance(bank, dict):
+                    self.log_test("FDIC Bank Detail Endpoint", False, 
+                                f"Bank should be object, got: {type(bank)}", data)
+                    return False
+                
+                # Validate bank structure
+                required_bank_fields = ['bankId', 'bankName', 'category', 'exposurePct', 'stack', 'footnoteId', 'retrievalAt', 'source']
+                missing_bank_fields = [field for field in required_bank_fields if field not in bank]
+                
+                if missing_bank_fields:
+                    self.log_test("FDIC Bank Detail Endpoint", False, 
+                                f"Bank object missing fields: {missing_bank_fields}", data)
+                    return False
+                
+                # Check bank ID matches request
+                if bank.get('bankId') != test_bank_id:
+                    self.log_test("FDIC Bank Detail Endpoint", False, 
+                                f"Bank ID mismatch: requested {test_bank_id}, got {bank.get('bankId')}", data)
+                    return False
+                
+                # Check stack structure
+                stack = bank.get('stack', {})
+                required_stack_fields = ['mf', 'off', 'ind', 'other']
+                missing_stack_fields = [field for field in required_stack_fields if field not in stack]
+                
+                if missing_stack_fields:
+                    self.log_test("FDIC Bank Detail Endpoint", False, 
+                                f"Bank stack missing fields: {missing_stack_fields}", data)
+                    return False
+                
+                # Check for details section (enhanced data)
+                details = bank.get('details', {})
+                if details:
+                    expected_detail_fields = ['assets_total', 'loans_cre_total', 'risk_metrics', 'quarterly_trend']
+                    found_detail_fields = [field for field in expected_detail_fields if field in details]
+                    
+                    if len(found_detail_fields) < 2:  # Should have at least some detail fields
+                        self.log_test("FDIC Bank Detail Endpoint", False, 
+                                    f"Bank details section incomplete, found: {found_detail_fields}", data)
+                        return False
+                
+                self.log_test("FDIC Bank Detail Endpoint", True, 
+                            f"FDIC bank detail retrieved successfully for {bank.get('bankName')} ({test_bank_id}) with complete data structure", 
+                            {'bank_id': test_bank_id, 'bank_name': bank.get('bankName'), 'has_details': bool(details)})
+                return True
+                
+            else:
+                self.log_test("FDIC Bank Detail Endpoint", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_test("FDIC Bank Detail Endpoint", False, f"Request failed: {str(e)}")
+            return False
+
     # ======= REGRESSION TESTING =======
     
     def test_rates_endpoint(self) -> bool:
