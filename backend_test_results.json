@@ -1,27 +1,27 @@
 {
   "total_tests": 21,
-  "passed": 19,
-  "failed": 2,
-  "success_rate": 90.47619047619048,
-  "created_document_id": "ec3d7bf2-166b-46e1-ba83-4a4cf79b0530",
+  "passed": 21,
+  "failed": 0,
+  "success_rate": 100.0,
+  "created_document_id": "bcac5915-01bc-4182-b0ba-335010093b1f",
   "test_results": [
     {
       "test": "Status Endpoint",
       "success": true,
       "details": "System healthy, database connected",
-      "timestamp": "2025-08-30T07:34:08.038857",
+      "timestamp": "2025-08-30T07:35:53.058848",
       "response_data": {
         "status": "healthy",
         "database": "connected",
         "system": "Coastal Oak Capital Live Document System",
-        "timestamp": "2025-08-30T07:34:08.036444"
+        "timestamp": "2025-08-30T07:35:53.055614"
       }
     },
     {
       "test": "Live Data Endpoint",
       "success": true,
       "details": "Successfully fetched 8 data sources with complete structure",
-      "timestamp": "2025-08-30T07:34:08.549785",
+      "timestamp": "2025-08-30T07:35:53.571734",
       "response_data": {
         "sources_count": 8,
         "sample_sources": [
@@ -35,9 +35,9 @@
       "test": "Document Create Endpoint",
       "success": true,
       "details": "Document created successfully with 8 sections and 8 data sources",
-      "timestamp": "2025-08-30T07:34:09.085820",
+      "timestamp": "2025-08-30T07:35:54.083344",
       "response_data": {
-        "document_id": "ec3d7bf2-166b-46e1-ba83-4a4cf79b0530",
+        "document_id": "bcac5915-01bc-4182-b0ba-335010093b1f",
         "sections": 8,
         "data_sources": 8
       }
@@ -46,7 +46,7 @@
       "test": "Document Get Endpoint",
       "success": true,
       "details": "Document retrieved successfully with 8 sections and 8 data sources",
-      "timestamp": "2025-08-30T07:34:09.599849",
+      "timestamp": "2025-08-30T07:35:54.595404",
       "response_data": {
         "sections_count": 8,
         "data_sources_count": 8
@@ -56,7 +56,7 @@
       "test": "Document Update Endpoint",
       "success": true,
       "details": "Document updated successfully, 8 sources refreshed",
-      "timestamp": "2025-08-30T07:34:10.115384",
+      "timestamp": "2025-08-30T07:35:55.109831",
       "response_data": {
         "sources_updated": [
           "fed_funds_rate",
@@ -70,7 +70,7 @@
       "test": "Document Export Markdown Endpoint",
       "success": true,
       "details": "Markdown export successful, 70217 characters generated",
-      "timestamp": "2025-08-30T07:34:10.625986",
+      "timestamp": "2025-08-30T07:35:55.623407",
       "response_data": {
         "content_length": 70217,
         "format": "markdown"
@@ -79,28 +79,28 @@
     {
       "test": "Documents List Endpoint",
       "success": true,
-      "details": "Successfully listed 32 documents",
-      "timestamp": "2025-08-30T07:34:11.143198",
+      "details": "Successfully listed 33 documents",
+      "timestamp": "2025-08-30T07:35:56.133019",
       "response_data": {
-        "count": 32,
+        "count": 33,
         "has_created_doc": true
       }
     },
     {
       "test": "Daily Refresh Endpoint",
       "success": true,
-      "details": "Daily refresh completed successfully - 32/32 documents updated",
-      "timestamp": "2025-08-30T07:34:11.694100",
+      "details": "Daily refresh completed successfully - 33/33 documents updated",
+      "timestamp": "2025-08-30T07:35:56.686663",
       "response_data": {
-        "refreshed": 32,
-        "total": 32
+        "refreshed": 33,
+        "total": 33
       }
     },
     {
       "test": "Healthz Deps Endpoint",
       "success": true,
       "details": "All dependencies healthy - Mongo: connected, FRED: False, WeasyPrint: False, Agents: 14",
-      "timestamp": "2025-08-30T07:34:12.201451",
+      "timestamp": "2025-08-30T07:35:57.196252",
       "response_data": {
         "mongo": "connected",
         "fred_api_key": false,
@@ -112,7 +112,7 @@
       "test": "Rates History Endpoint",
       "success": true,
       "details": "Historical rates data retrieved successfully - 5Y: 1 points, 10Y: 1 points, 30Y: 1 points, DFF: 1 points",
-      "timestamp": "2025-08-30T07:34:12.708554",
+      "timestamp": "2025-08-30T07:35:57.705760",
       "response_data": {
         "5Y": 1,
         "10Y": 1,
@@ -124,7 +124,7 @@
       "test": "Execsum PDF Endpoint",
       "success": true,
       "details": "HTML fallback working correctly - 696 characters",
-      "timestamp": "2025-08-30T07:34:13.214953",
+      "timestamp": "2025-08-30T07:35:58.214608",
       "response_data": {
         "content_type": "text/html; charset=utf-8",
         "fallback_header": "fallback-html",
@@ -134,34 +134,46 @@
     {
       "test": "Deck Request Endpoint",
       "success": true,
-      "details": "Access token issued successfully - Token: tok_29ba..., Expires: 2025-08-30T07:49:13.721021+00:00",
-      "timestamp": "2025-08-30T07:34:13.725986",
+      "details": "Access token issued successfully - Token: tok_e980..., Expires: 2025-08-30T07:50:58.720402+00:00",
+      "timestamp": "2025-08-30T07:35:58.724917",
       "response_data": {
         "token_length": 36,
-        "expires_at": "2025-08-30T07:49:13.721021+00:00"
+        "expires_at": "2025-08-30T07:50:58.720402+00:00"
       }
     },
     {
       "test": "Deck Download Endpoint",
-      "success": false,
-      "details": "HTTP 500: {\"detail\":\"Failed to download deck: 'latin-1' codec can't encode character '\\\\u2022' in position 17: ordinal not in range(256)\"}",
-      "timestamp": "2025-08-30T07:34:14.235144",
-      "response_data": null
+      "success": true,
+      "details": "\u2705 SINGLE-USE TOKEN ENFORCEMENT WORKING CORRECTLY - First download: 200 (text/html; charset=utf-8), Second download: 403 (blocked), Third download: 403 (blocked)",
+      "timestamp": "2025-08-30T07:35:59.254241",
+      "response_data": {
+        "first_response": 200,
+        "second_response": 403,
+        "third_response": 403,
+        "content_type": "text/html; charset=utf-8"
+      }
     },
     {
       "test": "Invalid Token Scenario",
       "success": true,
       "details": "Invalid token correctly rejected with 404 and proper error message: invalid token",
-      "timestamp": "2025-08-30T07:34:14.742819",
+      "timestamp": "2025-08-30T07:35:59.763528",
       "response_data": null
     },
     {
       "test": "Concurrent Token Usage",
-      "success": false,
-      "details": "Unexpected result - 0 successful, 3 failed",
-      "timestamp": "2025-08-30T07:34:15.300961",
+      "success": true,
+      "details": "\u2705 RACE CONDITION PROTECTION WORKING - Only 1 of 3 concurrent attempts succeeded, 2 were blocked",
+      "timestamp": "2025-08-30T07:36:00.376563",
       "response_data": {
+        "successful": 1,
+        "failed": 2,
         "results": [
+          {
+            "attempt_id": 1,
+            "status_code": 200,
+            "success": true
+          },
           {
             "attempt_id": 3,
             "status_code": 403,
@@ -171,11 +183,6 @@
             "attempt_id": 2,
             "status_code": 403,
             "success": false
-          },
-          {
-            "attempt_id": 1,
-            "status_code": 500,
-            "success": false
           }
         ]
       }
@@ -184,7 +191,7 @@
       "test": "Audit Endpoint",
       "success": true,
       "details": "Audit log retrieved successfully - 16 entries, found events: ['token_issued', 'token_issued', 'deck_download_html_fallback', 'token_issued', 'token_issued', 'token_issued', 'token_issued', 'token_issued']",
-      "timestamp": "2025-08-30T07:34:15.812320",
+      "timestamp": "2025-08-30T07:36:00.889865",
       "response_data": {
         "count": 16,
         "found_events": [
@@ -203,7 +210,7 @@
       "test": "Footnotes Endpoint",
       "success": true,
       "details": "Footnotes retrieved successfully - 8 entries including all required IDs: ['F1', 'T1', 'M1', 'B1', 'H1', 'R1', 'S1', 'C1']",
-      "timestamp": "2025-08-30T07:34:16.318437",
+      "timestamp": "2025-08-30T07:36:01.404804",
       "response_data": {
         "total_footnotes": 8,
         "required_ids_found": 8
@@ -213,7 +220,7 @@
       "test": "Rates Endpoint (Regression)",
       "success": true,
       "details": "Current rates endpoint working",
-      "timestamp": "2025-08-30T07:34:16.825521",
+      "timestamp": "2025-08-30T07:36:01.916277",
       "response_data": {
         "has_treasury": true,
         "has_fed_funds": true
@@ -223,21 +230,21 @@
       "test": "Maturities Endpoint (Regression)",
       "success": true,
       "details": "CRE maturities endpoint working",
-      "timestamp": "2025-08-30T07:34:17.331766",
+      "timestamp": "2025-08-30T07:36:02.429516",
       "response_data": null
     },
     {
       "test": "Banks Endpoint (Regression)",
       "success": true,
       "details": "FDIC banks endpoint working",
-      "timestamp": "2025-08-30T07:34:17.838212",
+      "timestamp": "2025-08-30T07:36:02.940539",
       "response_data": null
     },
     {
       "test": "Agents Execute Endpoint (Regression)",
       "success": true,
       "details": "Agent execution working - 2 agents executed",
-      "timestamp": "2025-08-30T07:34:18.345649",
+      "timestamp": "2025-08-30T07:36:03.452441",
       "response_data": null
     }
   ],
