@@ -28,6 +28,15 @@ MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 client = MongoClient(MONGO_URL)
 db = client.coastal_oak_db
 
+# Create MongoDB indexes for proper performance and uniqueness
+try:
+    db.credentials.create_index("token", unique=True)
+    db.credentials.create_index("expiresAt")
+    db.access_log.create_index([("ts", 1)])
+    logger.info("MongoDB indexes created successfully")
+except Exception as e:
+    logger.warning(f"Index creation warning: {e}")
+
 def log_audit(action: str, details: Dict[str, Any]):
     try:
         db.audit_logs.insert_one({
