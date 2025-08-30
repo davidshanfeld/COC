@@ -513,6 +513,36 @@ async def api_rates(audience: str = Query("LP", regex="^(LP|GP|Internal)$")):
         payload.pop("internalNotes", None)
     return payload
 
+@app.get("/api/rates/history")
+async def api_rates_history(days: int = Query(180, ge=30, le=1095), audience: str = Query("LP", regex="^(LP|GP|Internal)$")):
+    """Get historical rates data for specified number of days."""
+    
+    # Fetch historical data
+    history = await fetch_rates_history(days)
+    
+    # Update footnotes for historical data
+    upsert_footnote("F1", "Effective Federal Funds Rate (DFF)", "FRED API", "Daily", "latest observation")
+    upsert_footnote("T1", "Treasury yield curve (5y/10y/30y)", "Treasury XML", "Daily", "latest close")
+    upsert_footnote("H1", f"Historical rates ({days} days)", "FRED + Treasury APIs", "Daily", "business days, US market hours")
+    
+    # Add metadata
+    response = {
+        "data": history,
+        "metadata": {
+            "days": days,
+            "count": len(history),
+            "audience": audience,
+            "asOf": now_iso()[:10],
+            "footnotes": ["F1", "T1", "H1"]
+        }
+    }
+    
+    # Audience gating (placeholder for sensitive data filtering)
+    if audience == "LP":
+        response["metadata"].pop("internalNotes", None)
+    
+    return response
+
 @app.get("/api/maturities")
 async def api_maturities(audience: str = Query("LP", regex="^(LP|GP|Internal)$")):
     # Placeholder rows compatible with Trepp/MSCI swap later
