@@ -23,6 +23,8 @@ import {
   Eye
 } from 'lucide-react';
 
+// Backend base via env with /api prefix enforced at call sites
+const API_BASE = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/$/, '');
 const LivingPitchDeck = () => {
   const [activeAudience, setActiveAudience] = useState('LP');
   const [agentResults, setAgentResults] = useState([]);
