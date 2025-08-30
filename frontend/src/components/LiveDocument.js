@@ -6,7 +6,8 @@ import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
 import { RefreshCw, Download, FileText, TrendingUp, Eye, Zap, Server, Truck, Car, BarChart3, PieChart, Activity, Building2 } from 'lucide-react';
 
-const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+// Always use env-provided backend URL; do not hardcode defaults
+const API_BASE_URL = (process.env.REACT_APP_BACKEND_URL || '').replace(/\/$/, '');
 
 const LiveDocument = () => {
   const [document, setDocument] = useState(null);
@@ -183,7 +184,7 @@ const LiveDocument = () => {
                   <Zap className="w-8 h-8 text-yellow-600" />
                   <div>
                     <div className="font-medium">EV Charging Networks</div>
-                    <div className="text-sm text-gray-600">Consumer & fleet infrastructure</div>
+                    <div className="text-sm text-gray-600">Consumer &amp; fleet infrastructure</div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -423,7 +424,7 @@ const LiveDocument = () => {
               <div>
                 <Zap className="w-8 h-8 text-green-600 mb-2" />
                 <h3 className="font-semibold text-lg text-gray-900">EV Super-Charging</h3>
-                <p className="text-sm text-gray-600">Consumer & commercial fleet charging infrastructure networks</p>
+                <p className="text-sm text-gray-600">Consumer &amp; commercial fleet charging infrastructure networks</p>
               </div>
               <Badge className="bg-green-100 text-green-800">Active</Badge>
             </div>

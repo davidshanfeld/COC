@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response, HTMLResponse
 from pymongo import MongoClient
@@ -6,8 +6,9 @@ from bson import ObjectId
 import os
 import logging
 from contextlib import asynccontextmanager
-from datetime import datetime
-from typing import Dict, Any
+from datetime import datetime, timedelta
+from typing import Dict, Any, Optional
+import uuid
 
 # Import our models and services - using absolute imports
 from models import LiveDocument, UpdateRequest, RealTimeDataResponse
@@ -26,6 +27,17 @@ logger = logging.getLogger(__name__)
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 client = MongoClient(MONGO_URL)
 db = client.coastal_oak_db
+
+def log_audit(action: str, details: Dict[str, Any]):
+    try:
+        db.audit_logs.insert_one({
+            "id": str(uuid.uuid4()),
+            "action": action,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Audit log error: {e}")
 
 # Initialize document service
 document_service = EnhancedDocumentService()
@@ -395,6 +407,32 @@ async def get_current_rates():
         logger.error(f"Error fetching rates: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch rates: {str(e)}")
 
+@router.get("/rates/history")
+async def get_rates_history(days: int = Query(180, ge=1, le=1825)):
+    """Get historical Treasury and Fed rates for the past N days"""
+    try:
+        start_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        series_map = {"5Y": "GS5", "10Y": "GS10", "30Y": "GS30", "DFF": "DFF"}
+        
+        gs5 = await data_feed_service.fred(series_map["5Y"], {"start_date": start_date, "limit": 5000})
+        gs10 = await data_feed_service.fred(series_map["10Y"], {"start_date": start_date, "limit": 5000})
+        gs30 = await data_feed_service.fred(series_map["30Y"], {"start_date": start_date, "limit": 5000})
+        dff = await data_feed_service.fred(series_map["DFF"], {"start_date": start_date, "limit": 5000})
+        
+        return {
+            "success": True,
+            "data": {
+                "5Y": gs5.rows[::-1],
+                "10Y": gs10.rows[::-1],
+                "30Y": gs30.rows[::-1],
+                "DFF": dff.rows[::-1],
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error fetching rate history: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch rate history: {str(e)}")
+
 @router.get("/maturities")
 async def get_cre_maturities():
     """Get CRE maturity ladder data"""
@@ -470,10 +508,28 @@ async def request_deck_access(request: dict):
         context = orchestrator.ctx
         result = await security_agents[0].run(security_request, context)
         
+        token = result.findings.get("access_control", {}).get("token") or str(uuid.uuid4())
+        expires_at = result.findings.get("access_control", {}).get("expires_at") or (datetime.now() + timedelta(hours=24)).isoformat()
+        
+        # Persist token for single-use enforcement
+        try:
+            db.tokens.insert_one({
+                "token": token,
+                "audience": audience,
+                "user_id": user_id,
+                "issued_at": datetime.now().isoformat(),
+                "expires_at": expires_at,
+                "used": False
+            })
+        except Exception as e:
+            logger.error(f"Token persistence error: {e}")
+        
+        log_audit("token_issued", {"user_id": user_id, "audience": audience, "token": token})
+        
         return {
             "success": True,
-            "access_token": result.findings.get("access_control", {}).get("token"),
-            "expires_at": result.findings.get("access_control", {}).get("expires_at"),
+            "access_token": token,
+            "expires_at": expires_at,
             "audience": audience,
             "timestamp": datetime.now().isoformat()
         }
@@ -482,33 +538,136 @@ async def request_deck_access(request: dict):
         logger.error(f"Error issuing deck access: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to issue access token: {str(e)}")
 
+@router.get("/deck/download")
+async def download_deck(token: str):
+    """Download watermarked executive summary with single-use token enforcement"""
+    try:
+        rec = db.tokens.find_one({"token": token})
+        if not rec:
+            log_audit("token_invalid", {"token": token})
+            raise HTTPException(status_code=403, detail="Invalid token")
+        if rec.get("used"):
+            log_audit("token_reuse_blocked", {"token": token})
+            raise HTTPException(status_code=403, detail="Token already used")
+        if rec.get("expires_at") and datetime.fromisoformat(rec["expires_at"]) < datetime.now():
+            log_audit("token_expired", {"token": token})
+            raise HTTPException(status_code=403, detail="Token expired")
+        
+        # Mark as used
+        db.tokens.update_one({"token": token}, {"$set": {"used": True, "used_at": datetime.now().isoformat()}})
+        
+        # Generate a simple executive summary HTML with watermark
+        watermark = f"Viewer: {rec.get('user_id','unknown')} • Audience: {rec.get('audience','LP')} • {datetime.now().isoformat()}"
+        html = f"""
+        <html><head><meta charset='utf-8'><style>
+        body {{ font-family: Arial, sans-serif; margin: 40px; }}
+        .wm {{ position: fixed; top: 10px; right: 10px; color: #888; font-size: 10px; }}
+        h1 {{ color: #064e3b; }}
+        .meta {{ color:#475569; font-size:12px; margin-bottom:20px; }}
+        </style></head><body>
+        <div class='wm'>{watermark}</div>
+        <h1>Executive Summary — Coastal Oak Capital</h1>
+        <div class='meta'>Generated {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>
+        <p>Distressed CRE debt with AI/Data Infrastructure and EV Super-charging conversions. Institutional discipline, clear underwriting, and real-time market intelligence.</p>
+        </body></html>
+        """
+        
+        # Try to render PDF if WeasyPrint is available
+        try:
+            from weasyprint import HTML
+            pdf_bytes = HTML(string=html).write_pdf()
+            log_audit("deck_download_pdf", {"token": token})
+            return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": "attachment; filename=executive_summary.pdf"})
+        except Exception as e:
+            # Fallback to HTML
+            log_audit("deck_download_html_fallback", {"token": token, "error": str(e)})
+            return HTMLResponse(content=html, headers={"X-PDF-Mode": "fallback-html"})
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error during deck download: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to download deck: {str(e)}")
+
+@router.get("/execsum.pdf")
+async def executive_summary_pdf():
+    """Direct executive summary PDF (falls back to HTML if PDF engine unavailable)"""
+    try:
+        watermark = f"Direct View • {datetime.now().isoformat()}"
+        html = f"""
+        <html><head><meta charset='utf-8'><style>
+        body {{ font-family: Arial, sans-serif; margin: 40px; }}
+        .wm {{ position: fixed; top: 10px; right: 10px; color: #888; font-size: 10px; }}
+        h1 {{ color: #064e3b; }}
+        .meta {{ color:#475569; font-size:12px; margin-bottom:20px; }}
+        </style></head><body>
+        <div class='wm'>{watermark}</div>
+        <h1>Executive Summary — Coastal Oak Capital</h1>
+        <div class='meta'>Generated {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>
+        <p>Opportunistic Commercial Real Estate Distressed Debt Fund with conversion strategies into AI/Data Centers and EV infrastructure.</p>
+        </body></html>
+        """
+        try:
+            from weasyprint import HTML
+            pdf_bytes = HTML(string=html).write_pdf()
+            return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": "inline; filename=executive_summary.pdf"})
+        except Exception as e:
+            return HTMLResponse(content=html, headers={"X-PDF-Mode": "fallback-html"})
+    except Exception as e:
+        logger.error(f"Error generating /execsum.pdf: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate executive summary: {str(e)}")
+
+@router.get("/audit")
+async def get_audit(limit: int = 20):
+    """Return latest audit log entries"""
+    try:
+        docs = list(db.audit_logs.find({}, {"_id": 0}).sort([("timestamp", -1)]).limit(limit))
+        return {"success": True, "data": docs, "count": len(docs)}
+    except Exception as e:
+        logger.error(f"Error fetching audit logs: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch audit logs: {str(e)}")
+
+@router.get("/healthz/deps")
+async def healthz_deps():
+    """Dependency health check"""
+    status = {"mongo": "unknown", "fred_api_key": bool(os.getenv("FRED_API_KEY")), "weasyprint": False, "agents_registered": 0}
+    try:
+        db.command('ping')
+        status["mongo"] = "connected"
+    except Exception as e:
+        status["mongo"] = f"error: {e}"
+    try:
+        import weasyprint  # noqa: F401
+        status["weasyprint"] = True
+    except Exception:
+        status["weasyprint"] = False
+    try:
+        status["agents_registered"] = len(orchestrator.registry.list())
+    except Exception:
+        status["agents_registered"] = 0
+    return {"success": True, "status": status, "timestamp": datetime.now().isoformat()}
+
+# ======= DATA SOURCES AND FOOTNOTES =======
+
 @router.get("/footnotes")
 async def get_footnotes():
     """Get all footnotes and source citations"""
     try:
-        # This would typically query the footnotes collection
-        # For now, return a sample structure
+        # Sample structure, includes registry keys expected in v1.3.0
+        now = datetime.now().isoformat()
         footnotes_data = {
             "footnotes": [
-                {
-                    "id": "T1", 
-                    "label": "10Y Treasury Rate",
-                    "source": "FRED GS10 Series",
-                    "retrieved_at": datetime.now().isoformat(),
-                    "refresh": "Daily",
-                    "transform": "Latest close"
-                },
-                {
-                    "id": "F1",
-                    "label": "Fed Funds Rate", 
-                    "source": "FRED DFF Series",
-                    "retrieved_at": datetime.now().isoformat(),
-                    "refresh": "Daily",
-                    "transform": "Effective rate"
-                }
+                {"id": "T1", "label": "10Y Treasury Rate", "source": "FRED GS10 Series", "retrieved_at": now, "refresh": "Daily", "transform": "Latest close"},
+                {"id": "F1", "label": "Fed Funds Rate", "source": "FRED DFF Series", "retrieved_at": now, "refresh": "Daily", "transform": "Effective rate"},
+                {"id": "M1", "label": "CRE Maturity Ladder", "source": "Trepp/MSCI compatible mock", "retrieved_at": now, "refresh": "Weekly", "transform": "Aggregated by year"},
+                {"id": "B1", "label": "FDIC Call Reports", "source": "FDIC API (simplified)", "retrieved_at": now, "refresh": "Quarterly", "transform": "Selected fields"},
+                {"id": "H1", "label": "Rates History", "source": "FRED GS5/GS10/GS30/DFF", "retrieved_at": now, "refresh": "Daily", "transform": "Observation series"},
+                {"id": "R1", "label": "Regulatory Tracker", "source": "Federal Register + CA/LA", "retrieved_at": now, "refresh": "Weekly", "transform": "Normalized statuses"},
+                {"id": "S1", "label": "Sentiment Composite", "source": "VNQ/IYR P/C, VIX, IG/HY Spreads (FRED)", "retrieved_at": now, "refresh": "Daily", "transform": "Composite signal"},
+                {"id": "C1", "label": "CA Transactions Feed", "source": "County trustee filings + press", "retrieved_at": now, "refresh": "Weekly", "transform": "Tagged type/counterparty"}
             ],
-            "total_count": 2,
-            "last_updated": datetime.now().isoformat()
+            "total_count": 8,
+            "last_updated": now
         }
         
         return {
