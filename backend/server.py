@@ -600,7 +600,7 @@ async def download_deck(token: str):
             from weasyprint import HTML
             pdf_bytes = HTML(string=html).write_pdf()
             log_audit("deck_download_pdf", {"token": token})
-            return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": "attachment; filename=executive_summary.pdf"})
+            return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": "attachment; filename=executive_summary.pdf", "Cache-Control":"no-store, no-cache, must-revalidate, max-age=0", "Pragma":"no-cache", "Expires":"0"})
         except Exception as e:
             # Fallback to HTML
             log_audit("deck_download_html_fallback", {"token": token, "error": str(e)})
