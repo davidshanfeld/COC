@@ -24,11 +24,14 @@
 **Title**: "Value Creation Methodology"
 **Description**: Step-by-step value creation process from distressed acquisition to infrastructure monetization
 **Process Steps**:
-1. **Acquire**: Distressed CRE at 30-40% discount to replacement cost
-2. **Reposition**: Convert to power-centric infrastructure uses
-3. **Operate**: Generate revenue from data/power/charging services
-4. **Optimize**: Refinance/hold for cash flow or strategic sale
-5. **Return**: Target 20%+ IRR through multiple value drivers
+1. **Acquire CLO (Secured Note)**: Purchase senior loan from bank*
+2. **Foreclose on Borrower**: Exercise remedies on default
+3. **Acquire Property**: Take title from lender post-foreclosure
+4. **Convert Asset**: Build data center or EV infrastructure
+5. **Refinance**: Optimize capital structure
+6. **Pay Out LPs**: Perpetual distributions from cash flow
+
+*Acquisition routes include foreclosure, deed-in-lieu, or debt-for-services restructuring.
 
 ### Table 1.1: Key Investment Highlights Summary
 **Type**: Performance Metrics Table
