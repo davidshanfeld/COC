@@ -138,3 +138,19 @@ class CreMaturitiesResponse(BaseModel):
 
 class ZoningLAResponse(BaseModel):
     rows: List[Dict[str, Any]]
+
+# Regulatory + FDIC Adapter Models
+class RegItem(BaseModel):
+    scope: str  # "federal", "state", "municipal"
+    code: str
+    title: str
+    summary: str
+    citations: List[str]
+    footnoteId: str
+
+class FDICSnapshot(BaseModel):
+    bankId: str
+    bankName: str
+    exposurePct: float
+    stack: Dict[str, float]  # {"mf": 0.4, "off": 0.3, "ind": 0.2, "other": 0.1}
+    footnoteId: str
