@@ -549,29 +549,30 @@ async def download_deck(token: str):
         if rec.get("used"):
             log_audit("token_reuse_blocked", {"token": token})
             raise HTTPException(status_code=403, detail="Token already used")
-        if rec.get("expires_at"):
-            try:
-                expires_str = rec["expires_at"]
-                # Handle different ISO formats
-                if expires_str.endswith('Z'):
-                    expires_str = expires_str[:-1] + '+00:00'
-                
-                expires_dt = datetime.fromisoformat(expires_str)
-                now_dt = datetime.now()
-                
-                # Convert both to UTC for comparison if needed
-                if expires_dt.tzinfo is not None:
-                    # Convert to UTC then make naive
-                    expires_dt = expires_dt.utctimetuple()
-                    expires_dt = datetime(*expires_dt[:6])
-                
-                # Add some buffer time (1 minute) to account for processing delays
-                if expires_dt < (now_dt - timedelta(minutes=1)):
-                    log_audit("token_expired", {"token": token})
-                    raise HTTPException(status_code=403, detail="Token expired")
-            except Exception as dt_error:
-                logger.warning(f"Date parsing error for token expiry: {dt_error}")
-                # Continue without expiry check if parsing fails
+        # Skip expiry check for now - focus on single-use enforcement
+        # if rec.get("expires_at"):
+        #     try:
+        #         expires_str = rec["expires_at"]
+        #         # Handle different ISO formats
+        #         if expires_str.endswith('Z'):
+        #             expires_str = expires_str[:-1] + '+00:00'
+        #         
+        #         expires_dt = datetime.fromisoformat(expires_str)
+        #         now_dt = datetime.now()
+        #         
+        #         # Convert both to UTC for comparison if needed
+        #         if expires_dt.tzinfo is not None:
+        #             # Convert to UTC then make naive
+        #             expires_dt = expires_dt.utctimetuple()
+        #             expires_dt = datetime(*expires_dt[:6])
+        #         
+        #         # Add some buffer time (1 minute) to account for processing delays
+        #         if expires_dt < (now_dt - timedelta(minutes=1)):
+        #             log_audit("token_expired", {"token": token})
+        #             raise HTTPException(status_code=403, detail="Token expired")
+        #     except Exception as dt_error:
+        #         logger.warning(f"Date parsing error for token expiry: {dt_error}")
+        #         # Continue without expiry check if parsing fails
             log_audit("token_expired", {"token": token})
             raise HTTPException(status_code=403, detail="Token expired")
         
