@@ -1,7 +1,7 @@
-# ================================
-# FILE: /app/frontend/src/App.js
-# Single-file React app (Recharts + Tailwind). Use `export default App;` only.
-# ================================
+// ================================
+// FILE: /app/frontend/src/App.js
+// Single-file React app (Recharts + Tailwind). Use `export default App;` only.
+// ================================
 import React, { useEffect, useMemo, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, BarChart, Bar } from "recharts";
 
