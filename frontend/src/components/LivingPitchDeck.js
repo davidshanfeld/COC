@@ -284,6 +284,18 @@ const LivingPitchDeck = () => {
                 Live Market Intelligence
               </CardTitle>
             </CardHeader>
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm text-slate-600">History window: {rangeDays}d</div>
+          <div className="flex gap-2">
+            {[180,365,730].map(d => (
+              <button key={d} onClick={()=>{setRangeDays(d); fetchRatesHistory(d);}} className={`px-2 py-1 text-xs rounded border ${rangeDays===d?'bg-emerald-600 text-white':'bg-white text-slate-600'}`}>{d===180?'6M':d===365?'1Y':'2Y'}</button>
+            ))}
+          </div>
+        </div>
+        {slopeText && (
+          <div className="text-xs text-slate-600 mb-4">Slope context: {slopeText}</div>
+        )}
+
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
