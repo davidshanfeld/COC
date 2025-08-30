@@ -896,7 +896,18 @@ class CoastalOakAPITester:
                 # Validate audit entry structure
                 if audit_entries:
                     sample_entry = audit_entries[0]
-                    required_entry_fields = ['action', 'details', 'timestamp']
+                    # Handle mixed audit log formats
+                    if 'action' in sample_entry and 'details' in sample_entry:
+                        # New format
+                        required_entry_fields = ['action', 'details', 'timestamp']
+                    elif 'event' in sample_entry and 'meta' in sample_entry:
+                        # Agent system format
+                        required_entry_fields = ['event', 'meta', 'timestamp']
+                    else:
+                        self.log_test("Audit Endpoint", False, 
+                                    f"Unknown audit entry format: {sample_entry.keys()}", data)
+                        return False
+                    
                     missing_entry_fields = [field for field in required_entry_fields if field not in sample_entry]
                     
                     if missing_entry_fields:
