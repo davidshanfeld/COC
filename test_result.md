@@ -174,6 +174,21 @@ backend:
           agent: "testing"
           comment: "✅ ALL 8 DATA LINEAGE & AUDITABILITY TESTS PASSED: 1) POST /api/snapshots with Basic auth (gp:Contrarians) creates snapshots with proper UUID, as_of_date, creator='gp', seq=v001/v002 format. 2) GET /api/snapshots lists with pagination (limit/cursor), sorted desc by created_at. 3) GET /api/snapshots/{id} returns complete snapshot with summary, lineage, deals, kpis. 4) GET /api/excel/summary?refresh=true creates new snapshot and returns metadata with _snapshot_id, _lineage, _last_updated_iso. Rate limiting works - consecutive refresh within 60s returns 429. 5) GET /api/excel/summary?snapshot_id={id} returns exact snapshot-backed data. 6) POST /api/excel/generate?snapshot_id={id} streams Excel with correct filename format 'Coastal_Excel_Analytics_{AS_OF}_{SEQ}.xlsx' and proper content-type. 7) Lineage allowlist verified - all URLs use approved domains (treasury.gov, fred.stlouisfed.org, bls.gov, etc.). 8) Non-existent snapshot IDs return 404 for all endpoints. Authentication working - Basic auth required for snapshot endpoints, 401 without credentials. API contract exported to /app/api.contract.json."
 
+  - task: "Export endpoints with GP Basic Auth"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "New export endpoints implemented: POST /api/export/executive-summary, POST /api/export/pitch-deck, GET /api/export/excel with GP Basic Auth (gp:Contrarians)"
+        - working: true
+          agent: "testing"
+          comment: "✅ ALL 7 EXPORT ENDPOINT TESTS PASSED: 1) POST /api/export/executive-summary requires Basic Auth (gp:Contrarians) - returns 401 without auth or with wrong credentials. With correct auth returns application/pdf with filename Executive_Summary_YYYY-MM-DD.pdf format and valid PDF content (%PDF signature). 2) POST /api/export/pitch-deck requires Basic Auth - returns 401 without auth or with wrong credentials. With correct auth returns application/vnd.openxmlformats-officedocument.presentationml.presentation with filename Coastal_Oak_Pitch_YYYY-MM-DD.pptx format and valid PPTX content (ZIP signature). 3) GET /api/export/excel requires Basic Auth - returns 401 without auth or with wrong credentials. With correct auth and existing snapshot_id returns application/vnd.openxmlformats-officedocument.spreadsheetml.sheet with filename Coastal_Excel_Analytics_${AS_OF}_v${SEQ}.xlsx format and valid Excel content (ZIP signature). 4) GET /api/export/excel with non-existent snapshot_id correctly returns 404. All endpoints properly validate Basic Auth credentials and return appropriate content-types and filenames as specified."
+
 frontend:
   - task: "LoginPage component with dual passwords"
     implemented: true
