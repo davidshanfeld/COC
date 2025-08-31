@@ -1446,6 +1446,13 @@ def run_all_tests():
     
     print(f"\n🔍 Data Lineage & Auditability: {lineage_passed}/{lineage_total} tests passed")
     
+    # Separate summary for Export Endpoints
+    export_tests = {k: v for k, v in results.items() if k.startswith('export_')}
+    export_passed = sum(1 for result in export_tests.values() if result)
+    export_total = len(export_tests)
+    
+    print(f"\n📤 Export Endpoints: {export_passed}/{export_total} tests passed")
+    
     if passed == total:
         print("🎉 All tests passed! Backend is working correctly.")
         return True
