@@ -1410,6 +1410,10 @@ def run_all_tests():
     lineage_results = test_data_lineage_auditability()
     results.update(lineage_results)
     
+    # Test Export Endpoints (GP Basic Auth Required)
+    export_results = test_export_endpoints()
+    results.update(export_results)
+    
     # Summary
     print("\n" + "="*50)
     print("🏁 TEST SUMMARY")
