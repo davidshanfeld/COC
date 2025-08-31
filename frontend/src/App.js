@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LoginPage from './components/LoginPage';
 import LegalDisclaimer from './components/LegalDisclaimer';
 import Dashboard from './components/Dashboard';
+import DownloadCenter from './components/DownloadCenter';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -62,6 +63,8 @@ function App() {
     );
   }
 
+  const gpOnly = (element) => (userType === 'gp' ? element : <Navigate to="/dashboard" replace />);
+
   return (
     <Router>
       <div className="App">
@@ -84,6 +87,10 @@ function App() {
             isAuthenticated && hasAcceptedTerms ? 
             <Dashboard userType={userType} onLogout={handleLogout} /> : 
             <Navigate to="/login" replace />
+          } />
+
+          <Route path="/downloads" element={
+            isAuthenticated && hasAcceptedTerms ? gpOnly(<DownloadCenter userType={userType} />) : <Navigate to="/login" replace />
           } />
           
           <Route path="/" element={<Navigate to="/login" replace />} />
