@@ -971,6 +971,374 @@ def test_nonexistent_snapshot_404():
         print(f"❌ Non-existent snapshot 404 test failed: {str(e)}")
         return False
 
+# ============================================================================
+# EXPORT ENDPOINTS TESTS (GP Basic Auth Required)
+# ============================================================================
+
+def test_export_executive_summary_auth():
+    """Test POST /api/export/executive-summary requires Basic Auth"""
+    print("\n=== Testing Executive Summary Export Auth (POST /api/export/executive-summary) ===")
+    
+    try:
+        # Test without auth - should get 401
+        response = requests.post(f"{BACKEND_URL}/export/executive-summary", json={}, timeout=15)
+        print(f"POST /api/export/executive-summary (no auth) - Status: {response.status_code}")
+        
+        if response.status_code != 401:
+            print(f"❌ Expected 401 without auth, got {response.status_code}")
+            return False
+        
+        # Test with wrong auth - should get 401
+        wrong_auth = ('wrong', 'credentials')
+        response2 = requests.post(f"{BACKEND_URL}/export/executive-summary", json={}, auth=wrong_auth, timeout=15)
+        print(f"POST /api/export/executive-summary (wrong auth) - Status: {response2.status_code}")
+        
+        if response2.status_code != 401:
+            print(f"❌ Expected 401 with wrong auth, got {response2.status_code}")
+            return False
+        
+        print("✅ Executive Summary export auth requirements working correctly")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Executive Summary export auth test failed: {str(e)}")
+        return False
+
+def test_export_executive_summary():
+    """Test POST /api/export/executive-summary returns PDF with correct filename"""
+    print("\n=== Testing Executive Summary Export (POST /api/export/executive-summary) ===")
+    
+    try:
+        # Basic Auth with gp:Contrarians
+        auth = ('gp', 'Contrarians')
+        payload = {"as_of_date": None, "scenario": "Base"}
+        
+        response = requests.post(f"{BACKEND_URL}/export/executive-summary", json=payload, auth=auth, timeout=15, stream=True)
+        print(f"POST /api/export/executive-summary - Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            # Verify Content-Type
+            content_type = response.headers.get('content-type', '')
+            if 'application/pdf' not in content_type:
+                print(f"❌ Wrong content type: expected application/pdf, got {content_type}")
+                return False
+            
+            # Verify Content-Disposition header
+            content_disposition = response.headers.get('content-disposition', '')
+            if 'attachment' not in content_disposition:
+                print(f"❌ Missing attachment in content-disposition: {content_disposition}")
+                return False
+            
+            # Extract filename from Content-Disposition
+            if 'filename=' in content_disposition:
+                filename_part = content_disposition.split('filename=')[1].strip('"')
+                print(f"  - Filename: {filename_part}")
+                
+                # Verify filename format: Executive_Summary_YYYY-MM-DD.pdf
+                if not filename_part.startswith('Executive_Summary_'):
+                    print(f"❌ Filename doesn't start with expected prefix: {filename_part}")
+                    return False
+                
+                if not filename_part.endswith('.pdf'):
+                    print(f"❌ Filename doesn't end with .pdf: {filename_part}")
+                    return False
+                
+                # Check for date pattern YYYY-MM-DD
+                date_part = filename_part.replace('Executive_Summary_', '').replace('.pdf', '')
+                if len(date_part) != 10 or date_part.count('-') != 2:
+                    print(f"❌ Filename missing proper date format YYYY-MM-DD: {filename_part}")
+                    return False
+                
+            else:
+                print(f"❌ No filename in content-disposition: {content_disposition}")
+                return False
+            
+            # Read first few bytes to verify it's actually PDF content
+            first_chunk = next(response.iter_content(chunk_size=1024), b'')
+            if len(first_chunk) > 0:
+                # PDF files start with %PDF
+                if first_chunk[:4] == b'%PDF':
+                    print(f"  - File appears to be valid PDF format")
+                else:
+                    print(f"❌ File doesn't appear to be PDF format (no %PDF signature)")
+                    return False
+            
+            print(f"✅ Executive Summary export working correctly")
+            return True
+            
+        else:
+            print(f"❌ Executive Summary export failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Executive Summary export test failed: {str(e)}")
+        return False
+
+def test_export_pitch_deck_auth():
+    """Test POST /api/export/pitch-deck requires Basic Auth"""
+    print("\n=== Testing Pitch Deck Export Auth (POST /api/export/pitch-deck) ===")
+    
+    try:
+        # Test without auth - should get 401
+        response = requests.post(f"{BACKEND_URL}/export/pitch-deck", json={}, timeout=15)
+        print(f"POST /api/export/pitch-deck (no auth) - Status: {response.status_code}")
+        
+        if response.status_code != 401:
+            print(f"❌ Expected 401 without auth, got {response.status_code}")
+            return False
+        
+        # Test with wrong auth - should get 401
+        wrong_auth = ('wrong', 'credentials')
+        response2 = requests.post(f"{BACKEND_URL}/export/pitch-deck", json={}, auth=wrong_auth, timeout=15)
+        print(f"POST /api/export/pitch-deck (wrong auth) - Status: {response2.status_code}")
+        
+        if response2.status_code != 401:
+            print(f"❌ Expected 401 with wrong auth, got {response2.status_code}")
+            return False
+        
+        print("✅ Pitch Deck export auth requirements working correctly")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Pitch Deck export auth test failed: {str(e)}")
+        return False
+
+def test_export_pitch_deck():
+    """Test POST /api/export/pitch-deck returns PPTX with correct filename"""
+    print("\n=== Testing Pitch Deck Export (POST /api/export/pitch-deck) ===")
+    
+    try:
+        # Basic Auth with gp:Contrarians
+        auth = ('gp', 'Contrarians')
+        payload = {"as_of_date": None, "format": "pptx", "include_notes": True}
+        
+        response = requests.post(f"{BACKEND_URL}/export/pitch-deck", json=payload, auth=auth, timeout=15, stream=True)
+        print(f"POST /api/export/pitch-deck - Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            # Verify Content-Type
+            content_type = response.headers.get('content-type', '')
+            expected_content_type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+            
+            if expected_content_type not in content_type:
+                print(f"❌ Wrong content type: expected {expected_content_type}, got {content_type}")
+                return False
+            
+            # Verify Content-Disposition header
+            content_disposition = response.headers.get('content-disposition', '')
+            if 'attachment' not in content_disposition:
+                print(f"❌ Missing attachment in content-disposition: {content_disposition}")
+                return False
+            
+            # Extract filename from Content-Disposition
+            if 'filename=' in content_disposition:
+                filename_part = content_disposition.split('filename=')[1].strip('"')
+                print(f"  - Filename: {filename_part}")
+                
+                # Verify filename format: Coastal_Oak_Pitch_YYYY-MM-DD.pptx
+                if not filename_part.startswith('Coastal_Oak_Pitch_'):
+                    print(f"❌ Filename doesn't start with expected prefix: {filename_part}")
+                    return False
+                
+                if not filename_part.endswith('.pptx'):
+                    print(f"❌ Filename doesn't end with .pptx: {filename_part}")
+                    return False
+                
+                # Check for date pattern YYYY-MM-DD
+                date_part = filename_part.replace('Coastal_Oak_Pitch_', '').replace('.pptx', '')
+                if len(date_part) != 10 or date_part.count('-') != 2:
+                    print(f"❌ Filename missing proper date format YYYY-MM-DD: {filename_part}")
+                    return False
+                
+            else:
+                print(f"❌ No filename in content-disposition: {content_disposition}")
+                return False
+            
+            # Read first few bytes to verify it's actually PPTX content
+            first_chunk = next(response.iter_content(chunk_size=1024), b'')
+            if len(first_chunk) > 0:
+                # PPTX files start with PK (ZIP signature)
+                if first_chunk[:2] == b'PK':
+                    print(f"  - File appears to be valid PPTX format (ZIP signature found)")
+                else:
+                    print(f"❌ File doesn't appear to be PPTX format (no ZIP signature)")
+                    return False
+            
+            print(f"✅ Pitch Deck export working correctly")
+            return True
+            
+        else:
+            print(f"❌ Pitch Deck export failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Pitch Deck export test failed: {str(e)}")
+        return False
+
+def test_export_excel_auth():
+    """Test GET /api/export/excel requires Basic Auth"""
+    print("\n=== Testing Excel Export Auth (GET /api/export/excel) ===")
+    
+    try:
+        # Test without auth - should get 401
+        response = requests.get(f"{BACKEND_URL}/export/excel", timeout=15)
+        print(f"GET /api/export/excel (no auth) - Status: {response.status_code}")
+        
+        if response.status_code != 401:
+            print(f"❌ Expected 401 without auth, got {response.status_code}")
+            return False
+        
+        # Test with wrong auth - should get 401
+        wrong_auth = ('wrong', 'credentials')
+        response2 = requests.get(f"{BACKEND_URL}/export/excel", auth=wrong_auth, timeout=15)
+        print(f"GET /api/export/excel (wrong auth) - Status: {response2.status_code}")
+        
+        if response2.status_code != 401:
+            print(f"❌ Expected 401 with wrong auth, got {response2.status_code}")
+            return False
+        
+        print("✅ Excel export auth requirements working correctly")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Excel export auth test failed: {str(e)}")
+        return False
+
+def test_export_excel_with_snapshot():
+    """Test GET /api/export/excel?snapshot_id=<existing> returns XLSX with correct filename"""
+    print("\n=== Testing Excel Export with Snapshot (GET /api/export/excel?snapshot_id=<id>) ===")
+    
+    try:
+        # First, get an existing snapshot ID
+        auth = ('gp', 'Contrarians')
+        snapshots_response = requests.get(f"{BACKEND_URL}/snapshots", auth=auth, timeout=10)
+        
+        if snapshots_response.status_code != 200:
+            print(f"❌ Could not get snapshots for Excel export test: {snapshots_response.status_code}")
+            return False
+        
+        snapshots_data = snapshots_response.json()
+        items = snapshots_data.get("items", [])
+        
+        if not items:
+            print("❌ No snapshots available for Excel export testing")
+            return False
+        
+        snapshot_id = items[0].get("id")
+        print(f"  - Using snapshot ID: {snapshot_id}")
+        
+        # Test Excel export with existing snapshot
+        response = requests.get(f"{BACKEND_URL}/export/excel?snapshot_id={snapshot_id}", auth=auth, timeout=15, stream=True)
+        print(f"GET /api/export/excel?snapshot_id={snapshot_id} - Status: {response.status_code}")
+        
+        if response.status_code == 200:
+            # Verify Content-Type
+            content_type = response.headers.get('content-type', '')
+            expected_content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            
+            if expected_content_type not in content_type:
+                print(f"❌ Wrong content type: expected {expected_content_type}, got {content_type}")
+                return False
+            
+            # Verify Content-Disposition header
+            content_disposition = response.headers.get('content-disposition', '')
+            if 'attachment' not in content_disposition:
+                print(f"❌ Missing attachment in content-disposition: {content_disposition}")
+                return False
+            
+            # Extract filename from Content-Disposition
+            if 'filename=' in content_disposition:
+                filename_part = content_disposition.split('filename=')[1].strip('"')
+                print(f"  - Filename: {filename_part}")
+                
+                # Verify filename format: Coastal_Excel_Analytics_${AS_OF}_v${SEQ}.xlsx
+                if not filename_part.startswith('Coastal_Excel_Analytics_'):
+                    print(f"❌ Filename doesn't start with expected prefix: {filename_part}")
+                    return False
+                
+                if not filename_part.endswith('.xlsx'):
+                    print(f"❌ Filename doesn't end with .xlsx: {filename_part}")
+                    return False
+                
+                # Check for date and version pattern
+                parts = filename_part.replace('Coastal_Excel_Analytics_', '').replace('.xlsx', '')
+                if '_v' not in parts:
+                    print(f"❌ Filename missing version pattern: {filename_part}")
+                    return False
+                
+            else:
+                print(f"❌ No filename in content-disposition: {content_disposition}")
+                return False
+            
+            # Read first few bytes to verify it's actually Excel content
+            first_chunk = next(response.iter_content(chunk_size=1024), b'')
+            if len(first_chunk) > 0:
+                # Excel files start with PK (ZIP signature)
+                if first_chunk[:2] == b'PK':
+                    print(f"  - File appears to be valid Excel format (ZIP signature found)")
+                else:
+                    print(f"❌ File doesn't appear to be Excel format (no ZIP signature)")
+                    return False
+            
+            print(f"✅ Excel export with snapshot working correctly")
+            return True
+            
+        else:
+            print(f"❌ Excel export with snapshot failed with status {response.status_code}")
+            print(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Excel export with snapshot test failed: {str(e)}")
+        return False
+
+def test_export_excel_nonexistent_snapshot():
+    """Test GET /api/export/excel?snapshot_id=<nonexistent> returns 404"""
+    print("\n=== Testing Excel Export with Non-existent Snapshot (GET /api/export/excel?snapshot_id=<fake>) ===")
+    
+    try:
+        fake_id = "00000000-0000-0000-0000-000000000000"
+        auth = ('gp', 'Contrarians')
+        
+        response = requests.get(f"{BACKEND_URL}/export/excel?snapshot_id={fake_id}", auth=auth, timeout=10)
+        print(f"GET /api/export/excel?snapshot_id={fake_id} - Status: {response.status_code}")
+        
+        if response.status_code == 404:
+            print("✅ Excel export correctly returns 404 for non-existent snapshot")
+            return True
+        else:
+            print(f"❌ Expected 404 for non-existent snapshot, got {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Excel export non-existent snapshot test failed: {str(e)}")
+        return False
+
+def test_export_endpoints():
+    """Run all Export Endpoints tests"""
+    print("\n" + "="*80)
+    print("📤 EXPORT ENDPOINTS TESTING (GP Basic Auth Required)")
+    print("="*80)
+    
+    results = {}
+    
+    # Test Executive Summary Export
+    results['export_executive_summary_auth'] = test_export_executive_summary_auth()
+    results['export_executive_summary'] = test_export_executive_summary()
+    
+    # Test Pitch Deck Export
+    results['export_pitch_deck_auth'] = test_export_pitch_deck_auth()
+    results['export_pitch_deck'] = test_export_pitch_deck()
+    
+    # Test Excel Export
+    results['export_excel_auth'] = test_export_excel_auth()
+    results['export_excel_with_snapshot'] = test_export_excel_with_snapshot()
+    results['export_excel_nonexistent_snapshot'] = test_export_excel_nonexistent_snapshot()
+    
+    return results
+
 def test_data_lineage_auditability():
     """Run all Data Lineage & Auditability tests"""
     print("\n" + "="*80)
